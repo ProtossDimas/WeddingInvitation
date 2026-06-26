@@ -64,53 +64,101 @@ async function handleGetWishes(env) {
 // Setiap kali file ini diganti & di-push ke GitHub, Cloudflare Pages otomatis re-deploy
 // dan daftar tamu ikut terupdate (tidak perlu jalankan script atau import SQL apa pun).
 
-import * as XLSX from "xlsx";
+// Catatan: TIDAK memakai library eksternal (xlsx dll) sengaja, karena Cloudflare Pages
+// Functions tidak menjalankan "npm install" sebelum bundling kalau tidak ada build command,
+// jadi dependency luar gampang gagal saat deploy. CSV cukup dibaca sebagai teks biasa.
 
-const GUEST_EXCEL_PATH = "/data/daftar-tamu.xlsx";
+const GUEST_CSV_PATH = "/data/daftar-tamu.csv";
 
 let _guestsCache = null; // bertahan selama isolate worker masih hidup (aman, karena tiap deploy = isolate baru)
 
-function findColumnKey(row, candidates) {
-  const keys = Object.keys(row);
-  for (const c of candidates) {
-    const found = keys.find((k) => k.trim().toLowerCase() === c);
-    if (found) return found;
+// Parser CSV sederhana yang tetap menangani nilai berisi koma kalau dibungkus tanda kutip ("...").
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else {
+      field += c;
+    }
   }
-  return null;
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows.filter((r) => r.some((v) => v.trim() !== ""));
 }
 
-async function loadGuestsFromExcel(request, env) {
+function findColumnIndex(header, candidates) {
+  for (const c of candidates) {
+    const idx = header.findIndex((h) => h.trim().toLowerCase() === c);
+    if (idx !== -1) return idx;
+  }
+  return -1;
+}
+
+async function loadGuestsFromCsv(request, env) {
   if (_guestsCache) return _guestsCache;
   if (!env.ASSETS) throw new Error("ASSETS binding tidak tersedia.");
 
-  const assetUrl = new URL(GUEST_EXCEL_PATH, request.url);
+  const assetUrl = new URL(GUEST_CSV_PATH, request.url);
   const res = await env.ASSETS.fetch(new Request(assetUrl.toString()));
   if (!res.ok) {
     throw new Error(
-      `File "${GUEST_EXCEL_PATH}" tidak ditemukan (status ${res.status}). Pastikan file sudah di-upload ke repo & sudah di-deploy.`
+      `File "${GUEST_CSV_PATH}" tidak ditemukan (status ${res.status}). Pastikan file sudah di-upload ke repo & sudah di-deploy.`
     );
   }
 
-  const buffer = await res.arrayBuffer();
-  const workbook = XLSX.read(buffer, { type: "array" });
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+  const text = await res.text();
+  const rows = parseCsv(text);
+  if (rows.length === 0) {
+    _guestsCache = new Map();
+    return _guestsCache;
+  }
+
+  const header = rows[0];
+  const nameIdx = findColumnIndex(header, ["nama", "name"]);
+  const groupIdx = findColumnIndex(header, ["grup", "group", "kelompok"]);
+  const codeIdx = findColumnIndex(header, ["kode", "code"]);
 
   const map = new Map();
   let autoCounter = 0;
 
-  for (const row of rows) {
-    const nameKey = findColumnKey(row, ["nama", "name"]);
-    if (!nameKey) continue;
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (nameIdx === -1) continue;
 
-    const name = String(row[nameKey] || "").trim();
+    const name = String(r[nameIdx] || "").trim();
     if (!name) continue;
 
-    const groupKey = findColumnKey(row, ["grup", "group", "kelompok"]);
-    const codeKey = findColumnKey(row, ["kode", "code"]);
-
-    const group = groupKey ? String(row[groupKey] || "").trim() : "";
-    let code = codeKey ? String(row[codeKey] || "").trim() : "";
+    const group = groupIdx !== -1 ? String(r[groupIdx] || "").trim() : "";
+    let code = codeIdx !== -1 ? String(r[codeIdx] || "").trim() : "";
 
     if (!code) {
       do {
@@ -132,9 +180,9 @@ async function handleGetGuest(code, request, env) {
 
   let guests;
   try {
-    guests = await loadGuestsFromExcel(request, env);
+    guests = await loadGuestsFromCsv(request, env);
   } catch (err) {
-    return json({ error: "Gagal membaca daftar tamu dari Excel: " + err.message }, 500);
+    return json({ error: "Gagal membaca daftar tamu dari CSV: " + err.message }, 500);
   }
 
   const row = guests.get(cleanCode);
