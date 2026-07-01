@@ -53,92 +53,141 @@ async function handleGetWishes(env) {
   return json({ items: results });
 }
 
-// ====== Daftar tamu langsung dari file Excel di repo (tanpa D1, tanpa script import) ======
+// ====== Daftar tamu langsung dari Google Spreadsheet (live, tanpa redeploy, tanpa Apps Script) ======
 //
-// Cukup upload file Excel ke: /data/daftar-tamu.xlsx (root project, sejajar index.html)
-// Kolom yang dibaca (nama kolom tidak case-sensitive, urutan bebas):
-//   - "Nama" / "Name"   -> wajib
-//   - "Grup" / "Group"  -> opsional
-//   - "Kode" / "Code"   -> opsional. Kalau kosong, kode 001, 002, ... dibuat otomatis sesuai urutan baris.
+// Struktur Sheet (tab bernama sesuai GUEST_SHEET_RANGE, default "Tamu"):
+//   Kolom A: Kode   (otomatis diisi Worker ini kalau kosong)
+//   Kolom B: Nama   (wajib, kamu isi manual)
+//   Kolom C: Grup   (opsional, kamu isi manual)
+//   Kolom D: Link   (otomatis diisi Worker ini kalau kosong)
 //
-// Setiap kali file ini diganti & di-push ke GitHub, Cloudflare Pages otomatis re-deploy
-// dan daftar tamu ikut terupdate (tidak perlu jalankan script atau import SQL apa pun).
+// Cara kerja: setiap kali ada yang membuka website ini (atau endpoint /api/guest/:code
+// dipanggil), Worker membaca Sheet. Kalau ada baris dengan Nama terisi tapi Kode/Link
+// masih kosong, Worker langsung MENULIS BALIK ke Sheet itu juga (kolom A & D), sebelum
+// menjawab request. Jadi kamu cukup isi kolom Nama (& Grup kalau mau) di Sheet — kode
+// dan link akan muncul sendiri di Sheet begitu ada trafik ke website (atau buka sendiri
+// salah satu link tamu / halaman utama untuk memicunya kalau mau instan).
+//
+// Env vars yang dibutuhkan (Settings > Environment variables di Cloudflare Pages):
+//   GOOGLE_SERVICE_ACCOUNT_EMAIL       - email service account
+//   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY - private key PEM dari file JSON service account
+//   GUEST_SHEET_ID                     - ID spreadsheet (dari URL sheet)
+//   GUEST_SHEET_RANGE                  - opsional, default "Tamu!A:C" (kolom yang dibaca)
+//   SITE_BASE_URL                      - contoh: https://undangan-nia-dimas.pages.dev
+//
+// Sheet harus di-share (Share > klik tombol) ke email service account dengan akses "Editor"
+// (bukan cuma Viewer, karena Worker ini menulis balik Kode & Link).
 
-// Catatan: TIDAK memakai library eksternal (xlsx dll) sengaja, karena Cloudflare Pages
-// Functions tidak menjalankan "npm install" sebelum bundling kalau tidak ada build command,
-// jadi dependency luar gampang gagal saat deploy. CSV cukup dibaca sebagai teks biasa.
+const GUEST_CACHE_TTL_MS = 30 * 1000; // data Sheet di-refresh tiap 30 detik (cukup "live" tanpa bikin quota API jebol)
+const TOKEN_CACHE_TTL_MS = 50 * 60 * 1000; // access token Google berlaku 1 jam, kita cache 50 menit
 
-const GUEST_CSV_PATH = "/data/daftar-tamu.csv";
+let _guestsCache = null;
+let _guestsCacheAt = 0;
+let _tokenCache = null;
+let _tokenCacheAt = 0;
 
-let _guestsCache = null; // bertahan selama isolate worker masih hidup (aman, karena tiap deploy = isolate baru)
+function base64UrlEncode(bytes) {
+  let str = typeof bytes === "string" ? btoa(bytes) : btoa(String.fromCharCode(...new Uint8Array(bytes)));
+  return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
 
-// Parser CSV sederhana yang tetap menangani nilai berisi koma kalau dibungkus tanda kutip ("...").
-function parseCsv(text) {
-  const rows = [];
-  let row = [];
-  let field = "";
-  let inQuotes = false;
+function pemToArrayBuffer(pem) {
+  const clean = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/, "")
+    .replace(/-----END PRIVATE KEY-----/, "")
+    .replace(/\\n/g, "")
+    .replace(/\s+/g, "");
+  const binary = atob(clean);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
 
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
+async function getGoogleAccessToken(env) {
+  const now = Date.now();
+  if (_tokenCache && now - _tokenCacheAt < TOKEN_CACHE_TTL_MS) return _tokenCache;
 
-    if (inQuotes) {
-      if (c === '"') {
-        if (text[i + 1] === '"') {
-          field += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        field += c;
-      }
-    } else if (c === '"') {
-      inQuotes = true;
-    } else if (c === ",") {
-      row.push(field);
-      field = "";
-    } else if (c === "\n" || c === "\r") {
-      if (c === "\r" && text[i + 1] === "\n") i++;
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = "";
-    } else {
-      field += c;
-    }
+  if (!env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) {
+    throw new Error("GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY belum diset.");
   }
-  if (field.length > 0 || row.length > 0) {
-    row.push(field);
-    rows.push(row);
+
+  const iat = Math.floor(now / 1000);
+  const exp = iat + 3600;
+  const header = { alg: "RS256", typ: "JWT" };
+  const claim = {
+    iss: env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    scope: "https://www.googleapis.com/auth/spreadsheets",
+    aud: "https://oauth2.googleapis.com/token",
+    iat,
+    exp,
+  };
+
+  const enc = (obj) => base64UrlEncode(JSON.stringify(obj));
+  const unsigned = `${enc(header)}.${enc(claim)}`;
+
+  const keyData = pemToArrayBuffer(env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY);
+  const cryptoKey = await crypto.subtle.importKey(
+    "pkcs8",
+    keyData,
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    cryptoKey,
+    new TextEncoder().encode(unsigned)
+  );
+  const jwt = `${unsigned}.${base64UrlEncode(signature)}`;
+
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=${encodeURIComponent("urn:ietf:params:oauth:grant-type:jwt-bearer")}&assertion=${jwt}`,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Gagal ambil access token Google (${res.status}): ${errText}`);
   }
-  return rows.filter((r) => r.some((v) => v.trim() !== ""));
+
+  const data = await res.json();
+  _tokenCache = data.access_token;
+  _tokenCacheAt = now;
+  return _tokenCache;
 }
 
 function findColumnIndex(header, candidates) {
   for (const c of candidates) {
-    const idx = header.findIndex((h) => h.trim().toLowerCase() === c);
+    const idx = header.findIndex((h) => String(h || "").trim().toLowerCase() === c);
     if (idx !== -1) return idx;
   }
   return -1;
 }
 
-async function loadGuestsFromCsv(request, env) {
-  if (_guestsCache) return _guestsCache;
-  if (!env.ASSETS) throw new Error("ASSETS binding tidak tersedia.");
+async function loadGuestsFromSheet(env) {
+  const now = Date.now();
+  if (_guestsCache && now - _guestsCacheAt < GUEST_CACHE_TTL_MS) return _guestsCache;
 
-  const assetUrl = new URL(GUEST_CSV_PATH, request.url);
-  const res = await env.ASSETS.fetch(new Request(assetUrl.toString()));
-  if (!res.ok) {
-    throw new Error(
-      `File "${GUEST_CSV_PATH}" tidak ditemukan (status ${res.status}). Pastikan file sudah di-upload ke repo & sudah di-deploy.`
-    );
+  if (!env.GUEST_SHEET_ID) {
+    throw new Error("GUEST_SHEET_ID belum diset.");
   }
 
-  const text = await res.text();
-  const rows = parseCsv(text);
+  const token = await getGoogleAccessToken(env);
+  const range = env.GUEST_SHEET_RANGE || "Tamu!A:C";
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.GUEST_SHEET_ID}/values/${encodeURIComponent(range)}`;
+
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Sheets API error (${res.status}): ${errText}`);
+  }
+
+  const data = await res.json();
+  const rows = data.values || [];
   if (rows.length === 0) {
     _guestsCache = new Map();
+    _guestsCacheAt = now;
     return _guestsCache;
   }
 
@@ -149,6 +198,7 @@ async function loadGuestsFromCsv(request, env) {
 
   const map = new Map();
   let autoCounter = 0;
+  const pendingUpdates = []; // baris yang perlu ditulis balik (Kode dan/atau Link)
 
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
@@ -159,30 +209,83 @@ async function loadGuestsFromCsv(request, env) {
 
     const group = groupIdx !== -1 ? String(r[groupIdx] || "").trim() : "";
     let code = codeIdx !== -1 ? String(r[codeIdx] || "").trim() : "";
+    let needsCodeWrite = false;
 
     if (!code) {
       do {
         autoCounter += 1;
         code = String(autoCounter).padStart(3, "0");
       } while (map.has(code));
+      needsCodeWrite = true;
     }
 
     map.set(code, { code, name, group });
+
+    if (needsCodeWrite) {
+      // sheetRow = nomor baris asli di Sheet (i adalah index array yang sudah dipotong header, +2 karena baris 1 = header)
+      pendingUpdates.push({ sheetRow: i + 1, code });
+    }
+  }
+
+  if (pendingUpdates.length > 0) {
+    try {
+      await writeBackCodesAndLinks(env, token, pendingUpdates);
+    } catch (err) {
+      // jangan gagalkan pembacaan tamu kalau tulis-balik gagal (misal akses Editor belum diberikan)
+      console.error("Gagal menulis balik Kode/Link ke Sheet:", err.message);
+    }
   }
 
   _guestsCache = map;
+  _guestsCacheAt = now;
   return map;
 }
 
-async function handleGetGuest(code, request, env) {
+async function writeBackCodesAndLinks(env, token, updates) {
+  const sheetTabName = (env.GUEST_SHEET_RANGE || "Tamu!A:C").split("!")[0];
+  const baseUrl = (env.SITE_BASE_URL || "").replace(/\/+$/, "");
+
+  const data = [];
+  for (const u of updates) {
+    // kolom A = Kode
+    data.push({
+      range: `${sheetTabName}!A${u.sheetRow}`,
+      values: [[u.code]],
+    });
+    // kolom D = Link (hanya ditulis kalau SITE_BASE_URL sudah diset)
+    if (baseUrl) {
+      data.push({
+        range: `${sheetTabName}!D${u.sheetRow}`,
+        values: [[`${baseUrl}/?to=${encodeURIComponent(u.code)}`]],
+      });
+    }
+  }
+
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.GUEST_SHEET_ID}/values:batchUpdate`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ valueInputOption: "USER_ENTERED", data }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`batchUpdate gagal (${res.status}): ${errText}`);
+  }
+}
+
+async function handleGetGuest(code, env) {
   const cleanCode = sanitize(code);
   if (!cleanCode) return badRequest("Kode tamu tidak valid.");
 
   let guests;
   try {
-    guests = await loadGuestsFromCsv(request, env);
+    guests = await loadGuestsFromSheet(env);
   } catch (err) {
-    return json({ error: "Gagal membaca daftar tamu dari CSV: " + err.message }, 500);
+    return json({ error: "Gagal membaca daftar tamu dari Spreadsheet: " + err.message }, 500);
   }
 
   const row = guests.get(cleanCode);
@@ -249,7 +352,7 @@ export async function onRequest(context) {
   if (path.startsWith("/api/guest/")) {
     if (request.method !== "GET") return json({ error: "Method tidak diizinkan." }, 405);
     const code = decodeURIComponent(path.slice("/api/guest/".length));
-    return handleGetGuest(code, request, env);
+    return handleGetGuest(code, env);
   }
 
   // Endpoint tak dikenal di bawah /api/*
