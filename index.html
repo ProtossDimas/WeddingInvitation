@@ -331,7 +331,7 @@
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
   </button>
   <audio id="bgMusic" loop preload="none">
-    <source src="/Banda Neira - Sampai Jadi Debu.mp3" type="audio/mpeg">
+    <source src="/music.mp3" type="audio/mpeg">
   </audio>
 
   <!-- ============ HERO ============ -->
@@ -513,9 +513,15 @@
     const looksLikeCode = /^[A-Za-z0-9_-]{1,12}$/.test(to) && !to.includes(' ');
     if (looksLikeCode) {
       fetch('/api/guest/' + encodeURIComponent(to))
-        .then(res => res.ok ? res.json() : Promise.reject())
-        .then(data => { guestEl.textContent = data.name; })
-        .catch(() => { guestEl.textContent = decodeURIComponent(to.replace(/\+/g, ' ')); });
+        .then(res => res.json().then(data => ({ ok: res.ok, status: res.status, data })))
+        .then(({ ok, status, data }) => {
+          if (ok && data.name) {
+            guestEl.textContent = data.name;
+          } else {
+            guestEl.textContent = '[ERROR ' + status + ': ' + (data.error || JSON.stringify(data)) + ']';
+          }
+        })
+        .catch(err => { guestEl.textContent = '[FETCH ERROR: ' + err.message + ']'; });
     } else {
       guestEl.textContent = decodeURIComponent(to.replace(/\+/g, ' '));
     }
