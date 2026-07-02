@@ -210,25 +210,68 @@
   }
   .btn-line:hover{ background:var(--maroon); color:var(--cream); }
 
-  /* GALLERY */
-  #gallery h2{ text-align:center; color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 30px;}
-  .gallery-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .gallery-grid .g-tall{ grid-row:span 2; }
+  /* GALLERY — horizontal filmstrip, ala "Our Moments" */
+  #gallery{ padding-left:0; padding-right:0; overflow:hidden; }
+  #gallery .eyebrow, #gallery h2{ padding-left:28px; padding-right:28px; }
+  #gallery h2{ text-align:center; color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 6px;}
+  .gallery-caption{
+    text-align:center; font-family:'Playfair Display',serif; font-style:italic;
+    font-size:.86rem; color:var(--maroon); opacity:.75; margin:0 0 26px; padding:0 30px; line-height:1.6;
+  }
+  .gallery-grid{
+    display:flex; gap:22px; overflow-x:auto; padding:26px 28px 34px;
+    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; perspective:900px;
+  }
+  .gallery-grid::-webkit-scrollbar{ display:none; }
   .g-item{
-    background:linear-gradient(160deg,var(--gold-soft),var(--cream-deep));
-    border-radius:14px; overflow:hidden; aspect-ratio:1/1;
+    flex:0 0 auto; scroll-snap-align:start;
+    width:150px; height:200px;
+    background:var(--cream);
+    padding:8px 8px 20px;
+    border-radius:6px; overflow:visible;
     display:flex; align-items:center; justify-content:center;
     color:var(--maroon); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
+    cursor:pointer; position:relative;
+    box-shadow:
+      0 2px 3px rgba(76,20,29,0.15),
+      0 14px 24px -10px rgba(76,20,29,0.45),
+      0 30px 40px -24px rgba(76,20,29,0.35);
+    transform-style:preserve-3d;
+    transition:transform .45s var(--ease), box-shadow .45s var(--ease);
   }
-  .g-item img{ width:100%; height:100%; object-fit:cover; display:block;}
-  .gallery-grid .g-tall{ aspect-ratio:auto; }
-  .g-item{ cursor:pointer; position:relative; }
-  .g-item video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .g-item::before{
+    content:""; position:absolute; inset:0; border-radius:6px;
+    background:linear-gradient(160deg, rgba(0,0,0,0) 55%, rgba(43,26,26,.18) 100%);
+    pointer-events:none; z-index:2;
+  }
+  .g-item:nth-child(6n+1){ transform:rotate(-6deg) translateY(6px); }
+  .g-item:nth-child(6n+2){ transform:rotate(4deg) translateY(-4px); }
+  .g-item:nth-child(6n+3){ transform:rotate(-3deg) translateY(10px); }
+  .g-item:nth-child(6n+4){ transform:rotate(5deg) translateY(0px); }
+  .g-item:nth-child(6n+5){ transform:rotate(-5deg) translateY(-6px); }
+  .g-item:nth-child(6n){ transform:rotate(3deg) translateY(4px); }
+  .g-item:active{
+    transform:rotate(0deg) translateY(-10px) scale(1.06) !important;
+    box-shadow:
+      0 4px 6px rgba(76,20,29,0.2),
+      0 22px 30px -12px rgba(76,20,29,0.5),
+      0 40px 50px -20px rgba(76,20,29,0.4);
+    z-index:5;
+  }
+  .g-item.g-tall{ width:170px; height:250px; }
+  .g-item.g-wide{ width:220px; height:200px; }
+  .g-item img{ width:100%; height:100%; object-fit:cover; display:block; border-radius:2px; position:relative; z-index:1;}
+  .g-item video{ width:100%; height:100%; object-fit:cover; display:block; border-radius:2px; position:relative; z-index:1;}
   .g-item .play-badge{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    background:rgba(43,26,26,0.18);
+    position:absolute; top:8px; left:8px; right:8px; bottom:20px; display:flex; align-items:center; justify-content:center;
+    background:rgba(43,26,29,0.18); z-index:2; border-radius:2px;
   }
   .g-item .play-badge svg{ width:34px; height:34px; fill:rgba(251,245,234,0.92); filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+  .gallery-hint{
+    text-align:center; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--maroon); opacity:.55; margin-top:2px;
+  }
 
   .lightbox{
     position:fixed; inset:0; z-index:80; background:rgba(43,26,26,0.92);
@@ -450,10 +493,12 @@
   <!-- ============ GALLERY ============ -->
   <section id="gallery" class="reveal">
     <span class="eyebrow" style="text-align:center; display:block;">Galeri</span>
-    <h2>Momen Kami</h2>
+    <h2>Our Moments</h2>
+    <p class="gallery-caption">I would rather share one lifetime with you than face all the ages of this world alone.</p>
     <div class="gallery-grid" id="galleryGrid">
-      <div class="g-item"><span style="font-size:.7rem; opacity:.6;">Memuat galeri...</span></div>
+      <div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Memuat galeri...</span></div>
     </div>
+    <div class="gallery-hint">Geser untuk melihat lebih banyak →</div>
   </section>
 
   <div id="lightbox" class="lightbox" aria-hidden="true">
@@ -686,7 +731,8 @@
 
   function buildGalleryItem(item, index){
     const div = document.createElement('div');
-    div.className = 'g-item' + (index % 5 === 0 ? ' g-tall' : '');
+    const shape = index % 4 === 0 ? ' g-tall' : (index % 4 === 2 ? ' g-wide' : '');
+    div.className = 'g-item' + shape;
     if (item.type === 'video'){
       div.innerHTML = `<video src="${item.url}" muted playsinline preload="metadata"></video><div class="play-badge"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
     } else {
