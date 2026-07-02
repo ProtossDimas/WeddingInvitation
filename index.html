@@ -263,6 +263,30 @@
   }
   .copy-btn.copied{ background:var(--sage); border-color:var(--sage); color:#fff;}
 
+  /* SHARE */
+  #share{ background:var(--cream-deep); text-align:center;}
+  #share h2{ color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 14px;}
+  #share p.lead{ font-size:.86rem; opacity:.8; max-width:320px; margin:0 auto 26px; line-height:1.7;}
+  .share-row{
+    display:flex; justify-content:center; gap:12px; flex-wrap:wrap; max-width:380px; margin:0 auto;
+  }
+  .share-btn{
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    background:var(--cream); border:1px solid var(--gold-soft); border-radius:16px;
+    padding:14px 16px; min-width:76px; cursor:pointer;
+    font-family:'Jost',sans-serif; font-size:.66rem; letter-spacing:.04em;
+    color:var(--maroon-deep); text-decoration:none;
+    transition:.25s var(--ease);
+  }
+  .share-btn:hover{ background:var(--gold-soft); }
+  .share-btn svg{ width:20px; height:20px; fill:var(--maroon); }
+  .share-btn.wa svg{ fill:#25D366; }
+  .share-btn.tg svg{ fill:#229ED9; }
+  .share-btn.copy.copied{ background:var(--sage); border-color:var(--sage); }
+  .share-btn.copy.copied svg{ fill:#fff; }
+  .share-btn.copy.copied span{ color:#fff; }
+  .share-note{ font-size:.68rem; opacity:.65; max-width:340px; margin:20px auto 0; line-height:1.7;}
+
   /* RSVP / WISHES */
   #rsvp h2{ text-align:center; color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 8px;}
   #rsvp p.lead{ text-align:center; font-size:.85rem; opacity:.75; max-width:320px; margin:0 auto 30px; line-height:1.7;}
@@ -478,6 +502,32 @@
     </div>
   </section>
 
+  <!-- ============ SHARE ============ -->
+  <section id="share" class="reveal">
+    <span class="eyebrow" style="text-align:center; display:block;">Sebarkan Kebahagiaan</span>
+    <h2>Bagikan Undangan</h2>
+    <p class="lead">Bantu kami menyebarkan undangan ini kepada keluarga dan sahabat lainnya.</p>
+    <div class="share-row">
+      <a class="share-btn wa" id="shareWa" href="#" target="_blank" rel="noopener" aria-label="Bagikan ke WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.6.9-.8 1-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.5c.1-.1.2-.3.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.3-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.5 4 3.5.5.2 1 .4 1.3.5.5.2 1 .1 1.4.1.4-.1 1.3-.5 1.5-1 .2-.5.2-.9.1-1zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      <a class="share-btn tg" id="shareTelegram" href="#" target="_blank" rel="noopener" aria-label="Bagikan ke Telegram">
+        <svg viewBox="0 0 24 24"><path d="M21.9 4.3 18.6 20c-.2 1-.9 1.2-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8.1c.4-.3-.1-.5-.6-.2L6.2 12.7 1.5 11.2c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z"/></svg>
+        <span>Telegram</span>
+      </a>
+      <button class="share-btn more" id="shareMore" aria-label="Bagikan lainnya">
+        <svg viewBox="0 0 24 24"><path d="M18 8a3 3 0 1 0-2.8-4H15a3 3 0 0 0 .1 1.8l-6.5 3.8a3 3 0 1 0 0 4.8l6.5 3.8a3 3 0 1 0 .7-1.3L9.3 13a3 3 0 0 0 0-2l6.5-3.8c.6.5 1.4.8 2.2.8z"/></svg>
+        <span>Lainnya</span>
+      </button>
+      <button class="share-btn copy" id="shareCopy" aria-label="Salin link">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
+        <span id="shareCopyLabel">Salin Link</span>
+      </button>
+    </div>
+    <p class="share-note">Instagram tidak mendukung link berbagi langsung — gunakan tombol <em>Lainnya</em> di HP (untuk share ke Story/DM) atau <em>Salin Link</em> lalu tempel di bio/caption/DM.</p>
+  </section>
+
   <!-- ============ CLOSING ============ -->
   <section id="closing">
     <span class="amp">&amp;</span>
@@ -582,7 +632,23 @@
   }
   tick(); setInterval(tick, 1000);
 
-  // ---- Gallery: auto-detect langsung dari isi folder /photos di GitHub (nama file bebas) ----
+  // ---- Gallery: MANUAL — atur sendiri foto/video mana saja yang tampil & urutannya ----
+  // Cukup isi nama file yang ada di folder /photos (tanpa path), urut sesuai keinginan.
+  // Contoh: 'lamaran.jpg', 'prewedding-1.jpg', 'video-proposal.mp4'
+  const GALLERY_FILES = [
+    'dimas.png',
+    // tambahkan nama file lain di sini, satu per baris, sesuai urutan tampil yang diinginkan
+  ];
+  const GALLERY_VIDEO_EXTS = ['mp4', 'webm', 'mov'];
+
+  function galleryItemFromFilename(name){
+    const ext = (name.split('.').pop() || '').toLowerCase();
+    return {
+      type: GALLERY_VIDEO_EXTS.includes(ext) ? 'video' : 'image',
+      url: '/photos/' + encodeURIComponent(name)
+    };
+  }
+
   const galleryGrid = document.getElementById('galleryGrid');
   const lightbox = document.getElementById('lightbox');
   const lightboxContent = document.getElementById('lightboxContent');
@@ -614,20 +680,11 @@
     return div;
   }
 
-  async function loadGallery(){
-    let found = [];
-    try{
-      const res = await fetch('/api/gallery');
-      if (!res.ok) throw new Error('failed');
-      const data = await res.json();
-      found = data.items || [];
-    }catch(err){
-      galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Gagal memuat galeri.</span></div>';
-      return;
-    }
+  function loadGallery(){
+    const found = GALLERY_FILES.map(galleryItemFromFilename);
     galleryGrid.innerHTML = '';
     if (found.length === 0){
-      galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Upload foto/video apa saja ke folder /photos di GitHub.</span></div>';
+      galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Tambahkan nama file ke daftar GALLERY_FILES di kode.</span></div>';
       return;
     }
     found.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx)));
@@ -641,6 +698,43 @@
       copyBtn.textContent = 'Tersalin!';
       copyBtn.classList.add('copied');
       setTimeout(()=>{ copyBtn.textContent='Salin'; copyBtn.classList.remove('copied'); }, 1800);
+    });
+  });
+
+  // ---- Share undangan ----
+  // Link yang dibagikan adalah URL dasar (tanpa ?to=...) supaya tidak menampilkan
+  // nama tamu tertentu ke orang lain. Kalau kamu justru mau membagikan link personal
+  // milik tamu yang sedang membuka (lengkap dengan ?to=kode), ganti shareUrl di bawah
+  // jadi: location.href
+  const shareUrl = location.origin + location.pathname;
+  const shareText = 'Dengan penuh syukur, kami mengundang Anda pada acara pernikahan Nia & Dimas 💍';
+
+  const shareWaBtn = document.getElementById('shareWa');
+  shareWaBtn.href = 'https://wa.me/?text=' + encodeURIComponent(shareText + '\n' + shareUrl);
+
+  const shareTgBtn = document.getElementById('shareTelegram');
+  shareTgBtn.href = 'https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(shareText);
+
+  const shareMoreBtn = document.getElementById('shareMore');
+  if (navigator.share) {
+    shareMoreBtn.addEventListener('click', function(){
+      navigator.share({ title: 'Undangan Pernikahan Nia & Dimas', text: shareText, url: shareUrl }).catch(()=>{});
+    });
+  } else {
+    // Browser tidak dukung Web Share API (kebanyakan desktop) — arahkan ke salin link saja
+    shareMoreBtn.querySelector('span').textContent = 'Facebook';
+    shareMoreBtn.addEventListener('click', function(){
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl), '_blank', 'noopener');
+    });
+  }
+
+  const shareCopyBtn = document.getElementById('shareCopy');
+  const shareCopyLabel = document.getElementById('shareCopyLabel');
+  shareCopyBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(shareUrl).then(()=>{
+      shareCopyLabel.textContent = 'Tersalin!';
+      shareCopyBtn.classList.add('copied');
+      setTimeout(()=>{ shareCopyLabel.textContent = 'Salin Link'; shareCopyBtn.classList.remove('copied'); }, 1800);
     });
   });
 
