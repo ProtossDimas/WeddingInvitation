@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Nia & Dimas — Undangan Pernikahan</title>
-<meta name="description" content="Undangan Pernikahan Nia & Dimas">
+<title>Dimas & Nia — Undangan Pernikahan</title>
+<meta name="description" content="Undangan Pernikahan Dimas & Nia">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&family=Italianno&display=swap" rel="stylesheet">
@@ -26,7 +26,10 @@
   body{
     margin:0;
     font-family:'Jost',sans-serif;
-    background:var(--cream);
+    background:
+      radial-gradient(circle at 15% 8%, rgba(201,161,74,0.10), transparent 45%),
+      radial-gradient(circle at 85% 92%, rgba(110,31,43,0.08), transparent 45%),
+      var(--maroon-deep);
     color:var(--ink);
     overflow-x:hidden;
   }
@@ -34,9 +37,12 @@
     max-width:520px;
     margin:0 auto;
     position:relative;
-    background:var(--cream);
+    background:
+      radial-gradient(circle at 12% 0%, rgba(201,161,74,0.09), transparent 40%),
+      radial-gradient(circle at 92% 30%, rgba(201,161,74,0.07), transparent 35%),
+      var(--cream);
     min-height:100vh;
-    box-shadow: 0 0 60px rgba(0,0,0,0.08);
+    box-shadow: 0 0 60px rgba(0,0,0,0.35);
   }
   h1,h2,h3,.script{font-family:'Playfair Display',serif;}
   .script-name{font-family:'Italianno',cursive; font-weight:400;}
@@ -145,7 +151,13 @@
   .divider-flower{ text-align:center; color:var(--gold); font-size:1.1rem; margin:6px 0 18px;}
 
   /* HERO */
-  #hero{ text-align:center; background:var(--cream-deep); padding-top:90px; padding-bottom:90px;}
+  #hero{
+    text-align:center; padding-top:90px; padding-bottom:90px;
+    background:
+      radial-gradient(circle at 25% 15%, rgba(201,161,74,0.16), transparent 42%),
+      radial-gradient(circle at 80% 90%, rgba(110,31,43,0.09), transparent 40%),
+      var(--cream-deep);
+  }
   #hero .eyebrow{ margin-bottom:14px;}
   #hero h1{ font-size:2.5rem; line-height:1.15; color:var(--maroon-deep); margin:0;}
   #hero .amp{ font-family:'Italianno',cursive; color:var(--gold); font-size:2.2rem; display:block;}
@@ -153,24 +165,63 @@
   #hero .quote-src{ display:block; margin-top:8px; font-style:normal; font-size:.72rem; letter-spacing:.1em; color:var(--maroon); text-transform:uppercase;}
 
   /* COUPLE */
-  .couple-wrap{ display:flex; flex-direction:column; gap:36px; }
-  .couple-card{ text-align:center; }
+  #couple{
+    background:
+      radial-gradient(circle at 20% 10%, rgba(201,161,74,0.14), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(110,31,43,0.08), transparent 40%),
+      radial-gradient(rgba(110,31,43,0.10) 1px, transparent 1px);
+    background-size: auto, auto, 16px 16px;
+    background-position: 0 0, 0 0, 0 0;
+  }
+  .couple-wrap{ display:flex; flex-direction:column; gap:28px; }
+  .couple-card{
+    text-align:center;
+    background:linear-gradient(165deg, var(--cream-deep) 0%, #E9D9BC 100%);
+    border:1px solid rgba(201,161,74,0.4);
+    border-radius:22px; padding:206px 24px 32px;
+    position:relative; margin-top:56px;
+    box-shadow:var(--shadow);
+  }
   .couple-photo{
-    width:148px; height:148px; border-radius:50%; margin:0 auto 16px;
+    width:184px; height:224px; border-radius:50% / 44%;
+    position:absolute; top:-56px; left:50%; transform:translateX(-50%);
     background:linear-gradient(160deg,var(--gold-soft),var(--cream-deep));
     border:3px solid var(--gold);
     display:flex; align-items:center; justify-content:center;
-    overflow:hidden; box-shadow:var(--shadow);
+    overflow:hidden; box-shadow:0 20px 34px -16px rgba(76,20,29,0.4);
     font-family:'Playfair Display',serif; font-size:2.6rem; color:var(--maroon);
   }
-  .couple-photo img{ width:100%; height:100%; object-fit:cover; }
-  .couple-card h3{ font-size:1.5rem; color:var(--maroon-deep); margin:0 0 2px;}
-  .couple-card .role{ font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--sage); margin-bottom:10px; display:block;}
-  .couple-card p{ font-size:.85rem; line-height:1.7; color:var(--ink); opacity:.8; max-width:300px; margin:0 auto;}
+  .couple-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 15%; }
+  .couple-card h3{ font-size:1.28rem; color:var(--maroon-deep); margin:0 0 12px; font-weight:600; line-height:1.3;}
+  .couple-card h3::after{
+    content:""; display:block; width:70px; height:1px; background:var(--maroon);
+    opacity:.4; margin:12px auto 0;
+  }
+  .couple-card .role{ display:none; }
+  .couple-card p{
+    font-family:'Playfair Display',serif; font-style:italic;
+    font-size:.96rem; line-height:1.55; color:var(--maroon-deep); opacity:.9;
+    max-width:230px; margin:0 auto;
+  }
   .couple-and{ text-align:center; font-family:'Italianno',cursive; font-size:2.4rem; color:var(--gold); margin:0;}
+  .couple-ig{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--maroon-deep); color:var(--cream);
+    padding:10px 20px; border-radius:999px; margin-top:20px;
+    font-size:.78rem; letter-spacing:.03em; text-decoration:none;
+    transition:.3s;
+  }
+  .couple-ig:hover{ background:var(--maroon); }
+  .couple-ig svg{ width:16px; height:16px; }
 
   /* STORY */
-  #story{ background:var(--maroon-deep); color:var(--cream); }
+  #story{
+    color:var(--cream);
+    background:
+      radial-gradient(circle at 20% 10%, rgba(201,161,74,0.14), transparent 42%),
+      radial-gradient(circle at 85% 90%, rgba(201,161,74,0.08), transparent 40%),
+      var(--maroon-deep);
+  }
   #story .eyebrow{ color:var(--gold-soft); }
   #story h2{ color:var(--cream); text-align:center; font-size:1.9rem; margin:8px 0 36px;}
   .timeline{ position:relative; padding-left:24px; border-left:1px solid rgba(227,205,147,.35); }
@@ -287,7 +338,13 @@
   }
 
   /* GIFT */
-  #gift{ background:var(--cream-deep); text-align:center;}
+  #gift{
+    text-align:center;
+    background:
+      radial-gradient(circle at 15% 85%, rgba(201,161,74,0.14), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(110,31,43,0.08), transparent 38%),
+      var(--cream-deep);
+  }
   #gift h2{ color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 14px;}
   #gift p.lead{ font-size:.86rem; opacity:.8; max-width:320px; margin:0 auto 26px; line-height:1.7;}
   .bank-card{
@@ -361,7 +418,13 @@
   .wish-empty{ text-align:center; font-size:.8rem; opacity:.55; padding:20px 0;}
 
   /* CLOSING */
-  #closing{ text-align:center; background:var(--maroon-deep); color:var(--cream); padding:90px 28px;}
+  #closing{
+    text-align:center; color:var(--cream); padding:90px 28px;
+    background:
+      radial-gradient(circle at 25% 20%, rgba(201,161,74,0.15), transparent 42%),
+      radial-gradient(circle at 80% 85%, rgba(201,161,74,0.08), transparent 38%),
+      var(--maroon-deep);
+  }
   #closing .amp{ font-family:'Italianno',cursive; font-size:2.4rem; color:var(--gold-soft); display:block; margin-bottom:10px;}
   #closing h2{ font-size:1.6rem; margin:0 0 14px;}
   #closing p{ font-size:.84rem; opacity:.8; line-height:1.8; max-width:300px; margin:0 auto;}
@@ -383,7 +446,7 @@
     <div class="cover-overlay"></div>
     <div class="cover-frame">
       <span class="cover-eyebrow">The Wedding Of</span>
-      <h1 class="cover-names">Nia<span class="cover-amp">&amp;</span>Dimas</h1>
+      <h1 class="cover-names">Dimas<span class="cover-amp">&amp;</span>Nia</h1>
       <div class="cover-date">SABTU, 12 SEPTEMBER 2026</div>
       <div class="cover-to">Kepada Bapak/Ibu/Saudara/i</div>
       <div class="cover-guest" id="guestName">Tamu Undangan</div>
@@ -402,7 +465,7 @@
   <!-- ============ HERO ============ -->
   <section id="hero" class="reveal">
     <span class="eyebrow">Undangan Pernikahan</span>
-    <h1>Nia <span class="amp">&amp;</span> Dimas</h1>
+    <h1>Dimas <span class="amp">&amp;</span> Nia</h1>
     <p class="quote">
       "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan agar kamu hidup tenang bersamanya. Dia jadikan pula di antaramu rasa cinta dan kasih sayang."
       <span class="quote-src">QS. Ar-Rum : 21</span>
@@ -417,17 +480,23 @@
     </div>
     <div class="couple-wrap">
       <div class="couple-card">
-        <div class="couple-photo"><img src="/photos/nia.JPG" alt="Sismadinia" onerror="this.parentElement.textContent='N'"></div>
-        <h3>Nia</h3>
-        <span class="role">Mempelai Wanita</span>
-        <p>Putri dari Bapak [Syamsul Bakhri] &amp; Ibu [Ismiyati]</p>
+        <div class="couple-photo"><img src="/photos/dimas.jpg" alt="Dimas Alfian Wahyudi" onerror="this.parentElement.textContent='D'"></div>
+        <h3>Dimas Alfian Wahyudi</h3>
+        <p>Putra dari<br>Bapak Amad Sayudi<br>&amp;<br>Ibu Alfinah</p>
+        <a class="couple-ig" href="https://instagram.com/dimasalfw" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.72 0-3.06.01-4.12.06-1.06.05-1.79.22-2.43.47-.66.26-1.22.6-1.77 1.16-.56.55-.9 1.11-1.16 1.77-.25.64-.42 1.37-.47 2.43C2 8.94 2 9.28 2 12s.01 3.06.06 4.12c.05 1.06.22 1.79.47 2.43.26.66.6 1.22 1.16 1.77.55.56 1.11.9 1.77 1.16.64.25 1.37.42 2.43.47C8.94 22 9.28 22 12 22s3.06-.01 4.12-.06c1.06-.05 1.79-.22 2.43-.47.66-.26 1.22-.6 1.77-1.16.56-.55.9-1.11 1.16-1.77.25-.64.42-1.37.47-2.43.05-1.06.06-1.4.06-4.12s-.01-3.06-.06-4.12c-.05-1.06-.22-1.79-.47-2.43-.26-.66-.6-1.22-1.16-1.77-.55-.56-1.11-.9-1.77-1.16-.64-.25-1.37-.42-2.43-.47C15.06 2.01 14.72 2 12 2zm0 1.8c2.67 0 2.99.01 4.04.06.98.04 1.5.21 1.85.34.47.18.8.4 1.15.75.35.35.57.68.75 1.15.13.35.3.87.34 1.85.05 1.05.06 1.37.06 4.04s-.01 2.99-.06 4.04c-.04.98-.21 1.5-.34 1.85-.18.47-.4.8-.75 1.15-.35.35-.68.57-1.15.75-.35.13-.87.3-1.85.34-1.05.05-1.37.06-4.04.06s-2.99-.01-4.04-.06c-.98-.04-1.5-.21-1.85-.34-.47-.18-.8-.4-1.15-.75-.35-.35-.57-.68-.75-1.15-.13-.35-.3-.87-.34-1.85-.05-1.05-.06-1.37-.06-4.04s.01-2.99.06-4.04c.04-.98.21-1.5.34-1.85.18-.47.4-.8.75-1.15.35-.35.68-.57 1.15-.75.35-.13.87-.3 1.85-.34C9.01 3.81 9.33 3.8 12 3.8zm0 3.06a5.14 5.14 0 100 10.28 5.14 5.14 0 000-10.28zm0 8.48a3.34 3.34 0 110-6.68 3.34 3.34 0 010 6.68zm5.34-8.68a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg>
+          dimasalfw
+        </a>
       </div>
       <p class="couple-and" style="margin:6px 0;">&amp;</p>
       <div class="couple-card">
-        <div class="couple-photo"><img src="/photos/dimas.jpg" alt="Dimas Alfian Wahyudi" onerror="this.parentElement.textContent='D'"></div>
-        <h3>Dimas</h3>
-        <span class="role">Mempelai Pria</span>
-        <p>Putra dari Bapak [Amad Sayudi] &amp; Ibu [Alfinah]</p>
+        <div class="couple-photo"><img src="/photos/nia.JPG" alt="Sismadinia" onerror="this.parentElement.textContent='N'"></div>
+        <h3>Sismadinia</h3>
+        <p>Putri dari<br>Bapak Syamsul Bakhri<br>&amp;<br>Ibu Ismiyati</p>
+        <a class="couple-ig" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.72 0-3.06.01-4.12.06-1.06.05-1.79.22-2.43.47-.66.26-1.22.6-1.77 1.16-.56.55-.9 1.11-1.16 1.77-.25.64-.42 1.37-.47 2.43C2 8.94 2 9.28 2 12s.01 3.06.06 4.12c.05 1.06.22 1.79.47 2.43.26.66.6 1.22 1.16 1.77.55.56 1.11.9 1.77 1.16.64.25 1.37.42 2.43.47C8.94 22 9.28 22 12 22s3.06-.01 4.12-.06c1.06-.05 1.79-.22 2.43-.47.66-.26 1.22-.6 1.77-1.16.56-.55.9-1.11 1.16-1.77.25-.64.42-1.37.47-2.43.05-1.06.06-1.4.06-4.12s-.01-3.06-.06-4.12c-.05-1.06-.22-1.79-.47-2.43-.26-.66-.6-1.22-1.16-1.77-.55-.56-1.11-.9-1.77-1.16-.64-.25-1.37-.42-2.43-.47C15.06 2.01 14.72 2 12 2zm0 1.8c2.67 0 2.99.01 4.04.06.98.04 1.5.21 1.85.34.47.18.8.4 1.15.75.35.35.57.68.75 1.15.13.35.3.87.34 1.85.05 1.05.06 1.37.06 4.04s-.01 2.99-.06 4.04c-.04.98-.21 1.5-.34 1.85-.18.47-.4.8-.75 1.15-.35.35-.68.57-1.15.75-.35.13-.87.3-1.85.34-1.05.05-1.37.06-4.04.06s-2.99-.01-4.04-.06c-.98-.04-1.5-.21-1.85-.34-.47-.18-.8-.4-1.15-.75-.35-.35-.57-.68-.75-1.15-.13-.35-.3-.87-.34-1.85-.05-1.05-.06-1.37-.06-4.04s.01-2.99.06-4.04c.04-.98.21-1.5.34-1.85.18-.47.4-.8.75-1.15.35-.35.68-.57 1.15-.75.35-.13.87-.3 1.85-.34C9.01 3.81 9.33 3.8 12 3.8zm0 3.06a5.14 5.14 0 100 10.28 5.14 5.14 0 000-10.28zm0 8.48a3.34 3.34 0 110-6.68 3.34 3.34 0 010 6.68zm5.34-8.68a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg>
+          ssmadnia14
+        </a>
       </div>
     </div>
   </section>
@@ -583,10 +652,10 @@
     <span class="amp">&amp;</span>
     <h2>Terima Kasih</h2>
     <p>Merupakan kebahagiaan serta kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami.</p>
-    <div class="signature">Nia &amp; Dimas</div>
+    <div class="signature">Dimas &amp; Nia</div>
   </section>
 
-  <footer>Dengan penuh cinta &middot; 2026</footer>
+  <footer>&copy; 2026. Dimas &amp; Nia Wedding</footer>
 </div>
 
 <script>
@@ -650,6 +719,19 @@
   }
   musicBtn.addEventListener('click', toggleMusic);
   loadMusic();
+
+  // Coba autoplay langsung saat halaman siap (berhasil di sebagian browser/mobile app webview)
+  window.addEventListener('DOMContentLoaded', () => { if (!playing) toggleMusic(); });
+
+  // Fallback: browser modern butuh "gesture" pengguna sebelum audio boleh play,
+  // jadi begitu ada sentuhan/klik pertama di mana saja, musik langsung dicoba jalan.
+  function tryAutoplayOnFirstGesture(){
+    if (!playing) toggleMusic();
+    document.removeEventListener('click', tryAutoplayOnFirstGesture);
+    document.removeEventListener('touchstart', tryAutoplayOnFirstGesture);
+  }
+  document.addEventListener('click', tryAutoplayOnFirstGesture, { once:true, passive:true });
+  document.addEventListener('touchstart', tryAutoplayOnFirstGesture, { once:true, passive:true });
 
   // ---- Cover open ----
   document.getElementById('openBtn').addEventListener('click', function(){
@@ -749,9 +831,41 @@
       galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Tambahkan nama file ke daftar GALLERY_FILES di kode.</span></div>';
       return;
     }
-    found.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx)));
+    // duplikat sekali biar loop auto-scroll terasa menyambung mulus
+    const doubled = found.concat(found);
+    doubled.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx % found.length)));
+    initGalleryAutoScroll(found.length);
   }
   loadGallery();
+
+  // ---- Gallery: auto-scroll jalan sendiri, pause saat disentuh/di-hover ----
+  function initGalleryAutoScroll(itemCount){
+    if (itemCount <= 1) return;
+    let paused = false;
+    let resumeTimer = null;
+    const speed = 0.45; // px per frame, sesuaikan kecepatan di sini
+
+    function pause(){
+      paused = true;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { paused = false; }, 2600);
+    }
+    galleryGrid.addEventListener('pointerdown', pause, { passive: true });
+    galleryGrid.addEventListener('wheel', pause, { passive: true });
+    galleryGrid.addEventListener('touchstart', pause, { passive: true });
+
+    function step(){
+      if (!paused){
+        const halfWidth = galleryGrid.scrollWidth / 2;
+        galleryGrid.scrollLeft += speed;
+        if (galleryGrid.scrollLeft >= halfWidth){
+          galleryGrid.scrollLeft -= halfWidth;
+        }
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
 
   // ---- Copy bank number ----
   const copyBtn = document.getElementById('copyBank');
@@ -769,7 +883,7 @@
   // milik tamu yang sedang membuka (lengkap dengan ?to=kode), ganti shareUrl di bawah
   // jadi: location.href
   const shareUrl = location.origin + location.pathname;
-  const shareText = 'Dengan penuh syukur, kami mengundang Anda pada acara pernikahan Nia & Dimas 💍';
+  const shareText = 'Dengan penuh syukur, kami mengundang Anda pada acara pernikahan Dimas & Nia 💍';
 
   const shareWaBtn = document.getElementById('shareWa');
   shareWaBtn.href = 'https://wa.me/?text=' + encodeURIComponent(shareText + '\n' + shareUrl);
@@ -780,7 +894,7 @@
   const shareMoreBtn = document.getElementById('shareMore');
   if (navigator.share) {
     shareMoreBtn.addEventListener('click', function(){
-      navigator.share({ title: 'Undangan Pernikahan Nia & Dimas', text: shareText, url: shareUrl }).catch(()=>{});
+      navigator.share({ title: 'Undangan Pernikahan Dimas & Nia', text: shareText, url: shareUrl }).catch(()=>{});
     });
   } else {
     // Browser tidak dukung Web Share API (kebanyakan desktop) — arahkan ke salin link saja
