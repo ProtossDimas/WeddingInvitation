@@ -330,9 +330,7 @@
   <button id="musicToggle" aria-label="Putar musik">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
   </button>
-  <audio id="bgMusic" loop preload="none">
-    <source src="/music.mp3" type="audio/mpeg">
-  </audio>
+  <audio id="bgMusic" loop preload="none"></audio>
 
   <!-- ============ HERO ============ -->
   <section id="hero" class="reveal">
@@ -531,12 +529,27 @@
   const music = document.getElementById('bgMusic');
   const musicBtn = document.getElementById('musicToggle');
   let playing = false;
-  function toggleMusic(){
-    if (playing){ music.pause(); musicBtn.classList.remove('spin'); }
-    else { music.play().catch(()=>{}); musicBtn.classList.add('spin'); }
-    playing = !playing;
+  let musicReady = null; // Promise yang resolve setelah src musik diisi dari /api/music
+
+  async function loadMusic(){
+    if (musicReady) return musicReady;
+    musicReady = fetch('/api/music')
+      .then(res => res.ok ? res.json() : { url: null })
+      .then(data => { if (data.url) music.src = data.url; return data.url; })
+      .catch(() => null);
+    return musicReady;
+  }
+
+  async function toggleMusic(){
+    if (playing){ music.pause(); musicBtn.classList.remove('spin'); playing = false; return; }
+    const url = await loadMusic();
+    if (!url) return; // belum ada file lagu di folder /music
+    music.play().catch(()=>{});
+    musicBtn.classList.add('spin');
+    playing = true;
   }
   musicBtn.addEventListener('click', toggleMusic);
+  loadMusic();
 
   // ---- Cover open ----
   document.getElementById('openBtn').addEventListener('click', function(){
@@ -569,30 +582,10 @@
   }
   tick(); setInterval(tick, 1000);
 
-  // ---- Gallery: auto-detect foto1.jpg, foto2.png, video1.mp4, dst ----
+  // ---- Gallery: auto-detect langsung dari isi folder /photos di GitHub (nama file bebas) ----
   const galleryGrid = document.getElementById('galleryGrid');
   const lightbox = document.getElementById('lightbox');
   const lightboxContent = document.getElementById('lightboxContent');
-  const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'webp'];
-  const VIDEO_EXTS = ['mp4', 'webm', 'mov'];
-  const MAX_ITEMS = 60;       // batas aman jumlah foto/video yang dicek
-  const MAX_MISSES_IN_ROW = 3; // berhenti mencari kalau 3 nomor berturut-turut tidak ada filenya
-
-  function checkUrl(url){
-    return fetch(url, { method: 'HEAD' }).then(res => res.ok ? url : null).catch(() => null);
-  }
-
-  async function findMediaForIndex(i){
-    for (const ext of IMAGE_EXTS){
-      const url = `/photos/foto${i}.${ext}`;
-      if (await checkUrl(url)) return { type: 'image', url };
-    }
-    for (const ext of VIDEO_EXTS){
-      const url = `/photos/video${i}.${ext}`;
-      if (await checkUrl(url)) return { type: 'video', url };
-    }
-    return null;
-  }
 
   function openLightbox(item){
     lightboxContent.innerHTML = item.type === 'video'
@@ -622,21 +615,19 @@
   }
 
   async function loadGallery(){
-    const found = [];
-    let missesInRow = 0;
-    for (let i = 1; i <= MAX_ITEMS; i++){
-      const item = await findMediaForIndex(i);
-      if (item){
-        found.push(item);
-        missesInRow = 0;
-      } else {
-        missesInRow++;
-        if (missesInRow >= MAX_MISSES_IN_ROW) break;
-      }
+    let found = [];
+    try{
+      const res = await fetch('/api/gallery');
+      if (!res.ok) throw new Error('failed');
+      const data = await res.json();
+      found = data.items || [];
+    }catch(err){
+      galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Gagal memuat galeri.</span></div>';
+      return;
     }
     galleryGrid.innerHTML = '';
     if (found.length === 0){
-      galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Upload foto1.jpg, foto2.jpg, dst ke folder /photos</span></div>';
+      galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Upload foto/video apa saja ke folder /photos di GitHub.</span></div>';
       return;
     }
     found.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx)));
