@@ -340,6 +340,9 @@ async function listGithubDir(env, dirPath) {
 }
 
 async function handleGetGallery(env) {
+  // Tidak dipakai lagi — galeri sekarang diatur manual lewat GALLERY_FILES di index.html
+  // agar Dimas & Nia bisa memilih sendiri foto mana yang tampil dan urutannya.
+  // Fungsi ini disimpan (tidak dipanggil) kalau suatu saat mode auto-detect ingin dipakai lagi.
   let files;
   try {
     files = await listGithubDir(env, "photos");
@@ -444,11 +447,6 @@ export async function onRequest(context) {
     if (request.method === "GET") return handleGetWishes(env);
     if (request.method === "POST") return handlePostWish(request, env);
     return json({ error: "Method tidak diizinkan." }, 405);
-  }
-
-  if (path === "/api/gallery") {
-    if (request.method !== "GET") return json({ error: "Method tidak diizinkan." }, 405);
-    return handleGetGallery(env);
   }
 
   if (path === "/api/music") {
