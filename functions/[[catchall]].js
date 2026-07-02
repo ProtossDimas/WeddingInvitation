@@ -277,6 +277,103 @@ async function writeBackCodesAndLinks(env, token, updates) {
   }
 }
 
+// ====== Galeri foto/video & musik latar — auto-detect langsung dari isi folder GitHub ======
+//
+// Cara kerja: Worker ini memanggil GitHub Contents API untuk membaca daftar file
+// yang ADA di folder "photos/" (foto & video) dan "music/" (lagu) di repo kamu,
+// apa pun nama filenya. Jadi kamu cukup UPLOAD file ke folder itu lewat GitHub —
+// tidak perlu rename ke foto1.jpg / music.mp3 dan tidak perlu edit kode lagi.
+//
+// Env vars (opsional tapi disarankan, Settings > Environment variables di Cloudflare Pages):
+//   GITHUB_OWNER   - default "ProtossDimas"
+//   GITHUB_REPO    - default "WeddingInvitation"
+//   GITHUB_BRANCH  - default "main"
+//   GITHUB_TOKEN   - opsional. Tanpa token, GitHub API dibatasi 60 request/jam per Worker
+//                    (biasanya cukup karena hasil di-cache 5 menit). Kalau mau lebih aman
+//                    saat hari-H (banyak tamu buka bareng), buat Personal Access Token
+//                    (fine-grained, read-only, khusus repo ini) di GitHub > Settings >
+//                    Developer settings, lalu isi di sini agar limit naik jadi 5000/jam.
+
+const MEDIA_CACHE_TTL_MS = 5 * 60 * 1000; // daftar file di-refresh tiap 5 menit
+const IMAGE_EXTS = ["jpg", "jpeg", "png", "webp", "gif"];
+const VIDEO_EXTS = ["mp4", "webm", "mov"];
+const AUDIO_EXTS = ["mp3", "m4a", "wav", "ogg"];
+
+const _mediaCache = {}; // { "photos": {data, at}, "music": {data, at} }
+
+function extOf(name) {
+  const m = String(name).match(/\.([a-zA-Z0-9]+)$/);
+  return m ? m[1].toLowerCase() : "";
+}
+
+async function listGithubDir(env, dirPath) {
+  const now = Date.now();
+  const cached = _mediaCache[dirPath];
+  if (cached && now - cached.at < MEDIA_CACHE_TTL_MS) return cached.data;
+
+  const owner = env.GITHUB_OWNER || "ProtossDimas";
+  const repo = env.GITHUB_REPO || "WeddingInvitation";
+  const branch = env.GITHUB_BRANCH || "main";
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${dirPath}?ref=${branch}`;
+
+  const headers = {
+    "User-Agent": "wedding-invitation-worker",
+    Accept: "application/vnd.github+json",
+  };
+  if (env.GITHUB_TOKEN) headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) {
+    // Folder belum ada / kosong / rate limit — anggap kosong daripada bikin error ke user.
+    if (res.status === 404) {
+      _mediaCache[dirPath] = { data: [], at: now };
+      return [];
+    }
+    throw new Error(`GitHub API error (${res.status}): ${await res.text()}`);
+  }
+
+  const data = await res.json();
+  const files = Array.isArray(data) ? data.filter((f) => f.type === "file").map((f) => f.name) : [];
+
+  _mediaCache[dirPath] = { data: files, at: now };
+  return files;
+}
+
+async function handleGetGallery(env) {
+  let files;
+  try {
+    files = await listGithubDir(env, "photos");
+  } catch (err) {
+    return json({ error: "Gagal membaca folder photos dari GitHub: " + err.message }, 500);
+  }
+
+  const items = files
+    .filter((name) => IMAGE_EXTS.includes(extOf(name)) || VIDEO_EXTS.includes(extOf(name)))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }))
+    .map((name) => ({
+      type: VIDEO_EXTS.includes(extOf(name)) ? "video" : "image",
+      url: `/photos/${encodeURIComponent(name)}`,
+    }));
+
+  return json({ items });
+}
+
+async function handleGetMusic(env) {
+  let files;
+  try {
+    files = await listGithubDir(env, "music");
+  } catch (err) {
+    return json({ error: "Gagal membaca folder music dari GitHub: " + err.message }, 500);
+  }
+
+  const tracks = files
+    .filter((name) => AUDIO_EXTS.includes(extOf(name)))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+
+  const track = tracks[0] || null;
+  return json({ url: track ? `/music/${encodeURIComponent(track)}` : null });
+}
+
 async function handleGetGuest(code, env) {
   const cleanCode = sanitize(code);
   if (!cleanCode) return badRequest("Kode tamu tidak valid.");
@@ -347,6 +444,16 @@ export async function onRequest(context) {
     if (request.method === "GET") return handleGetWishes(env);
     if (request.method === "POST") return handlePostWish(request, env);
     return json({ error: "Method tidak diizinkan." }, 405);
+  }
+
+  if (path === "/api/gallery") {
+    if (request.method !== "GET") return json({ error: "Method tidak diizinkan." }, 405);
+    return handleGetGallery(env);
+  }
+
+  if (path === "/api/music") {
+    if (request.method !== "GET") return json({ error: "Method tidak diizinkan." }, 405);
+    return handleGetMusic(env);
   }
 
   if (path.startsWith("/api/guest/")) {
