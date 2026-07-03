@@ -1,25 +1,18 @@
 // functions/[[catchall]].js
 // Cloudflare Pages Function — menangani semua request ke /api/*
-// Membutuhkan binding D1 bernama "DB" (lihat wrangler.toml / dashboard Pages > Settings > Functions > D1 bindings)
+// TIDAK butuh database D1 — semua data (daftar tamu & RSVP/ucapan) disimpan
+// langsung di Google Spreadsheet kamu, dibaca/ditulis lewat Google Sheets API
+// pakai Service Account (JWT), sama seperti daftar tamu di bawah.
 //
-// Skema tabel yang dibutuhkan (jalankan sekali lewat wrangler d1 execute):
+// Spreadsheet kamu perlu 2 tab:
+//   1. "Tamu"   — daftar tamu (lihat detail di bagian bawah)
+//   2. "Wishes" — RSVP & ucapan tamu, dengan header di baris 1:
+//        Waktu | Nama | Kehadiran | Jumlah Tamu | Ucapan
+//      (kalau tab ini belum ada, buat manual sekali — Worker akan mulai
+//      menambah baris di bawahnya secara otomatis begitu ada RSVP masuk)
 //
-// CREATE TABLE IF NOT EXISTS wishes (
-//   id INTEGER PRIMARY KEY AUTOINCREMENT,
-//   name TEXT NOT NULL,
-//   attendance TEXT NOT NULL,
-//   message TEXT NOT NULL,
-//   created_at TEXT NOT NULL DEFAULT (datetime('now'))
-// );
-//
-// CREATE TABLE IF NOT EXISTS guests (
-//   code TEXT PRIMARY KEY,      -- contoh: "001", "002", dst (TEXT agar nol di depan tidak hilang)
-//   name TEXT NOT NULL,
-//   group_name TEXT,
-//   created_at TEXT NOT NULL DEFAULT (datetime('now'))
-// );
-//
-// Lihat scripts/import-guests.mjs untuk cara import tamu dari file Excel/CSV ke tabel ini.
+// Env var tambahan yang dibutuhkan (selain env var daftar tamu di bawah):
+//   WISHES_SHEET_RANGE - opsional, default "Wishes!A:E"
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -43,15 +36,8 @@ function sanitize(str) {
   return String(str || "").trim();
 }
 
-async function handleGetWishes(env) {
-  if (!env.DB) {
-    return json({ error: "D1 database belum terhubung (binding 'DB' tidak ditemukan)." }, 500);
-  }
-  const { results } = await env.DB.prepare(
-    "SELECT name, attendance, message, created_at FROM wishes ORDER BY id DESC LIMIT 100"
-  ).all();
-  return json({ items: results });
-}
+// handleGetWishes & handlePostWish ada di bawah, setelah helper Google Sheets
+// (getGoogleAccessToken dipakai bersama oleh daftar tamu & RSVP).
 
 // ====== Daftar tamu langsung dari Google Spreadsheet (live, tanpa redeploy, tanpa Apps Script) ======
 //
@@ -241,6 +227,84 @@ async function loadGuestsFromSheet(env) {
   return map;
 }
 
+// ====== RSVP / Ucapan tamu — disimpan di tab "Wishes" pada Spreadsheet yang sama ======
+
+const WISHES_CACHE_TTL_MS = 15 * 1000; // cache singkat, RSVP baru harus cepat muncul
+let _wishesCache = null;
+let _wishesCacheAt = 0;
+
+async function appendWishToSheet(env, { name, attendance, guestCount, message }) {
+  const token = await getGoogleAccessToken(env);
+  const range = env.WISHES_SHEET_RANGE || "Wishes!A:E";
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.GUEST_SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+
+  const row = [new Date().toISOString(), name, attendance, guestCount, message];
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ values: [row] }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Gagal menyimpan RSVP ke Sheet (${res.status}): ${errText}`);
+  }
+
+  _wishesCache = null; // invalidasi cache biar RSVP baru langsung kelihatan di GET berikutnya
+}
+
+async function loadWishesFromSheet(env) {
+  const now = Date.now();
+  if (_wishesCache && now - _wishesCacheAt < WISHES_CACHE_TTL_MS) return _wishesCache;
+
+  if (!env.GUEST_SHEET_ID) {
+    throw new Error("GUEST_SHEET_ID belum diset.");
+  }
+
+  const token = await getGoogleAccessToken(env);
+  const range = env.WISHES_SHEET_RANGE || "Wishes!A:E";
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.GUEST_SHEET_ID}/values/${encodeURIComponent(range)}`;
+
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Sheets API error (${res.status}): ${errText}`);
+  }
+
+  const data = await res.json();
+  const rows = data.values || [];
+  // Kolom: A Waktu | B Nama | C Kehadiran | D Jumlah Tamu | E Ucapan
+  // (lewati baris 1 = header)
+  const items = rows.slice(1)
+    .filter((r) => r[1]) // wajib ada nama
+    .map((r) => ({
+      created_at: r[0] || "",
+      name: r[1] || "",
+      attendance: r[2] || "",
+      guest_count: parseInt(r[3], 10) || 1,
+      message: r[4] || "",
+    }))
+    .reverse() // terbaru duluan
+    .slice(0, 100);
+
+  _wishesCache = items;
+  _wishesCacheAt = now;
+  return items;
+}
+
+async function handleGetWishes(env) {
+  try {
+    const items = await loadWishesFromSheet(env);
+    return json({ items });
+  } catch (err) {
+    return json({ error: "Gagal membaca RSVP dari Spreadsheet: " + err.message }, 500);
+  }
+}
+
 async function writeBackCodesAndLinks(env, token, updates) {
   const sheetTabName = (env.GUEST_SHEET_RANGE || "Tamu!A:C").split("!")[0];
   const baseUrl = (env.SITE_BASE_URL || "").replace(/\/+$/, "");
@@ -393,11 +457,41 @@ async function handleGetGuest(code, env) {
   return json({ code: row.code, name: row.name, group: row.group || null });
 }
 
-async function handlePostWish(request, env) {
-  if (!env.DB) {
-    return json({ error: "D1 database belum terhubung (binding 'DB' tidak ditemukan)." }, 500);
-  }
+// ====== Notifikasi WhatsApp ke pemilik web saat ada tamu konfirmasi HADIR ======
+//
+// Pakai CallMeBot (gratis, tanpa akun bisnis) — cukup untuk notifikasi pribadi:
+//   1. Simpan nomor WA berikut di kontak HP kamu: +34 644 51 95 23 (nomor bot CallMeBot)
+//   2. Kirim pesan lewat WhatsApp ke nomor itu, isinya persis: "I allow callmebot to send me messages"
+//   3. Bot akan membalas dengan sebuah API key (angka)
+//   4. Di Cloudflare Pages > Settings > Environment variables, tambahkan:
+//        NOTIFY_PHONE       = nomor WA kamu format internasional TANPA "+" (mis. 6281234567890)
+//        CALLMEBOT_APIKEY   = API key dari langkah 3
+//   5. Deploy ulang. Kalau kedua env var ini kosong, notifikasi otomatis dilewati (tidak error).
+//
+// Kalau nanti mau pakai gateway lain (Fonnte, Wablas, dll) tinggal ganti isi fungsi
+// sendWhatsAppNotification di bawah ini — bagian lain kode tidak perlu diubah.
 
+async function sendWhatsAppNotification(env, { name, guestCount, message }) {
+  if (!env.NOTIFY_PHONE || !env.CALLMEBOT_APIKEY) return; // belum dikonfigurasi, lewati diam-diam
+
+  const text =
+    `RSVP baru — HADIR\n` +
+    `Nama: ${name}\n` +
+    `Jumlah tamu: ${guestCount}\n` +
+    `Ucapan: ${message}`;
+
+  const url =
+    `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(env.NOTIFY_PHONE)}` +
+    `&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(env.CALLMEBOT_APIKEY)}`;
+
+  try {
+    await fetch(url);
+  } catch (err) {
+    // gagal kirim notifikasi tidak boleh menggagalkan RSVP tamu
+  }
+}
+
+async function handlePostWish(request, env, context) {
   let body;
   try {
     body = await request.json();
@@ -409,6 +503,11 @@ async function handlePostWish(request, env) {
   const attendance = sanitize(body.attendance);
   const message = sanitize(body.message);
 
+  let guestCount = parseInt(body.guestCount, 10);
+  if (!Number.isFinite(guestCount) || guestCount < 1) guestCount = 1;
+  if (guestCount > 10) guestCount = 10;
+  if (attendance !== "hadir") guestCount = 1; // hanya relevan kalau konfirmasi hadir
+
   if (!name || name.length > MAX_NAME) {
     return badRequest("Nama tidak valid.");
   }
@@ -419,9 +518,20 @@ async function handlePostWish(request, env) {
     return badRequest("Ucapan tidak valid.");
   }
 
-  await env.DB.prepare(
-    "INSERT INTO wishes (name, attendance, message) VALUES (?, ?, ?)"
-  ).bind(name, attendance, message).run();
+  try {
+    await appendWishToSheet(env, { name, attendance, guestCount, message });
+  } catch (err) {
+    return json({ error: "Gagal menyimpan RSVP: " + err.message }, 500);
+  }
+
+  if (attendance === "hadir") {
+    const notify = sendWhatsAppNotification(env, { name, guestCount, message });
+    if (context && context.waitUntil) {
+      context.waitUntil(notify);
+    } else {
+      await notify;
+    }
+  }
 
   return json({ ok: true });
 }
@@ -445,7 +555,7 @@ export async function onRequest(context) {
 
   if (path === "/api/wishes") {
     if (request.method === "GET") return handleGetWishes(env);
-    if (request.method === "POST") return handlePostWish(request, env);
+    if (request.method === "POST") return handlePostWish(request, env, context);
     return json({ error: "Method tidak diizinkan." }, 405);
   }
 
