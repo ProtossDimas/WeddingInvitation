@@ -22,7 +22,7 @@
     --ease: cubic-bezier(.22,1,.36,1);
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth; overflow-x:hidden; max-width:100%;}
   body{
     margin:0;
     font-family:'Jost',sans-serif;
@@ -170,7 +170,7 @@
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   /* ---------- sections ---------- */
-  section{ position:relative; padding:78px 28px; }
+  section{ position:relative; padding:78px 28px; overflow:hidden; }
   .reveal{ opacity:0; transform:translateY(26px); transition:opacity .9s var(--ease), transform .9s var(--ease); }
   .reveal.show{ opacity:1; transform:translateY(0); }
 
@@ -295,8 +295,33 @@
   }
   .btn-line:hover{ background:var(--maroon); color:var(--cream); }
 
-  /* GALLERY — horizontal filmstrip, ala "Our Moments" */
-  #gallery{ padding-left:0; padding-right:0; overflow:hidden; }
+  /* YOUTUBE VIDEO */
+  #video{ text-align:center; }
+  .video-frame{
+    position:relative; width:100%; max-width:420px; margin:20px auto 0;
+    aspect-ratio:16/9; border-radius:18px; overflow:hidden;
+    border:1px solid var(--gold-soft); box-shadow:0 12px 30px rgba(110,31,43,0.12);
+  }
+  .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+  /* LIVE STREAMING */
+  #livestream{ text-align:center; }
+  .live-card{
+    max-width:340px; margin:20px auto 0; border:1px solid var(--gold-soft); border-radius:18px;
+    padding:28px 22px; background:var(--cream-deep);
+  }
+  .live-card .live-dot{
+    display:inline-block; width:8px; height:8px; border-radius:50%;
+    background:var(--maroon); margin-right:6px; animation:live-pulse 1.6s infinite;
+  }
+  @keyframes live-pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+  .live-card .live-label{
+    font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase;
+    font-size:.72rem; color:var(--maroon-deep); margin-bottom:14px;
+  }
+
+  /* GALLERY — vertical grid, ala polaroid */
+  #gallery{ padding-left:0; padding-right:0; }
   #gallery .eyebrow, #gallery h2{ padding-left:28px; padding-right:28px; }
   #gallery h2{ text-align:center; color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 6px;}
   .gallery-caption{
@@ -304,48 +329,34 @@
     font-size:.86rem; color:var(--maroon); opacity:.75; margin:0 0 26px; padding:0 30px; line-height:1.6;
   }
   .gallery-grid{
-    display:flex; gap:22px; overflow-x:auto; padding:26px 28px 34px;
-    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
-    scrollbar-width:none; perspective:900px;
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:18px 16px;
+    padding:10px 24px 8px; width:100%; max-width:100%;
   }
-  .gallery-grid::-webkit-scrollbar{ display:none; }
   .g-item{
-    flex:0 0 auto; scroll-snap-align:start;
-    width:150px; height:200px;
+    width:100%; aspect-ratio:3/4; height:auto;
     background:var(--cream);
     padding:8px 8px 20px;
-    border-radius:6px; overflow:visible;
+    border-radius:6px; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
     color:var(--maroon); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
     cursor:pointer; position:relative;
     box-shadow:
       0 2px 3px rgba(76,20,29,0.15),
-      0 14px 24px -10px rgba(76,20,29,0.45),
-      0 30px 40px -24px rgba(76,20,29,0.35);
-    transform-style:preserve-3d;
-    transition:transform .45s var(--ease), box-shadow .45s var(--ease);
+      0 10px 18px -10px rgba(76,20,29,0.4);
+    transition:box-shadow .3s var(--ease);
   }
   .g-item::before{
     content:""; position:absolute; inset:0; border-radius:6px;
     background:linear-gradient(160deg, rgba(0,0,0,0) 55%, rgba(43,26,26,.18) 100%);
     pointer-events:none; z-index:2;
   }
-  .g-item:nth-child(6n+1){ transform:rotate(-6deg) translateY(6px); }
-  .g-item:nth-child(6n+2){ transform:rotate(4deg) translateY(-4px); }
-  .g-item:nth-child(6n+3){ transform:rotate(-3deg) translateY(10px); }
-  .g-item:nth-child(6n+4){ transform:rotate(5deg) translateY(0px); }
-  .g-item:nth-child(6n+5){ transform:rotate(-5deg) translateY(-6px); }
-  .g-item:nth-child(6n){ transform:rotate(3deg) translateY(4px); }
   .g-item:active{
-    transform:rotate(0deg) translateY(-10px) scale(1.06) !important;
     box-shadow:
       0 4px 6px rgba(76,20,29,0.2),
-      0 22px 30px -12px rgba(76,20,29,0.5),
-      0 40px 50px -20px rgba(76,20,29,0.4);
-    z-index:5;
+      0 16px 24px -12px rgba(76,20,29,0.45);
   }
-  .g-item.g-tall{ width:170px; height:250px; }
-  .g-item.g-wide{ width:220px; height:200px; }
+  .g-item.g-tall{ aspect-ratio:3/4.6; }
+  .g-item.g-wide{ aspect-ratio:4/3; }
   .g-item img{ width:100%; height:100%; object-fit:cover; display:block; border-radius:2px; position:relative; z-index:1;}
   .g-item video{ width:100%; height:100%; object-fit:cover; display:block; border-radius:2px; position:relative; z-index:1;}
   .g-item .play-badge{
@@ -353,10 +364,7 @@
     background:rgba(43,26,29,0.18); z-index:2; border-radius:2px;
   }
   .g-item .play-badge svg{ width:34px; height:34px; fill:rgba(251,245,234,0.92); filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
-  .gallery-hint{
-    text-align:center; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--maroon); opacity:.55; margin-top:2px;
-  }
+
 
   .lightbox{
     position:fixed; inset:0; z-index:80; background:rgba(43,26,26,0.92);
@@ -463,11 +471,6 @@
   #closing .signature{ margin-top:30px; font-family:'Italianno',cursive; font-size:1.8rem; color:var(--gold-soft);}
   footer{ text-align:center; padding:18px; font-size:.65rem; opacity:.5; background:var(--maroon-deep); color:var(--cream); letter-spacing:.06em;}
 
-  @media (min-width:560px){
-    .couple-wrap{ flex-direction:row; }
-    .couple-card{ flex:1; max-width:280px; }
-  }
-
   /* ---------- Desktop / tablet scaling ---------- */
   @media (min-width:700px){
     section{ padding-left:56px; padding-right:56px; }
@@ -475,18 +478,15 @@
     #hero .quote{ max-width:460px; font-size:1rem; }
     .event-cards{ flex-direction:row; }
     .event-card{ flex:1; }
-    .gallery-grid{ padding-left:56px; padding-right:56px; }
+    .gallery-grid{ padding-left:56px; padding-right:56px; grid-template-columns:repeat(3, 1fr); }
     #gallery .eyebrow, #gallery h2{ padding-left:56px; padding-right:56px; }
-    .g-item{ width:190px; height:250px; }
-    .g-item.g-tall{ width:210px; height:300px; }
-    .g-item.g-wide{ width:270px; height:250px; }
   }
   @media (min-width:1000px){
     section{ padding-left:80px; padding-right:80px; }
     #hero h1{ font-size:3.6rem; }
     .couple-card{ max-width:340px; }
     #gallery .eyebrow, #gallery h2{ padding-left:80px; padding-right:80px; }
-    .gallery-grid{ padding-left:80px; padding-right:80px; }
+    .gallery-grid{ padding-left:80px; padding-right:80px; grid-template-columns:repeat(4, 1fr); }
   }
 </style>
 </head>
@@ -589,7 +589,7 @@
       </div>
       <p class="couple-and" style="margin:6px 0;">&amp;</p>
       <div class="couple-card">
-        <div class="couple-photo"><img src="/photos/nia.jpg" alt="Sismadinia" onerror="this.parentElement.textContent='N'"></div>
+        <div class="couple-photo"><img src="/photos/nia.JPG" alt="Sismadinia" onerror="this.parentElement.textContent='N'"></div>
         <h3>Sismadinia</h3>
         <p>Putri dari<br>Bapak Syamsul Bakhri<br>&amp;<br>Ibu Ismiyati</p>
         <a class="couple-ig" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">
@@ -667,7 +667,26 @@
     <div class="gallery-grid" id="galleryGrid">
       <div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Memuat galeri...</span></div>
     </div>
-    <div class="gallery-hint">Geser untuk melihat lebih banyak →</div>
+  </section>
+
+  <!-- ============ VIDEO ============ -->
+  <section id="video" class="reveal">
+    <span class="eyebrow" style="text-align:center; display:block;">Kenangan</span>
+    <h2>Our Video</h2>
+    <div class="video-frame">
+      <iframe id="ytVideo" src="https://www.youtube.com/embed/gIrDLOLmKq4?enablejsapi=1" title="Wedding Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </section>
+
+  <!-- ============ LIVE STREAMING ============ -->
+  <section id="livestream" class="reveal">
+    <span class="eyebrow" style="text-align:center; display:block;">Saksikan</span>
+    <h2>Live Streaming</h2>
+    <p class="gallery-caption">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
+    <div class="live-card">
+      <div class="live-label"><span class="live-dot"></span>Live di Instagram</div>
+      <a class="btn-line" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">@ssmadnia14</a>
+    </div>
   </section>
 
   <div id="lightbox" class="lightbox" aria-hidden="true">
@@ -824,6 +843,36 @@
   document.addEventListener('click', tryAutoplayOnFirstGesture, { once:true, passive:true });
   document.addEventListener('touchstart', tryAutoplayOnFirstGesture, { once:true, passive:true });
 
+  // ---- YouTube video: matikan musik latar sementara saat video diputar ----
+  let musicWasPlayingBeforeVideo = false;
+  function onYouTubeIframeAPIReady(){
+    const ytEl = document.getElementById('ytVideo');
+    if (!ytEl) return;
+    new YT.Player('ytVideo', {
+      events: {
+        onStateChange: function(e){
+          if (e.data === YT.PlayerState.PLAYING){
+            if (!music.paused){
+              musicWasPlayingBeforeVideo = true;
+              music.pause();
+            }
+          } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED){
+            if (musicWasPlayingBeforeVideo){
+              musicWasPlayingBeforeVideo = false;
+              playMusic();
+            }
+          }
+        }
+      }
+    });
+  }
+  (function loadYouTubeAPI(){
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  })();
+  window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+
   // ---- Cover open ----
   document.getElementById('openBtn').addEventListener('click', function(){
     document.getElementById('cover').classList.add('opened');
@@ -922,41 +971,9 @@
       galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Tambahkan nama file ke daftar GALLERY_FILES di kode.</span></div>';
       return;
     }
-    // duplikat sekali biar loop auto-scroll terasa menyambung mulus
-    const doubled = found.concat(found);
-    doubled.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx % found.length)));
-    initGalleryAutoScroll(found.length);
+    found.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx)));
   }
   loadGallery();
-
-  // ---- Gallery: auto-scroll jalan sendiri, pause saat disentuh/di-hover ----
-  function initGalleryAutoScroll(itemCount){
-    if (itemCount <= 1) return;
-    let paused = false;
-    let resumeTimer = null;
-    const speed = 0.45; // px per frame, sesuaikan kecepatan di sini
-
-    function pause(){
-      paused = true;
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(() => { paused = false; }, 2600);
-    }
-    galleryGrid.addEventListener('pointerdown', pause, { passive: true });
-    galleryGrid.addEventListener('wheel', pause, { passive: true });
-    galleryGrid.addEventListener('touchstart', pause, { passive: true });
-
-    function step(){
-      if (!paused){
-        const halfWidth = galleryGrid.scrollWidth / 2;
-        galleryGrid.scrollLeft += speed;
-        if (galleryGrid.scrollLeft >= halfWidth){
-          galleryGrid.scrollLeft -= halfWidth;
-        }
-      }
-      requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
 
   // ---- Copy bank number ----
   const copyBtn = document.getElementById('copyBank');
