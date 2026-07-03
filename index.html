@@ -397,35 +397,57 @@
   }
   .copy-btn.copied{ background:var(--sage); border-color:var(--sage); color:#fff;}
 
-  /* RSVP / WISHES */
-  #rsvp h2{ text-align:center; color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 8px;}
-  #rsvp p.lead{ text-align:center; font-size:.85rem; opacity:.75; max-width:320px; margin:0 auto 30px; line-height:1.7;}
-  form#wishForm{ display:flex; flex-direction:column; gap:14px; }
-  .field label{ display:block; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--sage); margin-bottom:6px;}
+  /* RSVP / WISHES — full-bleed photo background, like a keepsake portrait card */
+  #rsvp{
+    position:relative;
+    color:var(--cream);
+    isolation:isolate;
+    padding:100px 28px;
+  }
+  #rsvp::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(30,14,14,.35) 0%, rgba(30,14,14,.55) 55%, rgba(20,10,10,.82) 100%),
+      url('/photos/rsvp-bg.jpg') center 25%/cover no-repeat;
+    z-index:-1;
+  }
+  #rsvp .eyebrow{ color:var(--gold-soft); opacity:1; }
+  #rsvp h2{ text-align:center; color:var(--cream); font-size:1.9rem; margin:8px 0 8px;}
+  #rsvp p.lead{ text-align:center; font-size:.85rem; opacity:.88; max-width:320px; margin:0 auto 30px; line-height:1.7; color:var(--cream);}
+  form#wishForm{ display:flex; flex-direction:column; gap:16px; }
+  .field label{ display:block; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:7px;}
   .field input, .field select, .field textarea{
-    width:100%; border:1px solid var(--gold-soft); background:var(--cream-deep);
-    border-radius:10px; padding:12px 14px; font-family:'Jost',sans-serif; font-size:.9rem; color:var(--ink);
+    width:100%; border:1px solid rgba(251,245,234,.55); background:rgba(251,245,234,.08);
+    backdrop-filter:blur(2px);
+    border-radius:6px; padding:13px 14px; font-family:'Jost',sans-serif; font-size:.9rem; color:var(--cream);
+  }
+  .field input::placeholder, .field textarea::placeholder{ color:rgba(251,245,234,.55); }
+  .field select{ color-scheme:dark; }
+  .field select option{ color:var(--ink); }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none; border-color:var(--gold-soft); background:rgba(251,245,234,.14);
   }
   .field textarea{ min-height:90px; resize:vertical; }
   .submit-btn{
-    background:var(--maroon); color:var(--cream); border:none; border-radius:999px;
-    padding:14px; font-size:.78rem; letter-spacing:.1em; text-transform:uppercase;
-    cursor:pointer; transition:.3s;
+    background:var(--gold); color:var(--maroon-deep); border:none; border-radius:4px;
+    padding:15px; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase;
+    font-weight:600; cursor:pointer; transition:.3s;
   }
-  .submit-btn:hover{ background:var(--maroon-deep); }
+  .submit-btn:hover{ background:var(--gold-soft); }
   .submit-btn:disabled{ opacity:.5; cursor:default; }
-  #wishStatus{ font-size:.78rem; text-align:center; min-height:1.2em; }
-  #wishStatus.ok{ color:var(--sage); }
-  #wishStatus.err{ color:#a33; }
+  #wishStatus{ font-size:.78rem; text-align:center; min-height:1.2em; color:var(--cream); }
+  #wishStatus.ok{ color:var(--gold-soft); }
+  #wishStatus.err{ color:#e6a3a3; }
 
   .wish-list{ margin-top:34px; display:flex; flex-direction:column; gap:14px; max-height:380px; overflow-y:auto; padding-right:4px;}
-  .wish-item{ border-bottom:1px solid var(--gold-soft); padding-bottom:12px; }
-  .wish-item .w-name{ font-family:'Playfair Display',serif; font-size:.95rem; color:var(--maroon-deep); display:flex; align-items:center; gap:8px;}
+  .wish-item{ border-bottom:1px solid rgba(251,245,234,.25); padding-bottom:12px; }
+  .wish-item .w-name{ font-family:'Playfair Display',serif; font-size:.95rem; color:var(--cream); display:flex; align-items:center; gap:8px;}
   .w-tag{ font-size:.6rem; letter-spacing:.06em; text-transform:uppercase; padding:2px 8px; border-radius:999px; }
-  .w-tag.hadir{ background:rgba(124,139,111,.18); color:var(--sage); }
-  .w-tag.tidak{ background:rgba(110,31,43,.1); color:var(--maroon); }
-  .wish-item p{ font-size:.83rem; line-height:1.6; margin:6px 0 0; opacity:.85;}
-  .wish-empty{ text-align:center; font-size:.8rem; opacity:.55; padding:20px 0;}
+  .w-tag.hadir{ background:rgba(227,205,147,.22); color:var(--gold-soft); }
+  .w-tag.tidak{ background:rgba(251,245,234,.12); color:var(--cream); }
+  .wish-item p{ font-size:.83rem; line-height:1.6; margin:6px 0 0; opacity:.85; color:var(--cream);}
+  .wish-empty{ text-align:center; font-size:.8rem; opacity:.7; padding:20px 0; color:var(--cream);}
 
   /* CLOSING */
   #closing{
@@ -689,10 +711,14 @@
       <div class="field">
         <label for="wAttend">Konfirmasi Kehadiran</label>
         <select id="wAttend" name="attendance" required>
-          <option value="hadir">Hadir</option>
+          <option value="hadir">Saya akan hadir</option>
           <option value="tidak">Tidak Bisa Hadir</option>
           <option value="ragu">Masih Ragu</option>
         </select>
+      </div>
+      <div class="field" id="wCountField">
+        <label for="wCount">Jumlah Tamu Hadir</label>
+        <input id="wCount" name="guestCount" type="number" min="1" max="10" value="1">
       </div>
       <div class="field">
         <label for="wMsg">Doa &amp; Ucapan</label>
@@ -945,7 +971,7 @@
     wishList.innerHTML = items.map(w => `
       <div class="wish-item">
         <div class="w-name">${escapeHtml(w.name)} <span class="w-tag ${w.attendance==='hadir'?'hadir':'tidak'}">${
-          w.attendance === 'hadir' ? 'Hadir' : (w.attendance === 'tidak' ? 'Tidak Hadir' : 'Ragu')
+          w.attendance === 'hadir' ? `Hadir${w.guest_count > 1 ? ' · ' + w.guest_count + ' orang' : ''}` : (w.attendance === 'tidak' ? 'Tidak Hadir' : 'Ragu')
         }</span></div>
         <p>${escapeHtml(w.message)}</p>
       </div>
@@ -964,6 +990,14 @@
   }
   loadWishes();
 
+  const wAttendEl = document.getElementById('wAttend');
+  const wCountField = document.getElementById('wCountField');
+  function syncCountField(){
+    wCountField.style.display = wAttendEl.value === 'hadir' ? '' : 'none';
+  }
+  wAttendEl.addEventListener('change', syncCountField);
+  syncCountField();
+
   wishForm.addEventListener('submit', async function(e){
     e.preventDefault();
     wishSubmit.disabled = true;
@@ -973,6 +1007,9 @@
     const payload = {
       name: document.getElementById('wName').value.trim(),
       attendance: document.getElementById('wAttend').value,
+      guestCount: document.getElementById('wAttend').value === 'hadir'
+        ? (parseInt(document.getElementById('wCount').value, 10) || 1)
+        : undefined,
       message: document.getElementById('wMsg').value.trim()
     };
 
