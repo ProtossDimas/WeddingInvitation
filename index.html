@@ -773,7 +773,6 @@
   // ---- Music ----
   const music = document.getElementById('bgMusic');
   const musicBtn = document.getElementById('musicToggle');
-  let playing = false;
   let musicReady = null; // Promise yang resolve setelah src musik diisi dari /api/music
 
   async function loadMusic(){
@@ -785,24 +784,40 @@
     return musicReady;
   }
 
-  async function toggleMusic(){
-    if (playing){ music.pause(); musicBtn.classList.remove('spin'); playing = false; return; }
+  // Status play/pause selalu dibaca LANGSUNG dari elemen <audio>, tidak pakai
+  // variabel terpisah — supaya tidak pernah "salah ingat" statusnya sendiri.
+  function syncMusicUI(){
+    musicBtn.classList.toggle('spin', !music.paused && !music.ended);
+  }
+  music.addEventListener('play', syncMusicUI);
+  music.addEventListener('pause', syncMusicUI);
+  music.addEventListener('ended', syncMusicUI);
+
+  async function playMusic(){
     const url = await loadMusic();
-    if (!url) return; // belum ada file lagu di folder /music
-    music.play().catch(()=>{});
-    musicBtn.classList.add('spin');
-    playing = true;
+    if (!url) return false; // belum ada file lagu di folder /music
+    try {
+      await music.play();
+      return true;
+    } catch (err) {
+      return false; // diblokir kebijakan autoplay browser, akan dicoba lagi saat ada gesture berikutnya
+    }
+  }
+
+  async function toggleMusic(){
+    if (!music.paused){ music.pause(); return; }
+    await playMusic();
   }
   musicBtn.addEventListener('click', toggleMusic);
   loadMusic();
 
   // Coba autoplay langsung saat halaman siap (berhasil di sebagian browser/mobile app webview)
-  window.addEventListener('DOMContentLoaded', () => { if (!playing) toggleMusic(); });
+  playMusic();
 
   // Fallback: browser modern butuh "gesture" pengguna sebelum audio boleh play,
   // jadi begitu ada sentuhan/klik pertama di mana saja, musik langsung dicoba jalan.
   function tryAutoplayOnFirstGesture(){
-    if (!playing) toggleMusic();
+    if (music.paused) playMusic();
     document.removeEventListener('click', tryAutoplayOnFirstGesture);
     document.removeEventListener('touchstart', tryAutoplayOnFirstGesture);
   }
@@ -813,7 +828,7 @@
   document.getElementById('openBtn').addEventListener('click', function(){
     document.getElementById('cover').classList.add('opened');
     document.body.style.overflow = 'auto';
-    if (!playing) toggleMusic();
+    if (music.paused) playMusic();
   });
   document.body.style.overflow = 'hidden';
 
