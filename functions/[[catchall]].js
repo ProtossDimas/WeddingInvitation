@@ -459,20 +459,25 @@ async function handleGetGuest(code, env) {
 
 // ====== Notifikasi WhatsApp ke pemilik web saat ada tamu konfirmasi HADIR ======
 //
-// Pakai CallMeBot (gratis, tanpa akun bisnis) — cukup untuk notifikasi pribadi:
-//   1. Simpan nomor WA berikut di kontak HP kamu: +34 644 51 95 23 (nomor bot CallMeBot)
-//   2. Kirim pesan lewat WhatsApp ke nomor itu, isinya persis: "I allow callmebot to send me messages"
-//   3. Bot akan membalas dengan sebuah API key (angka)
+// Pakai Fonnte (gateway WA Indonesia, ada paket gratis) — setup:
+//   1. Daftar & login di https://fonnte.com
+//   2. Menu "Device" > tambah device baru > scan QR pakai WhatsApp
+//      yang mau dipakai untuk KIRIM notifikasi (bukan nomor yang menerima)
+//   3. Setelah device connect, salin "Device Token"-nya (di halaman Device)
 //   4. Di Cloudflare Pages > Settings > Environment variables, tambahkan:
-//        NOTIFY_PHONE       = nomor WA kamu format internasional TANPA "+" (mis. 6281234567890)
-//        CALLMEBOT_APIKEY   = API key dari langkah 3
+//        NOTIFY_PHONE   = nomor WA yang MENERIMA notifikasi, format internasional
+//                         TANPA "+" (mis. 6282145091666)
+//        FONNTE_TOKEN   = Device Token dari langkah 3
 //   5. Deploy ulang. Kalau kedua env var ini kosong, notifikasi otomatis dilewati (tidak error).
 //
-// Kalau nanti mau pakai gateway lain (Fonnte, Wablas, dll) tinggal ganti isi fungsi
+// Catatan: nomor pengirim (device Fonnte) dan nomor penerima (NOTIFY_PHONE) boleh
+// beda — device Fonnte cuma jadi "mesin kirim", tidak perlu WA khusus buat pemilik web.
+//
+// Kalau nanti mau ganti ke gateway lain (Wablas, Twilio, dll) tinggal ganti isi fungsi
 // sendWhatsAppNotification di bawah ini — bagian lain kode tidak perlu diubah.
 
 async function sendWhatsAppNotification(env, { name, guestCount, message }) {
-  if (!env.NOTIFY_PHONE || !env.CALLMEBOT_APIKEY) return; // belum dikonfigurasi, lewati diam-diam
+  if (!env.NOTIFY_PHONE || !env.FONNTE_TOKEN) return; // belum dikonfigurasi, lewati diam-diam
 
   const text =
     `RSVP baru — HADIR\n` +
@@ -480,12 +485,18 @@ async function sendWhatsAppNotification(env, { name, guestCount, message }) {
     `Jumlah tamu: ${guestCount}\n` +
     `Ucapan: ${message}`;
 
-  const url =
-    `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(env.NOTIFY_PHONE)}` +
-    `&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(env.CALLMEBOT_APIKEY)}`;
-
   try {
-    await fetch(url);
+    await fetch("https://api.fonnte.com/send", {
+      method: "POST",
+      headers: {
+        Authorization: env.FONNTE_TOKEN,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        target: env.NOTIFY_PHONE,
+        message: text,
+      }),
+    });
   } catch (err) {
     // gagal kirim notifikasi tidak boleh menggagalkan RSVP tamu
   }
