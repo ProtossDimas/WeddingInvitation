@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<script>
+  if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+  window.addEventListener('beforeunload', function(){ window.scrollTo(0, 0); });
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dimas & Nia — Undangan Pernikahan</title>
 <meta name="description" content="Undangan Pernikahan Dimas & Nia">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&family=Italianno&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -22,7 +27,7 @@
     --ease: cubic-bezier(.22,1,.36,1);
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth; overflow-x:hidden; max-width:100%;}
+  html{scroll-behavior:smooth; overflow-x:hidden; max-width:100%; scroll-snap-type:y proximity;}
   body{
     margin:0;
     font-family:'Jost',sans-serif;
@@ -170,9 +175,18 @@
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   /* ---------- sections ---------- */
-  section{ position:relative; padding:78px 28px; overflow:hidden; }
-  .reveal{ opacity:0; transform:translateY(26px); transition:opacity .9s var(--ease), transform .9s var(--ease); }
-  .reveal.show{ opacity:1; transform:translateY(0); }
+  section{ position:relative; padding:78px 28px; overflow:hidden; scroll-snap-align:start; scroll-snap-stop:normal; }
+
+  /* Custom background photo/video per section (lihat SECTION_BACKGROUNDS di script) */
+  .section-bg{ position:absolute; inset:0; z-index:0; overflow:hidden; }
+  .section-bg img, .section-bg video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .section-bg::after{
+    content:""; position:absolute; inset:0;
+    background:var(--section-bg-tint, rgba(251,245,234,0.86));
+  }
+  section.has-bg > *:not(.section-bg){ position:relative; z-index:1; }
+  .reveal{ opacity:0; transform:translateY(46px) scale(.97); transition:opacity 1.1s cubic-bezier(.16,.8,.24,1), transform 1.1s cubic-bezier(.16,.8,.24,1); }
+  .reveal.show{ opacity:1; transform:translateY(0) scale(1); }
 
   .divider{
     width:1px; height:46px; background:linear-gradient(var(--gold), transparent);
@@ -303,6 +317,15 @@
     border:1px solid var(--gold-soft); box-shadow:0 12px 30px rgba(110,31,43,0.12);
   }
   .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .video-thumb{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; cursor:pointer; }
+  .video-play-btn{
+    position:absolute; inset:0; margin:auto; width:64px; height:46px;
+    background:none; border:0; padding:0; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
+    transition:transform .25s var(--ease);
+  }
+  .video-play-btn:hover{ transform:scale(1.08); }
 
   /* LIVE STREAMING */
   #livestream{ text-align:center; }
@@ -417,7 +440,7 @@
     position:absolute; inset:0;
     background:
       linear-gradient(180deg, rgba(30,14,14,.35) 0%, rgba(30,14,14,.55) 55%, rgba(20,10,10,.82) 100%),
-      url('/photos/rsvp.jpg') center 25%/cover no-repeat;
+      url('/photos/rsvp-bg.jpg') center 25%/cover no-repeat;
     z-index:-1;
   }
   #rsvp .eyebrow{ color:var(--gold-soft); opacity:1; }
@@ -579,7 +602,7 @@
     </div>
     <div class="couple-wrap">
       <div class="couple-card">
-        <div class="couple-photo"><img src="/photos/dimas.jpg" alt="Dimas Alfian Wahyudi" onerror="this.parentElement.textContent='D'"></div>
+        <div class="couple-photo"><img src="/photos/dimas.jpg" alt="Dimas Alfian Wahyudi" loading="lazy" decoding="async" onerror="this.parentElement.textContent='D'"></div>
         <h3>Dimas Alfian Wahyudi</h3>
         <p>Putra dari<br>Bapak Amad Sayudi<br>&amp;<br>Ibu Alfinah</p>
         <a class="couple-ig" href="https://instagram.com/dimasalfw" target="_blank" rel="noopener">
@@ -589,7 +612,7 @@
       </div>
       <p class="couple-and" style="margin:6px 0;">&amp;</p>
       <div class="couple-card">
-        <div class="couple-photo"><img src="/photos/nia.jpg" alt="Sismadinia" onerror="this.parentElement.textContent='N'"></div>
+        <div class="couple-photo"><img src="/photos/nia.JPG" alt="Sismadinia" loading="lazy" decoding="async" onerror="this.parentElement.textContent='N'"></div>
         <h3>Sismadinia</h3>
         <p>Putri dari<br>Bapak Syamsul Bakhri<br>&amp;<br>Ibu Ismiyati</p>
         <a class="couple-ig" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">
@@ -671,16 +694,17 @@
 
   <!-- ============ VIDEO ============ -->
   <section id="video" class="reveal">
-    <span class="eyebrow" style="text-align:center; display:block;">Kenangan</span>
     <h2>Our Video</h2>
-    <div class="video-frame">
-      <iframe id="ytVideo" src="https://www.youtube.com/embed/gIrDLOLmKq4?enablejsapi=1" title="Wedding Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+    <div class="video-frame" id="videoFrame" data-yt-id="gIrDLOLmKq4">
+      <img class="video-thumb" src="https://i.ytimg.com/vi/gIrDLOLmKq4/hqdefault.jpg" alt="Wedding Video" loading="lazy" decoding="async">
+      <button class="video-play-btn" id="videoPlayBtn" aria-label="Putar video" type="button">
+        <svg viewBox="0 0 68 48" width="56" height="40"><path d="M66.5 7.7c-.8-2.9-2.6-5.2-5-6.1C57.4 0 34 0 34 0S10.6 0 6.5 1.6c-2.4.9-4.2 3.2-5 6.1C0 12 0 24 0 24s0 12 1.5 16.3c.8 2.9 2.6 5.1 5 6.1C10.6 48 34 48 34 48s23.4 0 27.5-1.6c2.4-.9 4.2-3.2 5-6.1C68 36 68 24 68 24s0-12-1.5-16.3z" fill="rgba(43,26,26,.72)"/><path d="M45 24 27 14v20z" fill="#fbf5ea"/></svg>
+      </button>
     </div>
   </section>
 
   <!-- ============ LIVE STREAMING ============ -->
   <section id="livestream" class="reveal">
-    <span class="eyebrow" style="text-align:center; display:block;">Saksikan</span>
     <h2>Live Streaming</h2>
     <p class="gallery-caption">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
     <div class="live-card">
@@ -843,35 +867,71 @@
   document.addEventListener('click', tryAutoplayOnFirstGesture, { once:true, passive:true });
   document.addEventListener('touchstart', tryAutoplayOnFirstGesture, { once:true, passive:true });
 
-  // ---- YouTube video: matikan musik latar sementara saat video diputar ----
-  let musicWasPlayingBeforeVideo = false;
-  function onYouTubeIframeAPIReady(){
-    const ytEl = document.getElementById('ytVideo');
-    if (!ytEl) return;
-    new YT.Player('ytVideo', {
-      events: {
-        onStateChange: function(e){
-          if (e.data === YT.PlayerState.PLAYING){
-            if (!music.paused){
-              musicWasPlayingBeforeVideo = true;
-              music.pause();
-            }
-          } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED){
-            if (musicWasPlayingBeforeVideo){
-              musicWasPlayingBeforeVideo = false;
-              playMusic();
-            }
-          }
-        }
+  // ---- Musik mati otomatis saat pindah tab / minimize / keluar dari web ----
+  let musicWasPlayingBeforeHidden = false;
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden){
+      if (!music.paused){
+        musicWasPlayingBeforeHidden = true;
+        music.pause();
       }
-    });
-  }
-  (function loadYouTubeAPI(){
+    } else {
+      if (musicWasPlayingBeforeHidden){
+        musicWasPlayingBeforeHidden = false;
+        playMusic();
+      }
+    }
+  });
+  window.addEventListener('pagehide', function(){ music.pause(); });
+
+  // ---- YouTube video: lazy-load, matikan musik latar sementara saat diputar ----
+  let musicWasPlayingBeforeVideo = false;
+  let ytPlayer = null;
+  const videoFrame = document.getElementById('videoFrame');
+  const videoPlayBtn = document.getElementById('videoPlayBtn');
+
+  function loadYouTubeAPI(cb){
+    if (window.YT && window.YT.Player){ cb(); return; }
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(tag);
-  })();
-  window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = cb;
+  }
+
+  function startVideo(){
+    const ytId = videoFrame.dataset.ytId;
+    videoFrame.querySelector('.video-thumb').remove();
+    videoPlayBtn.remove();
+    const iframe = document.createElement('iframe');
+    iframe.id = 'ytVideo';
+    iframe.src = `https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=1`;
+    iframe.title = 'Wedding Video';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.allowFullscreen = true;
+    videoFrame.appendChild(iframe);
+
+    loadYouTubeAPI(function(){
+      ytPlayer = new YT.Player('ytVideo', {
+        events: {
+          onStateChange: function(e){
+            if (e.data === YT.PlayerState.PLAYING){
+              if (!music.paused){
+                musicWasPlayingBeforeVideo = true;
+                music.pause();
+              }
+            } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED){
+              if (musicWasPlayingBeforeVideo){
+                musicWasPlayingBeforeVideo = false;
+                playMusic();
+              }
+            }
+          }
+        }
+      });
+    });
+  }
+  videoPlayBtn.addEventListener('click', startVideo);
+  videoFrame.querySelector('.video-thumb').addEventListener('click', startVideo);
 
   // ---- Cover open ----
   document.getElementById('openBtn').addEventListener('click', function(){
@@ -880,6 +940,7 @@
     if (music.paused) playMusic();
   });
   document.body.style.overflow = 'hidden';
+  window.scrollTo(0, 0);
 
   // ---- Reveal on scroll ----
   const revealEls = document.querySelectorAll('.reveal');
@@ -903,6 +964,45 @@
     document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
   }
   tick(); setInterval(tick, 1000);
+
+  // ---- Background foto/video per bagian (opsional) ----
+  // Isi url foto/video di sini kalau mau bagian tersebut punya background sendiri.
+  // type: 'image' atau 'video'. url: taruh file di /photos (foto) atau /videos (video), lalu isi path-nya.
+  // tint: warna overlay transparan di atas background biar teks tetap kebaca (boleh dikosongkan, pakai default).
+  // Contoh isi:
+  //   couple: { type:'image', url:'/photos/bg-mempelai.jpg' },
+  //   hero:   { type:'video', url:'/videos/bg-hero.mp4', tint:'rgba(43,26,26,0.55)' },
+  const SECTION_BACKGROUNDS = {
+    // hero:       { type:'image', url:'' },
+    // couple:     { type:'image', url:'' },
+    // story:      { type:'image', url:'' },
+    // event:      { type:'image', url:'' },
+    // gallery:    { type:'image', url:'' },
+    // video:      { type:'image', url:'' },
+    // livestream: { type:'image', url:'' },
+    // gift:       { type:'image', url:'' },
+    // rsvp:       { type:'image', url:'' },
+    // closing:    { type:'image', url:'' },
+  };
+  function applySectionBackgrounds(){
+    Object.keys(SECTION_BACKGROUNDS).forEach(function(id){
+      const cfg = SECTION_BACKGROUNDS[id];
+      if (!cfg || !cfg.url) return;
+      const section = document.getElementById(id);
+      if (!section) return;
+      const bg = document.createElement('div');
+      bg.className = 'section-bg';
+      if (cfg.tint) bg.style.setProperty('--section-bg-tint', cfg.tint);
+      if (cfg.type === 'video'){
+        bg.innerHTML = '<video src="' + cfg.url + '" autoplay muted loop playsinline></video>';
+      } else {
+        bg.innerHTML = '<img src="' + cfg.url + '" alt="">';
+      }
+      section.insertBefore(bg, section.firstChild);
+      section.classList.add('has-bg');
+    });
+  }
+  applySectionBackgrounds();
 
   // ---- Gallery: MANUAL — atur sendiri foto/video mana saja yang tampil & urutannya ----
   // Cukup isi nama file yang ada di folder /photos (tanpa path), urut sesuai keinginan.
@@ -958,7 +1058,7 @@
     if (item.type === 'video'){
       div.innerHTML = `<video src="${item.url}" muted playsinline preload="metadata"></video><div class="play-badge"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
     } else {
-      div.innerHTML = `<img src="${item.url}" alt="" loading="lazy">`;
+      div.innerHTML = `<img src="${item.url}" alt="" loading="lazy" decoding="async">`;
     }
     div.addEventListener('click', () => openLightbox(item));
     return div;
