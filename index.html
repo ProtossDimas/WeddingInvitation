@@ -101,7 +101,7 @@
     position:fixed; inset:0; z-index:50;
     background:
       linear-gradient(180deg, rgba(20,10,10,.38) 0%, rgba(20,10,10,.12) 32%, rgba(20,10,10,.20) 68%, rgba(15,7,7,.55) 100%),
-      url('/photos/coverdepan.jpeg') center 30%/cover no-repeat,
+      url('/photos/coverdepan.PNG') center 30%/cover no-repeat,
       var(--cream);
     color:var(--cream);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -174,7 +174,7 @@
   @media (min-width:700px){ .fl-names{ font-size:4.2rem; } .fl-quote{ max-width:420px; font-size:.92rem; } }
 
   .cover-title{
-    font-family:'Italianno',cursive; color:var(--cream);
+    font-family:'Italianno',cursive; color:var(--gold-soft);
     font-size:3rem; line-height:1.05; margin:0 0 34px;
     position:relative; z-index:2;
   }
@@ -261,8 +261,8 @@
     background-repeat:no-repeat; background-size:contain;
     opacity:.85; pointer-events:none; z-index:0;
   }
-  section:not(#hero)::before{ top:-14px; left:-20px; background-image:url("/photos/florals/floral-tl.png"); background-position:top left; }
-  section:not(#hero)::after{ bottom:-18px; right:-22px; width:210px; height:200px; background-image:url("/photos/florals/floral-br.png"); background-position:bottom right; }
+  section:not(#hero)::before{ top:-14px; left:-20px; background-image:url("/photos/florals/floral-tl.png?v=2"); background-position:top left; }
+  section:not(#hero)::after{ bottom:-18px; right:-22px; width:210px; height:200px; background-image:url("/photos/florals/floral-br.png?v=2"); background-position:bottom right; }
   section:not(#hero) > *{ position:relative; z-index:1; }
   @media (min-width:700px){
     section:not(#hero)::before{ width:230px; height:216px; }
@@ -649,18 +649,18 @@
 
   <!-- ============ PERMANENT CORNER FLORALS (tujuan "morph" dari floral bloom, menempel di puncak kartu) ============ -->
   <div id="cornerOrnTL" aria-hidden="true"><div class="co-inner">
-    <img src="/photos/florals/floral-tl.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left;">
+    <img src="/photos/florals/floral-tl.png?v=2" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left;">
   </div></div>
   <div id="cornerOrnTR" aria-hidden="true"><div class="co-inner">
-    <img src="/photos/florals/floral-tr.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top right;">
+    <img src="/photos/florals/floral-tr.png?v=2" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top right;">
   </div></div>
 
   <!-- ============ FLORAL BLOOM TRANSITION (main setelah "Buka Undangan" ditekan) ============ -->
   <div id="floralIntro" aria-hidden="true">
-    <div class="fl-piece fl-p1"><img src="/photos/florals/floral-tl.png" alt=""></div>
-    <div class="fl-piece fl-p2"><img src="/photos/florals/floral-tr.png" alt=""></div>
-    <div class="fl-piece fl-p3"><img src="/photos/florals/floral-bl.png" alt=""></div>
-    <div class="fl-piece fl-p4"><img src="/photos/florals/floral-br.png" alt=""></div>
+    <div class="fl-piece fl-p1"><img src="/photos/florals/floral-tl.png?v=2" alt=""></div>
+    <div class="fl-piece fl-p2"><img src="/photos/florals/floral-tr.png?v=2" alt=""></div>
+    <div class="fl-piece fl-p3"><img src="/photos/florals/floral-bl.png?v=2" alt=""></div>
+    <div class="fl-piece fl-p4"><img src="/photos/florals/floral-br.png?v=2" alt=""></div>
 
     <div class="fl-center">
       <span class="fl-eyebrow">Welcome to Our Wedding</span>
