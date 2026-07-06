@@ -92,11 +92,9 @@
     width:100%; height:100%; transform:scale(.94); transition:opacity .7s var(--ease), transform .7s var(--ease);
     opacity:.001;
   }
-  #cornerOrnTR .co-inner{ transform:scale(.94) scaleX(-1); }
   #cornerOrnTL .co-inner svg, #cornerOrnTR .co-inner svg{ width:100%; height:100%; overflow:visible; }
   #cornerOrnTL.show, #cornerOrnTR.show{ opacity:1; transition:opacity .3s ease; }
   #cornerOrnTL.show .co-inner, #cornerOrnTR.show .co-inner{ opacity:1; transform:scale(1); }
-  #cornerOrnTR.show .co-inner{ transform:scale(1) scaleX(-1); }
 
   /* ----------  ---------- */
   #cover{
@@ -115,71 +113,52 @@
   #cover .cover-overlay{ display:none; }
   #cover .cover-title, #cover .cover-to, #cover .cover-guest{ text-shadow: 0 2px 16px rgba(0,0,0,.5); }
 
-  /* ---------- FLORAL BLOOM TRANSITION (muncul SETELAH tombol Buka Undangan) ---------- */
+  /* ---------- WELCOME INTRO: bunga foto asli muncul satu-persatu di tiap pojok, lalu teks tengah ---------- */
   #floralIntro{
     position:fixed; inset:0; z-index:70;
-    background:var(--cream);
+    background:
+      radial-gradient(circle at 25% 15%, rgba(201,161,74,0.16), transparent 42%),
+      radial-gradient(circle at 80% 90%, rgba(110,31,43,0.09), transparent 40%),
+      var(--cream-deep);
     overflow:hidden;
     opacity:0; pointer-events:none;
     transition:opacity .5s ease;
   }
   #floralIntro.show{ opacity:1; pointer-events:auto; }
   #floralIntro.fade-out{ transition:opacity 1.05s var(--ease), filter 1.05s var(--ease); opacity:0; filter:blur(6px); }
-  /* Saat settle: p1 & p2 (bunga pojok atas) TIDAK ikut memudar — mereka justru bergerak/morph
+  /* Saat settle: p1 & p2 (bunga pojok ATAS) TIDAK ikut memudar — mereka justru bergerak/morph
      menuju posisi permanen di pojok kartu (lihat #cornerOrnTL/TR & playFloralBloom di JS). */
   #floralIntro.settling .fl-piece:not(.fl-p1):not(.fl-p2){ transition:opacity .9s var(--ease); opacity:0; }
   #floralIntro.settling .fl-center{ transition:opacity .7s var(--ease); opacity:0; }
   #floralIntro.settling .fl-p1, #floralIntro.settling .fl-p2{ transition:transform 1s var(--ease), opacity 1s var(--ease); }
+
   .fl-piece{
-    position:absolute; width:150px; height:150px; opacity:0; will-change:transform,opacity;
+    position:absolute; opacity:0; transform:scale(.7);
+    transition:opacity .9s var(--ease), transform .9s var(--ease);
+    will-change:transform,opacity; pointer-events:none;
   }
-  .fl-piece-inner{ width:100%; height:100%; }
-  .fl-piece-inner svg{ width:100%; height:100%; overflow:visible; }
-  .fl-piece-inner.flip-x{ transform:scaleX(-1); }
-  .fl-piece-inner.flip-y{ transform:scaleY(-1); }
-  .fl-piece-inner.flip-xy{ transform:scale(-1,-1); }
-
-  /* posisi akhir tiap elemen (menempel di tepi layar, membentuk bingkai) */
-  .fl-p1{ top:-30px; left:-40px; width:170px; height:170px; }
-  .fl-p2{ top:-30px; right:-40px; width:170px; height:170px; }
-  .fl-p3{ bottom:-30px; left:-30px; width:150px; height:150px; }
-  .fl-p4{ bottom:-30px; right:-30px; width:150px; height:150px; }
-  .fl-p5{ top:36%; left:-52px; width:110px; height:110px; }
-  .fl-p6{ top:36%; right:-52px; width:110px; height:110px; }
-  .fl-p7{ bottom:34%; left:50%; width:120px; height:120px; margin-left:-60px; }
-  .fl-p8{ top:-24px; left:50%; width:130px; height:130px; margin-left:-65px; }
-
-  /* posisi awal (di luar layar) sebelum animasi berjalan */
-  #floralIntro:not(.show) .fl-p1{ transform:translate(-120px,90px); }
-  #floralIntro:not(.show) .fl-p2{ transform:translate(120px,90px); }
-  #floralIntro:not(.show) .fl-p3{ transform:translate(-120px,-90px); }
-  #floralIntro:not(.show) .fl-p4{ transform:translate(120px,-90px); }
-  #floralIntro:not(.show) .fl-p5{ transform:translateX(-140px); }
-  #floralIntro:not(.show) .fl-p6{ transform:translateX(140px); }
-  #floralIntro:not(.show) .fl-p7{ transform:translateY(140px); }
-  #floralIntro:not(.show) .fl-p8{ transform:translateY(-140px); }
-
-  #floralIntro.show .fl-piece{
-    animation:flBloom .95s var(--ease) forwards;
+  .fl-piece img{ display:block; width:100%; height:auto; }
+  .fl-p1{ top:-16px; left:-16px; width:180px; transform-origin:top left; }
+  .fl-p2{ top:-16px; right:-16px; width:180px; transform-origin:top right; }
+  .fl-p3{ bottom:-16px; left:-16px; width:210px; transform-origin:bottom left; }
+  .fl-p4{ bottom:-16px; right:-16px; width:210px; transform-origin:bottom right; }
+  @media (min-width:700px){
+    .fl-p1, .fl-p2{ width:230px; }
+    .fl-p3, .fl-p4{ width:270px; }
   }
-  #floralIntro.show .fl-p1{ animation-delay:.05s; }
-  #floralIntro.show .fl-p2{ animation-delay:.12s; }
-  #floralIntro.show .fl-p3{ animation-delay:.0s; }
-  #floralIntro.show .fl-p4{ animation-delay:.18s; }
-  #floralIntro.show .fl-p5{ animation-delay:.32s; }
-  #floralIntro.show .fl-p6{ animation-delay:.4s; }
-  #floralIntro.show .fl-p7{ animation-delay:.5s; }
-  #floralIntro.show .fl-p8{ animation-delay:.72s; }
-  @keyframes flBloom{
-    0%{ opacity:0; }
-    45%{ opacity:1; }
-    100%{ opacity:1; transform:translate(0,0); }
-  }
+
+  /* reveal satu-per-satu: kiri-atas -> kanan-atas -> kiri-bawah -> kanan-bawah */
+  #floralIntro.show .fl-piece{ opacity:1; transform:scale(1); }
+  #floralIntro.show .fl-p1{ transition-delay:.15s; }
+  #floralIntro.show .fl-p2{ transition-delay:.55s; }
+  #floralIntro.show .fl-p3{ transition-delay:.95s; }
+  #floralIntro.show .fl-p4{ transition-delay:1.35s; }
+
   .fl-center{
     position:absolute; inset:0; z-index:2;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     text-align:center; padding:32px; opacity:0;
-    animation:flCenterIn 1s var(--ease) forwards; animation-delay:.9s;
+    animation:flCenterIn 1s var(--ease) forwards; animation-delay:2.05s;
   }
   @keyframes flCenterIn{ from{ opacity:0; transform:translateY(14px);} to{ opacity:1; transform:translateY(0);} }
   .fl-eyebrow{
@@ -190,7 +169,9 @@
     font-family:'Italianno',cursive; font-size:3.4rem; line-height:1; color:var(--maroon-deep);
     margin-top:14px;
   }
-  @media (min-width:700px){ .fl-names{ font-size:4.2rem; } }
+  .fl-quote{ margin-top:20px; font-size:.82rem; line-height:1.75; color:var(--ink); opacity:.85; font-style:italic; max-width:320px; }
+  .fl-quote-src{ display:block; margin-top:8px; font-style:normal; font-size:.68rem; letter-spacing:.1em; color:var(--maroon); text-transform:uppercase; }
+  @media (min-width:700px){ .fl-names{ font-size:4.2rem; } .fl-quote{ max-width:420px; font-size:.92rem; } }
 
   .cover-title{
     font-family:'Italianno',cursive; color:var(--cream);
@@ -276,16 +257,16 @@
   section:not(#hero)::before,
   section:not(#hero)::after{
     content:"";
-    position:absolute; width:132px; height:132px;
+    position:absolute; width:170px; height:160px;
     background-repeat:no-repeat; background-size:contain;
-    opacity:.4; pointer-events:none; z-index:0;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 130'%3E%3Cpath d='M15 115 Q35 95 50 78 Q65 62 78 48' stroke='%237C8B6F' stroke-width='2.5' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='10' ry='4.5' fill='%237C8B6F' transform='rotate(-40 42 90)'/%3E%3Cellipse cx='58' cy='72' rx='9' ry='4' fill='%237C8B6F' opacity='.85' transform='rotate(-35 58 72)'/%3E%3Cellipse cx='70' cy='58' rx='8' ry='3.5' fill='%237C8B6F' opacity='.7' transform='rotate(-30 70 58)'/%3E%3Cg transform='translate(92,32)'%3E%3Ccircle cx='-16' cy='4' r='9' fill='%23E3CD93' opacity='.9'/%3E%3Ccircle cx='0' cy='-6' r='12' fill='%236E1F2B'/%3E%3Ccircle cx='0' cy='-6' r='4' fill='%234C141D'/%3E%3Ccircle cx='16' cy='6' r='10' fill='%23D98A93' opacity='.92'/%3E%3Ccircle cx='16' cy='6' r='3.5' fill='%234C141D'/%3E%3Ccircle cx='4' cy='18' r='8' fill='%23E3CD93' opacity='.85'/%3E%3C/g%3E%3C/svg%3E");
+    opacity:.85; pointer-events:none; z-index:0;
   }
-  section:not(#hero)::before{ top:-18px; left:-26px; }
-  section:not(#hero)::after{ bottom:-18px; right:-26px; transform:scale(-1,-1); }
+  section:not(#hero)::before{ top:-14px; left:-20px; background-image:url("/photos/florals/floral-tl.png"); background-position:top left; }
+  section:not(#hero)::after{ bottom:-18px; right:-22px; width:210px; height:200px; background-image:url("/photos/florals/floral-br.png"); background-position:bottom right; }
   section:not(#hero) > *{ position:relative; z-index:1; }
   @media (min-width:700px){
-    section:not(#hero)::before, section:not(#hero)::after{ width:170px; height:170px; opacity:.45; }
+    section:not(#hero)::before{ width:230px; height:216px; }
+    section:not(#hero)::after{ width:280px; height:266px; }
   }
 
   /* Custom background photo/video per section (lihat SECTION_BACKGROUNDS di script) */
@@ -318,6 +299,9 @@
   #hero .amp{ font-family:'Italianno',cursive; color:var(--gold); font-size:2.2rem; display:block;}
   #hero .quote{ margin-top:26px; font-size:.92rem; line-height:1.8; color:var(--ink); opacity:.85; font-style:italic; max-width:340px; margin-inline:auto;}
   #hero .quote-src{ display:block; margin-top:8px; font-style:normal; font-size:.72rem; letter-spacing:.1em; color:var(--maroon); text-transform:uppercase;}
+  #hero{ padding:0; }
+  #hero .hero-art{ width:100%; display:block; line-height:0; }
+  #hero .hero-art img{ width:100%; height:auto; display:block; }
 
   /* COUPLE */
   #couple{
@@ -665,155 +649,26 @@
 
   <!-- ============ PERMANENT CORNER FLORALS (tujuan "morph" dari floral bloom, menempel di puncak kartu) ============ -->
   <div id="cornerOrnTL" aria-hidden="true"><div class="co-inner">
-    <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M15 115 Q35 95 50 78 Q65 62 78 48" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-      <ellipse cx="42" cy="90" rx="10" ry="4.5" fill="var(--sage)" transform="rotate(-40 42 90)"/>
-      <ellipse cx="58" cy="72" rx="9" ry="4" fill="var(--sage)" opacity=".85" transform="rotate(-35 58 72)"/>
-      <ellipse cx="70" cy="58" rx="8" ry="3.5" fill="var(--sage)" opacity=".7" transform="rotate(-30 70 58)"/>
-      <g transform="translate(92,32)">
-        <circle cx="-16" cy="4" r="9" fill="var(--gold-soft)" opacity=".9"/>
-        <circle cx="0" cy="-6" r="12" fill="var(--maroon)"/>
-        <circle cx="0" cy="-6" r="4" fill="var(--maroon-deep)"/>
-        <circle cx="16" cy="6" r="10" fill="#D98A93" opacity=".92"/>
-        <circle cx="16" cy="6" r="3.5" fill="var(--maroon-deep)"/>
-        <circle cx="4" cy="18" r="8" fill="var(--gold-soft)" opacity=".85"/>
-      </g>
-    </svg>
+    <img src="/photos/florals/floral-tl.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left;">
   </div></div>
   <div id="cornerOrnTR" aria-hidden="true"><div class="co-inner">
-    <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M15 115 Q35 95 50 78 Q65 62 78 48" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-      <ellipse cx="42" cy="90" rx="10" ry="4.5" fill="var(--sage)" transform="rotate(-40 42 90)"/>
-      <ellipse cx="58" cy="72" rx="9" ry="4" fill="var(--sage)" opacity=".85" transform="rotate(-35 58 72)"/>
-      <ellipse cx="70" cy="58" rx="8" ry="3.5" fill="var(--sage)" opacity=".7" transform="rotate(-30 70 58)"/>
-      <g transform="translate(92,32)">
-        <circle cx="-16" cy="4" r="9" fill="var(--gold-soft)" opacity=".9"/>
-        <circle cx="0" cy="-6" r="12" fill="var(--maroon)"/>
-        <circle cx="0" cy="-6" r="4" fill="var(--maroon-deep)"/>
-        <circle cx="16" cy="6" r="10" fill="#D98A93" opacity=".92"/>
-        <circle cx="16" cy="6" r="3.5" fill="var(--maroon-deep)"/>
-        <circle cx="4" cy="18" r="8" fill="var(--gold-soft)" opacity=".85"/>
-      </g>
-    </svg>
+    <img src="/photos/florals/floral-tr.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top right;">
   </div></div>
 
   <!-- ============ FLORAL BLOOM TRANSITION (main setelah "Buka Undangan" ditekan) ============ -->
   <div id="floralIntro" aria-hidden="true">
-    <div class="fl-piece fl-p1"><div class="fl-piece-inner">
-      <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 115 Q35 95 50 78 Q65 62 78 48" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-        <ellipse cx="42" cy="90" rx="10" ry="4.5" fill="var(--sage)" transform="rotate(-40 42 90)"/>
-        <ellipse cx="58" cy="72" rx="9" ry="4" fill="var(--sage)" opacity=".85" transform="rotate(-35 58 72)"/>
-        <ellipse cx="70" cy="58" rx="8" ry="3.5" fill="var(--sage)" opacity=".7" transform="rotate(-30 70 58)"/>
-        <g transform="translate(92,32)">
-          <circle cx="-16" cy="4" r="9" fill="var(--gold-soft)" opacity=".9"/>
-          <circle cx="0" cy="-6" r="12" fill="var(--maroon)"/>
-          <circle cx="0" cy="-6" r="4" fill="var(--maroon-deep)"/>
-          <circle cx="16" cy="6" r="10" fill="#D98A93" opacity=".92"/>
-          <circle cx="16" cy="6" r="3.5" fill="var(--maroon-deep)"/>
-          <circle cx="4" cy="18" r="8" fill="var(--gold-soft)" opacity=".85"/>
-        </g>
-      </svg>
-    </div></div>
-
-    <div class="fl-piece fl-p2"><div class="fl-piece-inner flip-x">
-      <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 115 Q35 95 50 78 Q65 62 78 48" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-        <ellipse cx="42" cy="90" rx="10" ry="4.5" fill="var(--sage)" transform="rotate(-40 42 90)"/>
-        <ellipse cx="58" cy="72" rx="9" ry="4" fill="var(--sage)" opacity=".85" transform="rotate(-35 58 72)"/>
-        <ellipse cx="70" cy="58" rx="8" ry="3.5" fill="var(--sage)" opacity=".7" transform="rotate(-30 70 58)"/>
-        <g transform="translate(92,32)">
-          <circle cx="-16" cy="4" r="9" fill="var(--gold-soft)" opacity=".9"/>
-          <circle cx="0" cy="-6" r="12" fill="var(--maroon)"/>
-          <circle cx="0" cy="-6" r="4" fill="var(--maroon-deep)"/>
-          <circle cx="16" cy="6" r="10" fill="#D98A93" opacity=".92"/>
-          <circle cx="16" cy="6" r="3.5" fill="var(--maroon-deep)"/>
-          <circle cx="4" cy="18" r="8" fill="var(--gold-soft)" opacity=".85"/>
-        </g>
-      </svg>
-    </div></div>
-
-    <div class="fl-piece fl-p3"><div class="fl-piece-inner flip-y">
-      <svg viewBox="0 0 130 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 155 Q35 130 40 105 Q45 80 55 60" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-        <ellipse cx="30" cy="128" rx="9" ry="4" fill="var(--sage)" transform="rotate(35 30 128)"/>
-        <ellipse cx="24" cy="142" rx="8" ry="3.5" fill="var(--sage)" opacity=".8" transform="rotate(50 24 142)"/>
-        <ellipse cx="40" cy="112" rx="8" ry="3.5" fill="var(--sage)" opacity=".85" transform="rotate(25 40 112)"/>
-        <g transform="translate(50,42)">
-          <circle cx="-20" cy="10" r="10" fill="#D98A93" opacity=".92"/>
-          <circle cx="-20" cy="10" r="3.5" fill="var(--maroon-deep)"/>
-          <circle cx="0" cy="0" r="14" fill="var(--maroon)"/>
-          <circle cx="0" cy="0" r="4.5" fill="var(--maroon-deep)"/>
-          <circle cx="18" cy="12" r="10" fill="var(--gold-soft)" opacity=".92"/>
-          <circle cx="-8" cy="24" r="9" fill="var(--gold-soft)" opacity=".85"/>
-          <circle cx="10" cy="26" r="8" fill="#D98A93" opacity=".8"/>
-          <circle cx="10" cy="26" r="3" fill="var(--maroon-deep)"/>
-        </g>
-      </svg>
-    </div></div>
-
-    <div class="fl-piece fl-p4"><div class="fl-piece-inner flip-xy">
-      <svg viewBox="0 0 130 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 155 Q35 130 40 105 Q45 80 55 60" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-        <ellipse cx="30" cy="128" rx="9" ry="4" fill="var(--sage)" transform="rotate(35 30 128)"/>
-        <ellipse cx="24" cy="142" rx="8" ry="3.5" fill="var(--sage)" opacity=".8" transform="rotate(50 24 142)"/>
-        <ellipse cx="40" cy="112" rx="8" ry="3.5" fill="var(--sage)" opacity=".85" transform="rotate(25 40 112)"/>
-        <g transform="translate(50,42)">
-          <circle cx="-20" cy="10" r="10" fill="#D98A93" opacity=".92"/>
-          <circle cx="-20" cy="10" r="3.5" fill="var(--maroon-deep)"/>
-          <circle cx="0" cy="0" r="14" fill="var(--maroon)"/>
-          <circle cx="0" cy="0" r="4.5" fill="var(--maroon-deep)"/>
-          <circle cx="18" cy="12" r="10" fill="var(--gold-soft)" opacity=".92"/>
-          <circle cx="-8" cy="24" r="9" fill="var(--gold-soft)" opacity=".85"/>
-          <circle cx="10" cy="26" r="8" fill="#D98A93" opacity=".8"/>
-          <circle cx="10" cy="26" r="3" fill="var(--maroon-deep)"/>
-        </g>
-      </svg>
-    </div></div>
-
-    <div class="fl-piece fl-p5"><div class="fl-piece-inner">
-      <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 80 Q28 60 40 42 Q50 28 60 14" stroke="var(--sage)" stroke-width="2.2" fill="none"/>
-        <ellipse cx="28" cy="60" rx="8" ry="3.6" fill="var(--sage)" transform="rotate(-40 28 60)"/>
-        <ellipse cx="42" cy="42" rx="7" ry="3.2" fill="var(--sage)" opacity=".85" transform="rotate(-35 42 42)"/>
-        <circle cx="58" cy="18" r="8" fill="var(--maroon)" opacity=".92"/>
-        <circle cx="58" cy="18" r="3" fill="var(--maroon-deep)"/>
-      </svg>
-    </div></div>
-
-    <div class="fl-piece fl-p6"><div class="fl-piece-inner flip-x">
-      <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 80 Q28 60 40 42 Q50 28 60 14" stroke="var(--sage)" stroke-width="2.2" fill="none"/>
-        <ellipse cx="28" cy="60" rx="8" ry="3.6" fill="var(--sage)" transform="rotate(-40 28 60)"/>
-        <ellipse cx="42" cy="42" rx="7" ry="3.2" fill="var(--sage)" opacity=".85" transform="rotate(-35 42 42)"/>
-        <circle cx="58" cy="18" r="8" fill="var(--maroon)" opacity=".92"/>
-        <circle cx="58" cy="18" r="3" fill="var(--maroon-deep)"/>
-      </svg>
-    </div></div>
-
-    <div class="fl-piece fl-p7"><div class="fl-piece-inner flip-y">
-      <svg viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50 88 Q48 62 46 44 Q44 26 40 10" stroke="var(--sage)" stroke-width="2.2" fill="none"/>
-        <ellipse cx="47" cy="60" rx="8" ry="3.6" fill="var(--sage)" transform="rotate(20 47 60)"/>
-        <ellipse cx="42" cy="36" rx="7" ry="3.2" fill="var(--sage)" opacity=".85" transform="rotate(15 42 36)"/>
-        <circle cx="38" cy="14" r="8" fill="#D98A93" opacity=".9"/>
-        <circle cx="38" cy="14" r="3" fill="var(--maroon-deep)"/>
-      </svg>
-    </div></div>
-
-    <div class="fl-piece fl-p8"><div class="fl-piece-inner">
-      <svg viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50 6 Q48 32 46 50 Q44 68 40 84" stroke="var(--sage)" stroke-width="2.2" fill="none"/>
-        <ellipse cx="47" cy="30" rx="8" ry="3.6" fill="var(--sage)" transform="rotate(-20 47 30)"/>
-        <ellipse cx="42" cy="54" rx="7" ry="3.2" fill="var(--sage)" opacity=".85" transform="rotate(-15 42 54)"/>
-        <circle cx="38" cy="76" r="8" fill="var(--gold-soft)" opacity=".92"/>
-        <circle cx="38" cy="76" r="3" fill="var(--maroon-deep)"/>
-      </svg>
-    </div></div>
+    <div class="fl-piece fl-p1"><img src="/photos/florals/floral-tl.png" alt=""></div>
+    <div class="fl-piece fl-p2"><img src="/photos/florals/floral-tr.png" alt=""></div>
+    <div class="fl-piece fl-p3"><img src="/photos/florals/floral-bl.png" alt=""></div>
+    <div class="fl-piece fl-p4"><img src="/photos/florals/floral-br.png" alt=""></div>
 
     <div class="fl-center">
       <span class="fl-eyebrow">Welcome to Our Wedding</span>
       <h1 class="fl-names">Dimas &amp; Nia</h1>
+      <p class="fl-quote">
+        "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan agar kamu hidup tenang bersamanya. Dia jadikan pula di antaramu rasa cinta dan kasih sayang."
+        <span class="fl-quote-src">QS. Ar-Rum : 21</span>
+      </p>
     </div>
   </div>
 
@@ -886,13 +741,9 @@
 
   <!-- ============ HERO ============ -->
   <section id="hero" class="reveal">
-    <span class="eyebrow">Welcome to Our Wedding</span>
-    <h1>Dimas <span class="amp">&amp;</span> Nia</h1>
-    <p class="quote">
-      "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan agar kamu hidup tenang bersamanya. Dia jadikan pula di antaramu rasa cinta dan kasih sayang."
-      <span class="quote-src">QS. Ar-Rum : 21</span>
-    </p>
-    <div class="divider" style="margin-top:30px;"></div>
+    <div class="hero-art">
+      <img src="/photos/hero-welcome.png" alt="Welcome to Our Wedding — Dimas &amp; Nia" loading="eager" decoding="async">
+    </div>
   </section>
 
   <!-- ============ COUPLE ============ -->
@@ -1099,9 +950,8 @@
   // Jika ?to= berupa kode tamu (mis. 001, 002), ambil nama dari /api/guest/:code.
   // Jika bukan berupa kode (mis. ?to=Budi+Santoso langsung), tampilkan apa adanya (mode tanpa database).
 
-  // ---- Floral bloom transition: muncul SETELAH tombol "Buka Undangan" ditekan ----
-  // Bunga & daun masuk dari sisi kiri/kanan/bawah dulu, lalu dari atas, makin lama makin
-  // banyak sampai membentuk bingkai penuh, lalu memudar menampilkan isi undangan.
+  // ---- Welcome intro: bunga foto asli muncul satu-persatu di 4 pojok, lalu teks "Welcome to
+  // Our Wedding / Dimas & Nia" reveal di tengah, baru overlay memudar menampilkan halaman web ----
   function playFloralBloom(){
     const overlay = document.getElementById('floralIntro');
     if (!overlay) return;
@@ -1132,7 +982,7 @@
           const dx = (rDst.left + rDst.width/2) - (rSrc.left + rSrc.width/2);
           const dy = (rDst.top + rDst.height/2) - (rSrc.top + rSrc.height/2);
           const scale = rDst.width / rSrc.width;
-          src.style.animation = 'none'; // lepas dari animasi bloom, serahkan ke transition di bawah
+          src.style.transitionDelay = '0s'; // lepas dari delay reveal awal, serahkan ke transition di bawah
           src.style.transformOrigin = 'center center';
           src.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')';
           src.style.opacity = '.85';
@@ -1153,7 +1003,7 @@
           overlay.setAttribute('aria-hidden', 'true');
         }, 1080);
       }, 1000);
-    }, 2000);
+    }, 3800);
   }
 
   const params = new URLSearchParams(location.search);
