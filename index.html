@@ -539,57 +539,77 @@
   }
   .copy-btn.copied{ background:var(--sage); border-color:var(--sage); color:#fff;}
 
-  /* RSVP / WISHES — full-bleed photo background, like a keepsake portrait card */
+  /* RSVP / WISHES — professional card layout on brand maroon background */
   #rsvp{
     position:relative;
     color:var(--cream);
-    isolation:isolate;
-    padding:100px 28px;
-  }
-  #rsvp::before{
-    content:"";
-    position:absolute; inset:0;
+    padding:90px 28px 100px;
     background:
-      linear-gradient(180deg, rgba(30,14,14,.35) 0%, rgba(30,14,14,.55) 55%, rgba(20,10,10,.82) 100%),
-      url('/photos/rsvp.jpg') center 25%/cover no-repeat;
-    z-index:-1;
+      radial-gradient(circle at 18% 12%, rgba(201,161,74,.14), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(201,161,74,.08), transparent 42%),
+      var(--maroon-deep);
   }
-  #rsvp .eyebrow{ color:var(--gold-soft); opacity:1; }
-  #rsvp h2{ text-align:center; color:var(--cream); font-size:1.9rem; margin:8px 0 8px;}
-  #rsvp p.lead{ text-align:center; font-size:.85rem; opacity:.88; max-width:320px; margin:0 auto 30px; line-height:1.7; color:var(--cream);}
+  .rsvp-photo-frame{
+    width:150px; height:150px; margin:0 auto 22px; position:relative; z-index:1;
+    border-radius:50%; padding:6px;
+    background:linear-gradient(160deg, var(--gold-soft), var(--gold) 60%, var(--gold-soft));
+    box-shadow:0 14px 30px -10px rgba(0,0,0,.55), 0 4px 10px rgba(0,0,0,.35);
+  }
+  .rsvp-photo-frame img{
+    width:100%; height:100%; object-fit:cover; border-radius:50%;
+    display:block; border:3px solid var(--maroon-deep);
+  }
+  #rsvp .eyebrow{ color:var(--gold-soft); opacity:1; position:relative; z-index:1; }
+  #rsvp h2{ text-align:center; color:var(--cream); font-size:1.9rem; margin:8px 0 8px; position:relative; z-index:1;}
+  #rsvp p.lead{ text-align:center; font-size:.85rem; opacity:.92; max-width:320px; margin:0 auto 30px; line-height:1.7; color:var(--cream); position:relative; z-index:1;}
+
+  /* elevated 3D card holding the form */
+  .rsvp-card{
+    position:relative; z-index:1;
+    background:linear-gradient(180deg, var(--cream) 0%, #F5EBD8 100%);
+    border-radius:16px;
+    padding:30px 24px 26px;
+    box-shadow:
+      0 24px 48px -18px rgba(0,0,0,.5),
+      0 2px 0 rgba(255,255,255,.6) inset,
+      0 -1px 0 rgba(0,0,0,.06) inset;
+    border:1px solid rgba(201,161,74,.25);
+  }
   form#wishForm{ display:flex; flex-direction:column; gap:16px; }
-  .field label{ display:block; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:7px;}
+  .field label{ display:block; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--maroon); margin-bottom:7px; font-weight:600;}
   .field input, .field select, .field textarea{
-    width:100%; border:1px solid rgba(251,245,234,.55); background:rgba(251,245,234,.08);
-    backdrop-filter:blur(2px);
-    border-radius:6px; padding:13px 14px; font-family:'Jost',sans-serif; font-size:.9rem; color:var(--cream);
+    width:100%; border:1px solid rgba(110,31,43,.22); background:#fff;
+    box-shadow:inset 0 2px 4px rgba(76,20,29,.06);
+    border-radius:8px; padding:13px 14px; font-family:'Jost',sans-serif; font-size:.9rem; color:var(--ink);
   }
-  .field input::placeholder, .field textarea::placeholder{ color:rgba(251,245,234,.55); }
-  .field select{ color-scheme:dark; }
+  .field input::placeholder, .field textarea::placeholder{ color:rgba(60,40,40,.4); }
+  .field select{ color-scheme:light; }
   .field select option{ color:var(--ink); }
   .field input:focus, .field select:focus, .field textarea:focus{
-    outline:none; border-color:var(--gold-soft); background:rgba(251,245,234,.14);
+    outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,161,74,.2);
   }
   .field textarea{ min-height:90px; resize:vertical; }
   .submit-btn{
-    background:var(--gold); color:var(--maroon-deep); border:none; border-radius:4px;
+    background:linear-gradient(180deg, var(--gold-soft), var(--gold));
+    color:var(--maroon-deep); border:none; border-radius:8px;
     padding:15px; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase;
-    font-weight:600; cursor:pointer; transition:.3s;
+    font-weight:700; cursor:pointer; transition:.3s;
+    box-shadow:0 10px 20px -8px rgba(158,122,42,.6);
   }
-  .submit-btn:hover{ background:var(--gold-soft); }
+  .submit-btn:hover{ background:var(--gold-soft); transform:translateY(-1px); }
   .submit-btn:disabled{ opacity:.5; cursor:default; }
-  #wishStatus{ font-size:.78rem; text-align:center; min-height:1.2em; color:var(--cream); }
-  #wishStatus.ok{ color:var(--gold-soft); }
-  #wishStatus.err{ color:#e6a3a3; }
+  #wishStatus{ font-size:.78rem; text-align:center; min-height:1.2em; color:var(--maroon); }
+  #wishStatus.ok{ color:var(--sage,#5a7052); }
+  #wishStatus.err{ color:#a33; }
 
-  .wish-list{ margin-top:34px; display:flex; flex-direction:column; gap:14px; max-height:380px; overflow-y:auto; padding-right:4px;}
+  .wish-list{ margin-top:34px; display:flex; flex-direction:column; gap:14px; max-height:380px; overflow-y:auto; padding-right:4px; position:relative; z-index:1;}
   .wish-item{ border-bottom:1px solid rgba(251,245,234,.25); padding-bottom:12px; }
   .wish-item .w-name{ font-family:'Playfair Display',serif; font-size:.95rem; color:var(--cream); display:flex; align-items:center; gap:8px;}
   .w-tag{ font-size:.6rem; letter-spacing:.06em; text-transform:uppercase; padding:2px 8px; border-radius:999px; }
   .w-tag.hadir{ background:rgba(227,205,147,.22); color:var(--gold-soft); }
   .w-tag.tidak{ background:rgba(251,245,234,.12); color:var(--cream); }
-  .wish-item p{ font-size:.83rem; line-height:1.6; margin:6px 0 0; opacity:.85; color:var(--cream);}
-  .wish-empty{ text-align:center; font-size:.8rem; opacity:.7; padding:20px 0; color:var(--cream);}
+  .wish-item p{ font-size:.83rem; line-height:1.6; margin:6px 0 0; opacity:.9; color:var(--cream);}
+  .wish-empty{ text-align:center; font-size:.8rem; opacity:.75; padding:20px 0; color:var(--cream);}
 
   /* CLOSING */
   #closing{
@@ -1008,9 +1028,13 @@
 
   <!-- ============ RSVP / WISHES ============ -->
   <section id="rsvp" class="reveal">
+    <div class="rsvp-photo-frame">
+      <img src="/photos/rsvp.jpg" alt="Dimas &amp; Nia" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none'">
+    </div>
     <span class="eyebrow" style="text-align:center; display:block;">RSVP</span>
     <h2>Konfirmasi &amp; Doa Restu</h2>
     <p class="lead">Mohon konfirmasi kehadiran serta titipkan doa restu untuk kami berdua.</p>
+    <div class="rsvp-card">
     <form id="wishForm">
       <div class="field">
         <label for="wName">Nama</label>
@@ -1035,10 +1059,12 @@
       <button class="submit-btn" type="submit" id="wSubmit">Kirim</button>
       <div id="wishStatus"></div>
     </form>
+    </div>
 
     <div class="wish-list" id="wishList">
       <div class="wish-empty">Memuat ucapan...</div>
     </div>
+
   </section>
 
   <!-- ============ CLOSING ============ -->
@@ -1272,6 +1298,18 @@
     entries.forEach(e=>{ if (e.isIntersecting) e.target.classList.add('show'); });
   }, { threshold: 0.15 });
   revealEls.forEach(el=>io.observe(el));
+  // Safety net: force-show any reveal section that's already near/in view but wasn't caught in time
+  // (covers hash-jump loads, slow devices, or observers set up after first paint).
+  function forceShowIfNear(){
+    revealEls.forEach(el=>{
+      if (el.classList.contains('show')) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 1.15 && r.bottom > -200) el.classList.add('show');
+    });
+  }
+  window.addEventListener('load', forceShowIfNear);
+  setTimeout(forceShowIfNear, 1200);
+  setTimeout(()=> revealEls.forEach(el=>el.classList.add('show')), 4000); // absolute fallback
 
   // ---- FLOW: continuous scroll-driven parallax/fade per section (ppt-slide feel) ----
   (function(){
