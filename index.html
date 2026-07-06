@@ -101,7 +101,7 @@
     position:fixed; inset:0; z-index:50;
     background:
       linear-gradient(180deg, rgba(20,10,10,.38) 0%, rgba(20,10,10,.12) 32%, rgba(20,10,10,.20) 68%, rgba(15,7,7,.55) 100%),
-      url('/photos/coverdepan.jpeg') center 30%/cover no-repeat,
+      url('/photos/coverdepan.jpeg') center center/cover no-repeat,
       var(--cream);
     color:var(--cream);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -300,17 +300,28 @@
   #hero .quote{ margin-top:26px; font-size:.92rem; line-height:1.8; color:var(--ink); opacity:.85; font-style:italic; max-width:340px; margin-inline:auto;}
   #hero .quote-src{ display:block; margin-top:8px; font-style:normal; font-size:.72rem; letter-spacing:.1em; color:var(--maroon); text-transform:uppercase;}
   #hero{ padding:0; }
-  #hero .hero-art{ width:100%; display:block; line-height:0; }
-  #hero .hero-art img{ width:100%; height:auto; display:block; }
+  #hero .hero-art{ width:100%; display:block; line-height:0; overflow:hidden; }
+  #hero .hero-art img{ width:100%; height:auto; display:block; transform:scale(1.55); transform-origin:center 38%; }
+  @media (min-width:700px){
+    #hero .hero-art img{ transform:scale(1.15); transform-origin:center 40%; }
+  }
+  @media (min-width:1100px){
+    #hero .hero-art img{ transform:scale(1); transform-origin:center; }
+  }
 
   /* COUPLE */
   #couple{
     background:
       radial-gradient(circle at 20% 10%, rgba(201,161,74,0.14), transparent 40%),
       radial-gradient(circle at 85% 85%, rgba(110,31,43,0.08), transparent 40%),
-      radial-gradient(rgba(110,31,43,0.10) 1px, transparent 1px);
-    background-size: auto, auto, 16px 16px;
-    background-position: 0 0, 0 0, 0 0;
+      radial-gradient(rgba(110,31,43,0.10) 1px, transparent 1px),
+      url('/photos/bg-window2.jpg') left center/auto 100% no-repeat,
+      var(--cream-deep);
+    background-size: auto, auto, 16px 16px, 220px 100%, auto;
+    background-position: 0 0, 0 0, 0 0, left center, 0 0;
+  }
+  @media (min-width:900px){
+    #couple{ background-size: auto, auto, 16px 16px, 340px 100%, auto; }
   }
   .couple-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; }
   .couple-card{
