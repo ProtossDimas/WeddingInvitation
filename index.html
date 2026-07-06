@@ -463,39 +463,54 @@
     font-size:.86rem; color:var(--maroon); opacity:.75; margin:0 0 26px; padding:0 30px; line-height:1.6;
   }
   .gallery-grid{
-    display:grid; grid-template-columns:repeat(2, 1fr); gap:18px 16px;
-    padding:10px 24px 8px; width:100%; max-width:100%;
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:22px 14px;
+    padding:14px 16px 12px; width:100%; max-width:100%;
+    perspective:1200px;
   }
   .g-item{
     width:100%; aspect-ratio:3/4; height:auto;
-    background:var(--cream);
-    padding:8px 8px 20px;
-    border-radius:6px; overflow:hidden;
+    background:#fff;
+    padding:9px 9px 24px;
+    border-radius:3px; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
     color:var(--maroon); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
     cursor:pointer; position:relative;
     box-shadow:
-      0 2px 3px rgba(76,20,29,0.15),
-      0 10px 18px -10px rgba(76,20,29,0.4);
-    transition:box-shadow .3s var(--ease);
+      0 1px 1px rgba(76,20,29,.1),
+      0 14px 22px -12px rgba(43,20,20,.5),
+      0 4px 8px -4px rgba(43,20,20,.3);
+    transform:rotate(var(--tilt,0deg));
+    transition:transform .45s var(--ease), box-shadow .45s var(--ease);
+    transform-style:preserve-3d;
+  }
+  .gallery-grid .g-item:nth-child(6n+1){ --tilt:-2.4deg; }
+  .gallery-grid .g-item:nth-child(6n+2){ --tilt:1.8deg; }
+  .gallery-grid .g-item:nth-child(6n+3){ --tilt:-1.2deg; }
+  .gallery-grid .g-item:nth-child(6n+4){ --tilt:2.2deg; }
+  .gallery-grid .g-item:nth-child(6n+5){ --tilt:-1.8deg; }
+  .gallery-grid .g-item:nth-child(6n+6){ --tilt:1.3deg; }
+  .g-item:hover{
+    transform:rotate(0deg) translateY(-6px) scale(1.035);
+    box-shadow:
+      0 2px 2px rgba(76,20,29,.12),
+      0 26px 34px -16px rgba(43,20,20,.55),
+      0 8px 14px -6px rgba(43,20,20,.35);
+    z-index:4;
   }
   .g-item::before{
-    content:""; position:absolute; inset:0; border-radius:6px;
-    background:linear-gradient(160deg, rgba(0,0,0,0) 55%, rgba(43,26,26,.18) 100%);
+    content:""; position:absolute; inset:0; border-radius:3px;
+    background:linear-gradient(160deg, rgba(0,0,0,0) 60%, rgba(43,26,26,.12) 100%);
     pointer-events:none; z-index:2;
   }
-  .g-item:active{
-    box-shadow:
-      0 4px 6px rgba(76,20,29,0.2),
-      0 16px 24px -12px rgba(76,20,29,0.45);
-  }
-  .g-item.g-tall{ aspect-ratio:3/4.6; }
-  .g-item.g-wide{ aspect-ratio:4/3; }
-  .g-item img{ width:100%; height:100%; object-fit:cover; display:block; border-radius:2px; position:relative; z-index:1;}
-  .g-item video{ width:100%; height:100%; object-fit:cover; display:block; border-radius:2px; position:relative; z-index:1;}
+  .g-item:active{ transform:rotate(0deg) scale(.98); }
+  .g-item.g-tall{ aspect-ratio:3/4; }
+  .g-item.g-wide{ aspect-ratio:3/4; }
+  .g-item .g-photo-wrap{ width:100%; height:100%; position:relative; overflow:hidden; background:var(--cream); z-index:1; }
+  .g-item img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; background:var(--cream); }
+  .g-item video{ width:100%; height:100%; object-fit:contain; display:block; background:var(--cream); }
   .g-item .play-badge{
-    position:absolute; top:8px; left:8px; right:8px; bottom:20px; display:flex; align-items:center; justify-content:center;
-    background:rgba(43,26,29,0.18); z-index:2; border-radius:2px;
+    position:absolute; top:9px; left:9px; right:9px; bottom:24px; display:flex; align-items:center; justify-content:center;
+    background:rgba(43,26,29,0.18); z-index:2;
   }
   .g-item .play-badge svg{ width:34px; height:34px; fill:rgba(251,245,234,0.92); filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
 
@@ -1420,6 +1435,8 @@
     'foto10.JPG',
     'foto11.JPG',
     'foto12.JPG',
+    'foto13.jpg',
+    'foto14.jpg',
     // tambahkan nama file lain di sini, satu per baris, sesuai urutan tampil yang diinginkan
   ];
   const GALLERY_VIDEO_EXTS = ['mp4', 'webm', 'mov'];
@@ -1453,8 +1470,7 @@
 
   function buildGalleryItem(item, index){
     const div = document.createElement('div');
-    const shape = index % 4 === 0 ? ' g-tall' : (index % 4 === 2 ? ' g-wide' : '');
-    div.className = 'g-item' + shape;
+    div.className = 'g-item';
     if (item.type === 'video'){
       div.innerHTML = `<video src="${item.url}" muted playsinline preload="metadata"></video><div class="play-badge"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
     } else {
