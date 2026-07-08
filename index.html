@@ -251,7 +251,7 @@
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   /* ---------- sections ---------- */
-  section{ position:relative; padding:78px 28px; overflow:hidden; scroll-snap-align:start; scroll-snap-stop:normal; will-change:transform,opacity; transform:translateZ(0); }
+  section{ position:relative; padding:12px 24px; overflow:hidden; scroll-snap-align:start; scroll-snap-stop:normal; will-change:transform,opacity; transform:translateZ(0); }
 
   /* ---------- hiasan bunga tipis di tiap pojok section, biar halaman nggak polos ---------- */
   section:not(#hero)::before,
@@ -549,7 +549,7 @@
   #rsvp{
     position:relative;
     color:var(--cream);
-    padding:90px 28px 100px;
+    padding:12px 28px 40px;
     background:
       radial-gradient(circle at 18% 12%, rgba(201,161,74,.14), transparent 45%),
       radial-gradient(circle at 85% 90%, rgba(201,161,74,.08), transparent 42%),
@@ -619,7 +619,7 @@
 
   /* CLOSING */
   #closing{
-    text-align:center; color:var(--cream); padding:90px 28px;
+    text-align:center; color:var(--cream); padding:12px 28px;
     background:
       radial-gradient(circle at 25% 20%, rgba(201,161,74,0.15), transparent 42%),
       radial-gradient(circle at 80% 85%, rgba(201,161,74,0.08), transparent 38%),
@@ -1153,10 +1153,8 @@
         const absD = Math.abs(d);
         const scale = 1 - Math.min(absD, 1) * 0.06;
         const translate = d * 34;
-        const opacity = 1 - Math.min(absD, 1) * 0.55;
 
         sec.style.transform = `translateY(${translate}px) scale(${scale})`;
-        sec.style.opacity = opacity.toFixed(3);
       });
     }
 
