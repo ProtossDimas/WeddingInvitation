@@ -1019,20 +1019,31 @@
     }
   }
 
+  // Preferensi mute disimpan per-undangan (localStorage), supaya kalau tamu
+  // sengaja mematikan musik lalu reload/scroll ulang, musik tidak otomatis nyala lagi.
+  const MUSIC_PREF_KEY = 'musik_muted_' + (window.location.pathname.split('/').filter(Boolean)[0] || 'default');
+  function isMusicMutedByUser(){
+    try { return localStorage.getItem(MUSIC_PREF_KEY) === '1'; } catch(e){ return false; }
+  }
+  function setMusicMutedByUser(muted){
+    try { localStorage.setItem(MUSIC_PREF_KEY, muted ? '1' : '0'); } catch(e){}
+  }
+
   async function toggleMusic(){
-    if (!music.paused){ music.pause(); return; }
-    await playMusic();
+    if (!music.paused){ music.pause(); setMusicMutedByUser(true); return; }
+    const ok = await playMusic();
+    if (ok) setMusicMutedByUser(false);
   }
   musicBtn.addEventListener('click', toggleMusic);
   loadMusic();
 
-  // Coba autoplay langsung saat halaman siap (berhasil di sebagian browser/mobile app webview)
-  playMusic();
+  // Coba autoplay langsung saat halaman siap, KECUALI tamu sebelumnya sudah memilih mute manual
+  if (!isMusicMutedByUser()) playMusic();
 
   // Fallback: browser modern butuh "gesture" pengguna sebelum audio boleh play,
   // jadi begitu ada sentuhan/klik pertama di mana saja, musik langsung dicoba jalan.
   function tryAutoplayOnFirstGesture(){
-    if (music.paused) playMusic();
+    if (music.paused && !isMusicMutedByUser()) playMusic();
     document.removeEventListener('click', tryAutoplayOnFirstGesture);
     document.removeEventListener('touchstart', tryAutoplayOnFirstGesture);
   }
@@ -1050,7 +1061,7 @@
     } else {
       if (musicWasPlayingBeforeHidden){
         musicWasPlayingBeforeHidden = false;
-        playMusic();
+        if (!isMusicMutedByUser()) playMusic();
       }
     }
   });
@@ -1130,18 +1141,27 @@
       if (r.top < window.innerHeight * 1.15 && r.bottom > -200) el.classList.add('show');
     });
   }
-  window.addEventListener('load', forceShowIfNear);
-  setTimeout(forceShowIfNear, 1200);
-  setTimeout(()=> revealEls.forEach(el=>el.classList.add('show')), 4000); // absolute fallback
+  window.addEventListener('load', forceShowIfNear, { once:true });
+  setTimeout(forceShowIfNear, 1200); // fallback tunggal, cukup sekali (baris 4000ms lama dihapus - redundan)
+
+  // ---- Utility: debounce (dipakai untuk resize, BUKAN untuk scroll) ----
+  function debounce(fn, wait){
+    let t;
+    return function(...args){
+      clearTimeout(t);
+      t = setTimeout(()=> fn.apply(this, args), wait);
+    };
+  }
 
   // ---- FLOW: continuous scroll-driven parallax/fade per section (ppt-slide feel) ----
   (function(){
     const flowSections = Array.from(document.querySelectorAll('section'));
     let ticking = false;
+    let cachedVH = window.innerHeight; // cache innerHeight, dihitung ulang hanya saat resize
 
     function update(){
       ticking = false;
-      const vh = window.innerHeight;
+      const vh = cachedVH;
       const center = vh / 2;
 
       flowSections.forEach(sec => {
@@ -1165,8 +1185,13 @@
       }
     }
 
+    function onResize(){
+      cachedVH = window.innerHeight; // update cache sekali per resize, bukan tiap scroll
+      onScroll();
+    }
+
     window.addEventListener('scroll', onScroll, { passive:true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', debounce(onResize, 150), { passive:true }); // resize di-debounce 150ms
     update();
   })();
 
