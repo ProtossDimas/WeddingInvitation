@@ -445,26 +445,19 @@
   .video-play-btn:hover{ transform:scale(1.08); }
 
   /* LIVE STREAMING */
-  #livestream{
+  #livestream-photobooth{
     text-align:center;
     position:relative;
     background:
-      radial-gradient(circle at 85% 15%, rgba(201,161,74,0.10), transparent 40%),
+      radial-gradient(circle at 85% 12%, rgba(201,161,74,0.10), transparent 40%),
+      radial-gradient(circle at 15% 88%, rgba(110,31,43,0.08), transparent 40%),
       linear-gradient(180deg, rgba(250,244,232,.55) 0%, rgba(250,244,232,.7) 100%),
       url('/photos/bg-livestream.jpg') center center/cover no-repeat,
       var(--cream-deep);
   }
-  #photobooth{
-    text-align:center;
-    position:relative;
-    background:
-      radial-gradient(circle at 15% 85%, rgba(110,31,43,0.08), transparent 40%),
-      linear-gradient(180deg, rgba(250,244,232,.55) 0%, rgba(250,244,232,.7) 100%),
-      url('/photos/bg-photobooth.jpg') center center/cover no-repeat,
-      var(--cream-deep);
-  }
-  #livestream h2, #photobooth h2{ color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 14px;}
-  #livestream p.lead, #photobooth p.lead{ font-size:.86rem; opacity:.8; max-width:320px; margin:0 auto 26px; line-height:1.7;}
+  #livestream-photobooth h2{ color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 14px;}
+  #livestream-photobooth p.lead{ font-size:.86rem; opacity:.8; max-width:320px; margin:0 auto 26px; line-height:1.7;}
+  .lp-block + .lp-block{ margin-top:34px; padding-top:34px; border-top:1px solid var(--gold-soft); }
   .info-card{
     background:var(--cream); border:1px solid var(--gold-soft); border-radius:18px;
     padding:22px; max-width:320px; margin:0 auto 14px;
@@ -841,29 +834,29 @@
     </div>
   </section>
 
-  <!-- ============ LIVE STREAMING ============ -->
-  <section id="livestream" class="reveal">
-    <h2>Live Streaming</h2>
-    <p class="lead">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
-    <div class="info-card">
-      <div>
-        <div class="info-label"><span class="live-dot"></span>Live di Instagram</div>
-        <div class="info-value">@ssmadnia14</div>
+  <!-- ============ LIVE STREAMING & PHOTOBOOTH ============ -->
+  <section id="livestream-photobooth" class="reveal">
+    <div class="lp-block">
+      <h2>Live Streaming</h2>
+      <p class="lead">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
+      <div class="info-card">
+        <div>
+          <div class="info-label"><span class="live-dot"></span>Live di Instagram</div>
+          <div class="info-value">@ssmadnia14</div>
+        </div>
+        <a class="btn-pill" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">Buka</a>
       </div>
-      <a class="btn-pill" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">Buka</a>
     </div>
-  </section>
-
-  <!-- ============ PHOTOBOOTH ONLINE ============ -->
-  <section id="photobooth" class="reveal">
-    <h2>Photobooth Online</h2>
-    <p class="lead">Abadikan momen Anda dan bagikan langsung dari ponsel, kapan saja selama acara berlangsung.</p>
-    <div class="info-card">
-      <div>
-        <div class="info-label">📸 Photobooth</div>
-        <div class="info-value">Ambil Foto</div>
+    <div class="lp-block">
+      <h2>Photobooth Online</h2>
+      <p class="lead">Abadikan momen Anda dan bagikan langsung dari ponsel, kapan saja selama acara berlangsung.</p>
+      <div class="info-card">
+        <div>
+          <div class="info-label">📸 Photobooth</div>
+          <div class="info-value">Ambil Foto</div>
+        </div>
+        <a class="btn-pill" href="https://photobooth-7tr.pages.dev/" target="_blank" rel="noopener">Buka</a>
       </div>
-      <a class="btn-pill" href="https://photobooth-7tr.pages.dev/" target="_blank" rel="noopener">Buka</a>
     </div>
   </section>
 
