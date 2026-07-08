@@ -454,53 +454,37 @@
     font-size:.86rem; color:var(--maroon); opacity:.75; margin:0 0 26px; padding:0 30px; line-height:1.6;
   }
   .gallery-grid{
-    display:grid; grid-template-columns:repeat(2, 1fr); gap:22px 14px;
+    column-count:2; column-gap:12px;
     padding:14px 16px 12px; width:100%; max-width:100%;
-    perspective:1200px;
   }
   .g-item{
-    width:100%; aspect-ratio:3/4; height:auto;
-    background:#fff;
-    padding:9px 9px 24px;
-    border-radius:3px; overflow:hidden;
-    display:flex; align-items:center; justify-content:center;
+    width:100%; break-inside:avoid; margin-bottom:12px;
+    background:var(--cream);
+    border-radius:14px; overflow:hidden;
+    display:block;
     color:var(--maroon); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
     cursor:pointer; position:relative;
     box-shadow:
       0 1px 1px rgba(76,20,29,.1),
-      0 14px 22px -12px rgba(43,20,20,.5),
-      0 4px 8px -4px rgba(43,20,20,.3);
-    transform:rotate(var(--tilt,0deg));
-    transition:transform .45s var(--ease), box-shadow .45s var(--ease);
-    transform-style:preserve-3d;
+      0 10px 18px -12px rgba(43,20,20,.45),
+      0 3px 6px -3px rgba(43,20,20,.28);
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease);
   }
-  .gallery-grid .g-item:nth-child(6n+1){ --tilt:-2.4deg; }
-  .gallery-grid .g-item:nth-child(6n+2){ --tilt:1.8deg; }
-  .gallery-grid .g-item:nth-child(6n+3){ --tilt:-1.2deg; }
-  .gallery-grid .g-item:nth-child(6n+4){ --tilt:2.2deg; }
-  .gallery-grid .g-item:nth-child(6n+5){ --tilt:-1.8deg; }
-  .gallery-grid .g-item:nth-child(6n+6){ --tilt:1.3deg; }
   .g-item:hover{
-    transform:rotate(0deg) translateY(-6px) scale(1.035);
+    transform:translateY(-4px);
     box-shadow:
       0 2px 2px rgba(76,20,29,.12),
-      0 26px 34px -16px rgba(43,20,20,.55),
-      0 8px 14px -6px rgba(43,20,20,.35);
+      0 20px 28px -14px rgba(43,20,20,.5),
+      0 6px 12px -6px rgba(43,20,20,.32);
     z-index:4;
   }
-  .g-item::before{
-    content:""; position:absolute; inset:0; border-radius:3px;
-    background:linear-gradient(160deg, rgba(0,0,0,0) 60%, rgba(43,26,26,.12) 100%);
-    pointer-events:none; z-index:2;
-  }
-  .g-item:active{ transform:rotate(0deg) scale(.98); }
-  .g-item.g-tall{ aspect-ratio:3/4; }
-  .g-item.g-wide{ aspect-ratio:3/4; }
+  .g-item:active{ transform:scale(.98); }
+  .g-item.g-tall, .g-item.g-wide{ aspect-ratio:auto; }
   .g-item .g-photo-wrap{ width:100%; height:100%; position:relative; overflow:hidden; background:var(--cream); z-index:1; }
-  .g-item img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; background:var(--cream); }
-  .g-item video{ width:100%; height:100%; object-fit:contain; display:block; background:var(--cream); }
+  .g-item img{ width:100%; height:auto; object-fit:cover; object-position:center; display:block; background:var(--cream); }
+  .g-item video{ width:100%; height:auto; object-fit:cover; display:block; background:var(--cream); }
   .g-item .play-badge{
-    position:absolute; top:9px; left:9px; right:9px; bottom:24px; display:flex; align-items:center; justify-content:center;
+    position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center;
     background:rgba(43,26,29,0.18); z-index:2;
   }
   .g-item .play-badge svg{ width:34px; height:34px; fill:rgba(251,245,234,0.92); filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
@@ -638,7 +622,7 @@
     #hero .quote{ max-width:460px; font-size:1rem; }
     .event-cards{ flex-direction:row; }
     .event-card{ flex:1; }
-    .gallery-grid{ padding-left:56px; padding-right:56px; grid-template-columns:repeat(3, 1fr); }
+    .gallery-grid{ padding-left:56px; padding-right:56px; column-count:3; }
     #gallery .eyebrow, #gallery h2{ padding-left:56px; padding-right:56px; }
   }
   @media (min-width:1000px){
@@ -646,7 +630,7 @@
     #hero h1{ font-size:3.6rem; }
     .couple-card{ max-width:340px; }
     #gallery .eyebrow, #gallery h2{ padding-left:80px; padding-right:80px; }
-    .gallery-grid{ padding-left:80px; padding-right:80px; grid-template-columns:repeat(4, 1fr); }
+    .gallery-grid{ padding-left:80px; padding-right:80px; column-count:4; }
   }
 </style>
 </head>
@@ -902,6 +886,26 @@
   <footer>&copy; 2026. Dimas &amp; Nia Wedding</footer>
 </div>
 
+<script>
+(function(){
+  // ---- Cegah pinch-zoom (iOS: event.scale, Android/Chrome: touches.length>1) ----
+  document.addEventListener('touchmove', function (event) {
+    if ((event.scale !== undefined && event.scale !== 1) || (event.touches && event.touches.length > 1)) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+
+  // ---- Cegah double-tap zoom ----
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function (event) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+})();
+</script>
 <script>
 (function(){
   // ---- Guest name from ?to= ----
