@@ -180,7 +180,7 @@
   }
 
   /* envelope */
-  .envelope-wrap{ position:relative; width:250px; margin:34px auto 26px; z-index:2; }
+ /* .envelope-wrap{ position:relative; width:250px; margin:34px auto 26px; z-index:2; }
   .envelope{
     position:relative; width:250px; height:164px;
     background:linear-gradient(160deg, var(--maroon) 0%, var(--maroon-deep) 100%);
@@ -206,7 +206,7 @@
   .envelope-flourish{ position:absolute; width:130px; pointer-events:none; }
   .envelope-flourish.fl-tr{ top:-58px; right:-46px; height:130px; }
   .envelope-flourish.fl-bl{ bottom:-78px; left:-46px; height:160px; }
-  .envelope-flourish svg{ width:100%; height:100%; overflow:visible; }
+  .envelope-flourish svg{ width:100%; height:100%; overflow:visible; } */
 
   .cover-to{ margin-top:6px; font-size:.78rem; opacity:.85; letter-spacing:.05em; color:var(--gold-soft); position:relative; z-index:2;}
   .cover-guest{ font-family:'Playfair Display',serif; font-style:italic; font-size:1.1rem; margin-top:4px; color:var(--cream); position:relative; z-index:2;}
@@ -682,55 +682,6 @@
   <!-- ============ COVER ============ -->
   <div id="cover">
     <h1 class="cover-title">The Beginning<br>of Forever</h1>
-
-    <div class="envelope-wrap">
-      <div class="envelope-flourish fl-tr">
-        <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- stems/leaves -->
-          <path d="M15 115 Q35 95 50 78 Q65 62 78 48" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-          <ellipse cx="42" cy="90" rx="10" ry="4.5" fill="var(--sage)" transform="rotate(-40 42 90)"/>
-          <ellipse cx="58" cy="72" rx="9" ry="4" fill="var(--sage)" opacity=".85" transform="rotate(-35 58 72)"/>
-          <ellipse cx="70" cy="58" rx="8" ry="3.5" fill="var(--sage)" opacity=".7" transform="rotate(-30 70 58)"/>
-          <!-- butterfly -->
-          <g transform="translate(28,52) rotate(-18)">
-            <path d="M0 0 C-10 -14 -22 -10 -20 2 C-19 10 -8 8 0 0Z" fill="var(--gold-soft)" opacity=".9"/>
-            <path d="M0 0 C10 -14 22 -10 20 2 C19 10 8 8 0 0Z" fill="var(--gold-soft)" opacity=".9"/>
-            <path d="M0 2 C-8 10 -14 14 -12 20 C-9 24 -3 18 0 10Z" fill="var(--gold-soft)" opacity=".75"/>
-            <path d="M0 2 C8 10 14 14 12 20 C9 24 3 18 0 10Z" fill="var(--gold-soft)" opacity=".75"/>
-            <line x1="0" y1="-2" x2="0" y2="14" stroke="var(--maroon-deep)" stroke-width="1.4"/>
-          </g>
-          <!-- flowers cluster -->
-          <g transform="translate(92,32)">
-            <circle cx="-16" cy="4" r="9" fill="var(--gold-soft)" opacity=".9"/>
-            <circle cx="0" cy="-6" r="12" fill="var(--maroon)"/>
-            <circle cx="0" cy="-6" r="4" fill="var(--maroon-deep)"/>
-            <circle cx="16" cy="6" r="10" fill="#D98A93" opacity=".92"/>
-            <circle cx="16" cy="6" r="3.5" fill="var(--maroon-deep)"/>
-            <circle cx="4" cy="18" r="8" fill="var(--gold-soft)" opacity=".85"/>
-          </g>
-        </svg>
-      </div>
-      <div class="envelope-flourish fl-bl">
-        <svg viewBox="0 0 130 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 155 Q35 130 40 105 Q45 80 55 60" stroke="var(--sage)" stroke-width="2.5" fill="none"/>
-          <ellipse cx="30" cy="128" rx="9" ry="4" fill="var(--sage)" transform="rotate(35 30 128)"/>
-          <ellipse cx="24" cy="142" rx="8" ry="3.5" fill="var(--sage)" opacity=".8" transform="rotate(50 24 142)"/>
-          <ellipse cx="40" cy="112" rx="8" ry="3.5" fill="var(--sage)" opacity=".85" transform="rotate(25 40 112)"/>
-          <g transform="translate(50,42)">
-            <circle cx="-20" cy="10" r="10" fill="#D98A93" opacity=".92"/>
-            <circle cx="-20" cy="10" r="3.5" fill="var(--maroon-deep)"/>
-            <circle cx="0" cy="0" r="14" fill="var(--maroon)"/>
-            <circle cx="0" cy="0" r="4.5" fill="var(--maroon-deep)"/>
-            <circle cx="18" cy="12" r="10" fill="var(--gold-soft)" opacity=".92"/>
-            <circle cx="-8" cy="24" r="9" fill="var(--gold-soft)" opacity=".85"/>
-            <circle cx="10" cy="26" r="8" fill="#D98A93" opacity=".8"/>
-            <circle cx="10" cy="26" r="3" fill="var(--maroon-deep)"/>
-          </g>
-        </svg>
-      </div>
-      <div class="envelope"></div>
-      <div class="envelope-seal">DN</div>
-    </div>
 
     <div class="cover-to">Kepada Yth</div>
     <div class="cover-guest" id="guestName">Tamu Undangan</div>
