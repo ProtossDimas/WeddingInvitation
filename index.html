@@ -270,6 +270,21 @@
   }
   #couple::before, #couple::after{ display:none; }
 
+  /* #hero tidak ikut aturan umum di atas (sudah punya bunga sendiri di pojok ATAS via
+     #cornerOrnTL/TR), tapi pojok BAWAH-nya perlu hiasan bunga sendiri juga supaya tidak kosong. */
+  #hero::before, #hero::after{
+    content:""; position:absolute; width:170px; height:160px;
+    background-repeat:no-repeat; background-size:contain;
+    opacity:.85; pointer-events:none; z-index:2;
+  }
+  #hero::before{ bottom:-14px; left:-20px; background-image:url("/photos/florals/floral-bl.png?v=2"); background-position:bottom left; }
+  #hero::after{ bottom:-18px; right:-22px; width:210px; height:200px; background-image:url("/photos/florals/floral-br.png?v=2"); background-position:bottom right; }
+  #hero > *{ position:relative; z-index:1; }
+  @media (min-width:700px){
+    #hero::before{ width:230px; height:216px; }
+    #hero::after{ width:280px; height:266px; }
+  }
+
   /* Custom background photo/video per section (lihat SECTION_BACKGROUNDS di script) */
   .section-bg{ position:absolute; inset:0; z-index:0; overflow:hidden; }
   .section-bg img, .section-bg video{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -430,19 +445,46 @@
   .video-play-btn:hover{ transform:scale(1.08); }
 
   /* LIVE STREAMING */
-  #livestream{ text-align:center; }
-  .live-card{
-    max-width:340px; margin:20px auto 0; border:1px solid var(--gold-soft); border-radius:18px;
-    padding:28px 22px; background:var(--cream-deep);
+  #livestream{
+    text-align:center;
+    position:relative;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(201,161,74,0.10), transparent 40%),
+      linear-gradient(180deg, rgba(250,244,232,.55) 0%, rgba(250,244,232,.7) 100%),
+      url('/photos/bg-livestream.jpg') center center/cover no-repeat,
+      var(--cream-deep);
   }
-  .live-card .live-dot{
+  #photobooth{
+    text-align:center;
+    position:relative;
+    background:
+      radial-gradient(circle at 15% 85%, rgba(110,31,43,0.08), transparent 40%),
+      linear-gradient(180deg, rgba(250,244,232,.55) 0%, rgba(250,244,232,.7) 100%),
+      url('/photos/bg-photobooth.jpg') center center/cover no-repeat,
+      var(--cream-deep);
+  }
+  #livestream h2, #photobooth h2{ color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 14px;}
+  #livestream p.lead, #photobooth p.lead{ font-size:.86rem; opacity:.8; max-width:320px; margin:0 auto 26px; line-height:1.7;}
+  .info-card{
+    background:var(--cream); border:1px solid var(--gold-soft); border-radius:18px;
+    padding:22px; max-width:320px; margin:0 auto 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    text-align:left;
+  }
+  .info-card .info-label{
+    font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--sage);
+    display:flex; align-items:center; gap:6px; margin-bottom:4px;
+  }
+  .info-card .info-value{ font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--maroon-deep); }
+  .info-card .live-dot{
     display:inline-block; width:8px; height:8px; border-radius:50%;
-    background:var(--maroon); margin-right:6px; animation:live-pulse 1.6s infinite;
+    background:var(--maroon); animation:live-pulse 1.6s infinite;
   }
   @keyframes live-pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
-  .live-card .live-label{
-    font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase;
-    font-size:.72rem; color:var(--maroon-deep); margin-bottom:14px;
+  .info-card .btn-pill{
+    border:1px solid var(--maroon); background:none; color:var(--maroon-deep);
+    border-radius:999px; padding:8px 14px; font-size:.68rem; letter-spacing:.06em;
+    text-transform:uppercase; white-space:nowrap; text-decoration:none; flex-shrink:0;
   }
 
   /* GALLERY — vertical grid, ala polaroid */
@@ -506,9 +548,12 @@
   /* GIFT */
   #gift{
     text-align:center;
+    position:relative;
     background:
-      radial-gradient(circle at 15% 85%, rgba(201,161,74,0.14), transparent 40%),
-      radial-gradient(circle at 90% 10%, rgba(110,31,43,0.08), transparent 38%),
+      radial-gradient(circle at 15% 85%, rgba(201,161,74,0.10), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(110,31,43,0.06), transparent 38%),
+      linear-gradient(180deg, rgba(250,244,232,.55) 0%, rgba(250,244,232,.7) 100%),
+      url('/photos/bg-gift-floral.png') center center/cover no-repeat,
       var(--cream-deep);
   }
   #gift h2{ color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 14px;}
@@ -799,10 +844,26 @@
   <!-- ============ LIVE STREAMING ============ -->
   <section id="livestream" class="reveal">
     <h2>Live Streaming</h2>
-    <p class="gallery-caption">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
-    <div class="live-card">
-      <div class="live-label"><span class="live-dot"></span>Live di Instagram</div>
-      <a class="btn-line" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">@ssmadnia14</a>
+    <p class="lead">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
+    <div class="info-card">
+      <div>
+        <div class="info-label"><span class="live-dot"></span>Live di Instagram</div>
+        <div class="info-value">@ssmadnia14</div>
+      </div>
+      <a class="btn-pill" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">Buka</a>
+    </div>
+  </section>
+
+  <!-- ============ PHOTOBOOTH ONLINE ============ -->
+  <section id="photobooth" class="reveal">
+    <h2>Photobooth Online</h2>
+    <p class="lead">Abadikan momen Anda dan bagikan langsung dari ponsel, kapan saja selama acara berlangsung.</p>
+    <div class="info-card">
+      <div>
+        <div class="info-label">📸 Photobooth</div>
+        <div class="info-value">Ambil Foto</div>
+      </div>
+      <a class="btn-pill" href="https://photobooth-7tr.pages.dev/" target="_blank" rel="noopener">Buka</a>
     </div>
   </section>
 
