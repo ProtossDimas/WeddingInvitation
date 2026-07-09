@@ -173,10 +173,46 @@
   .fl-quote-src{ display:block; margin-top:8px; font-style:normal; font-size:.68rem; letter-spacing:.1em; color:var(--maroon); text-transform:uppercase; }
   @media (min-width:700px){ .fl-names{ font-size:4.2rem; } .fl-quote{ max-width:420px; font-size:.92rem; } }
 
-  .cover-title{
-    font-family:'Italianno',cursive; color:var(--gold-soft);
-    font-size:3rem; line-height:1.05; margin:0 0 34px;
+  /* ---------- WELCOME (The Wedding Of) — section sendiri, muncul setelah cover, sebelum Mempelai ---------- */
+  #welcome{
+    position:relative; min-height:100svh; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    background:
+      linear-gradient(180deg, rgba(20,10,10,.38) 0%, rgba(20,10,10,.12) 32%, rgba(20,10,10,.20) 68%, rgba(15,7,7,.55) 100%),
+      url('/photos/bg-welcome.jpg') center center/cover no-repeat,
+      var(--cream);
+  }
+  #welcome .welcome-inner{
+    text-align:center; padding:32px; position:relative; z-index:2;
+  }
+  #welcome .cover-eyebrow, #welcome .cover-title, #welcome .cover-quote, #welcome .cover-quote-src{
+    text-shadow: 0 2px 16px rgba(0,0,0,.5);
+  }
+  #welcome::before, #welcome::after{ content:none; }
+
+  .cover-eyebrow{
+    font-family:'Jost',sans-serif; letter-spacing:.32em; text-transform:uppercase;
+    font-size:.7rem; color:var(--cream); opacity:.9;
     position:relative; z-index:2;
+  }
+  .cover-title{
+    font-family:'Italianno',cursive; color:var(--cream);
+    font-size:3.2rem; line-height:1.05; margin:12px 0 24px;
+    position:relative; z-index:2;
+  }
+  .cover-title .amp{ font-size:2.5rem; display:block; color:var(--gold-soft); }
+  .cover-quote{
+    font-size:.82rem; line-height:1.75; color:var(--cream); opacity:.92; font-style:italic;
+    max-width:320px; margin:0 auto; position:relative; z-index:2;
+  }
+  .cover-quote-src{
+    display:block; margin-top:8px; font-style:normal; font-size:.7rem;
+    letter-spacing:.1em; color:var(--gold-soft); text-transform:uppercase;
+  }
+  @media (min-width:700px){
+    .cover-title{ font-size:4rem; }
+    .cover-title .amp{ font-size:3.1rem; }
+    .cover-quote{ max-width:420px; font-size:.92rem; }
   }
 
   /* envelope */
@@ -208,17 +244,14 @@
   .envelope-flourish.fl-bl{ bottom:-78px; left:-46px; height:160px; }
   .envelope-flourish svg{ width:100%; height:100%; overflow:visible; } */
 
-  .cover-to{ margin-top:6px; font-size:.78rem; opacity:.85; letter-spacing:.05em; color:var(--gold-soft); position:relative; z-index:2;}
-  .cover-guest{ font-family:'Playfair Display',serif; font-style:italic; font-size:1.1rem; margin-top:4px; color:var(--cream); position:relative; z-index:2;}
+  .cover-to{ margin-top:22px; font-size:1.35rem; opacity:.95; letter-spacing:.05em; color:var(--gold-soft); position:relative; z-index:2;}
+  .cover-guest{ font-family:'Playfair Display',serif; font-style:italic; font-size:1.35rem; margin-top:4px; color:var(--cream); position:relative; z-index:2;}
 
   .open-btn{
     margin-top:32px;
     position:relative; z-index:2;
-    background:
-      linear-gradient(100deg, transparent 0%, rgba(0,0,0,0.08) 15%, transparent 30%,
-        rgba(0,0,0,0.06) 55%, transparent 75%),
-      var(--maroon-deep);
-    border:none;
+    background:transparent;
+    border:1.5px solid var(--cream);
     color:var(--cream);
     padding:15px 34px;
     font-family:'Playfair Display',serif;
@@ -231,9 +264,18 @@
     display:inline-flex; align-items:center; gap:10px;
     text-decoration:underline;
     text-underline-offset:5px;
-    transition:.3s var(--ease);
+    transition:background .35s var(--ease), border-color .35s var(--ease), transform .3s var(--ease);
   }
-  .open-btn:hover{ background:var(--maroon); transform:translateY(-2px); }
+  .open-btn:hover,
+  .open-btn:active,
+  .open-btn.pressed{
+    background:
+      linear-gradient(100deg, transparent 0%, rgba(0,0,0,0.08) 15%, transparent 30%,
+        rgba(0,0,0,0.06) 55%, transparent 75%),
+      var(--maroon-deep);
+    border-color:var(--maroon-deep);
+    transform:translateY(-2px);
+  }
   .open-btn svg{ width:14px; height:14px; text-decoration:none; }
 
   /* ---------- music toggle ---------- */
@@ -427,7 +469,6 @@
   .btn-line:hover{ background:var(--maroon); color:var(--cream); }
 
   /* YOUTUBE VIDEO */
-  #video{ text-align:center; }
   .video-frame{
     position:relative; width:100%; max-width:420px; margin:20px auto 0;
     aspect-ratio:16/9; border-radius:18px; overflow:hidden;
@@ -692,7 +733,7 @@
     <div class="fl-piece fl-p4"><img src="/photos/florals/floral-br.png?v=2" alt=""></div>
 
     <div class="fl-center">
-      <span class="fl-eyebrow">Welcome to Our Wedding</span>
+      <span class="fl-eyebrow">The Wedding Of</span>
       <h1 class="fl-names">Dimas &amp; Nia</h1>
       <p class="fl-quote">
         "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan agar kamu hidup tenang bersamanya. Dia jadikan pula di antaramu rasa cinta dan kasih sayang."
@@ -719,10 +760,15 @@
   </button>
   <audio id="bgMusic" loop preload="none"></audio>
 
-  <!-- ============ HERO ============ -->
-  <section id="hero" class="reveal">
-    <div class="hero-art">
-      <img src="/photos/hero-welcome.png" alt="Welcome to Our Wedding — Dimas &amp; Nia" loading="eager" decoding="async">
+  <!-- ============ WEDDING OF (muncul setelah Buka Undangan, sebelum Mempelai) ============ -->
+  <section id="welcome" class="reveal">
+    <div class="welcome-inner">
+      <div class="cover-eyebrow">The Wedding Of</div>
+      <h1 class="cover-title">Dimas<span class="amp">&amp;</span>Nia</h1>
+      <p class="cover-quote">
+        "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan agar kamu hidup tenang bersamanya. Dia jadikan pula di antaramu rasa cinta dan kasih sayang."
+        <span class="cover-quote-src">QS. Ar-Rum : 21</span>
+      </p>
     </div>
   </section>
 
@@ -823,19 +869,17 @@
     </div>
   </section>
 
-  <!-- ============ VIDEO ============ -->
-  <section id="video" class="reveal">
-    <h2>Our Video</h2>
-    <div class="video-frame" id="videoFrame" data-yt-id="gIrDLOLmKq4">
-      <img class="video-thumb" src="https://i.ytimg.com/vi/gIrDLOLmKq4/hqdefault.jpg" alt="Wedding Video" loading="lazy" decoding="async">
-      <button class="video-play-btn" id="videoPlayBtn" aria-label="Putar video" type="button">
-        <svg viewBox="0 0 68 48" width="56" height="40"><path d="M66.5 7.7c-.8-2.9-2.6-5.2-5-6.1C57.4 0 34 0 34 0S10.6 0 6.5 1.6c-2.4.9-4.2 3.2-5 6.1C0 12 0 24 0 24s0 12 1.5 16.3c.8 2.9 2.6 5.1 5 6.1C10.6 48 34 48 34 48s23.4 0 27.5-1.6c2.4-.9 4.2-3.2 5-6.1C68 36 68 24 68 24s0-12-1.5-16.3z" fill="rgba(43,26,26,.72)"/><path d="M45 24 27 14v20z" fill="#fbf5ea"/></svg>
-      </button>
-    </div>
-  </section>
-
-  <!-- ============ LIVE STREAMING & PHOTOBOOTH ============ -->
+  <!-- ============ VIDEO, LIVE STREAMING & PHOTOBOOTH ============ -->
   <section id="livestream-photobooth" class="reveal">
+    <div class="lp-block" id="video">
+      <h2>Our Video</h2>
+      <div class="video-frame" id="videoFrame" data-yt-id="gIrDLOLmKq4">
+        <img class="video-thumb" src="https://i.ytimg.com/vi/gIrDLOLmKq4/hqdefault.jpg" alt="Wedding Video" loading="lazy" decoding="async">
+        <button class="video-play-btn" id="videoPlayBtn" aria-label="Putar video" type="button">
+          <svg viewBox="0 0 68 48" width="56" height="40"><path d="M66.5 7.7c-.8-2.9-2.6-5.2-5-6.1C57.4 0 34 0 34 0S10.6 0 6.5 1.6c-2.4.9-4.2 3.2-5 6.1C0 12 0 24 0 24s0 12 1.5 16.3c.8 2.9 2.6 5.1 5 6.1C10.6 48 34 48 34 48s23.4 0 27.5-1.6c2.4-.9 4.2-3.2 5-6.1C68 36 68 24 68 24s0-12-1.5-16.3z" fill="rgba(43,26,26,.72)"/><path d="M45 24 27 14v20z" fill="#fbf5ea"/></svg>
+        </button>
+      </div>
+    </div>
     <div class="lp-block">
       <h2>Live Streaming</h2>
       <p class="lead">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
@@ -1176,10 +1220,18 @@
 
   // ---- Cover open ----
   document.getElementById('openBtn').addEventListener('click', function(){
-    document.getElementById('cover').classList.add('opened');
-    document.body.style.overflow = 'auto';
-    if (music.paused) playMusic();
-    playFloralBloom();
+    const btn = this;
+    if (btn.classList.contains('pressed')) return;
+    btn.classList.add('pressed');
+    setTimeout(function(){
+      document.getElementById('cover').classList.add('opened');
+      document.body.style.overflow = 'auto';
+      if (music.paused) playMusic();
+      const cornerTL = document.getElementById('cornerOrnTL');
+      const cornerTR = document.getElementById('cornerOrnTR');
+      if (cornerTL) cornerTL.classList.add('show');
+      if (cornerTR) cornerTR.classList.add('show');
+    }, 350);
   });
   document.body.style.overflow = 'hidden';
   window.scrollTo(0, 0);
