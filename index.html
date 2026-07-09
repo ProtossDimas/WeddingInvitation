@@ -31,18 +31,24 @@
   body{
     margin:0;
     font-family:'Jost',sans-serif;
-    background:var(--maroon-deep);
+    background:
+      radial-gradient(circle at 15% 8%, rgba(201,161,74,0.10), transparent 45%),
+      radial-gradient(circle at 85% 92%, rgba(110,31,43,0.08), transparent 45%),
+      var(--maroon-deep);
     color:var(--ink);
     overflow-x:hidden;
   }
   /* ---------- fixed photo background (diam saat discroll) ---------- */
-  /* position:fixed dipakai (bukan background-attachment:fixed di body) supaya
-     konsisten di semua browser termasuk mobile Safari yang notabene tidak
-     mendukung background-attachment:fixed dengan baik. */
+  /* Foto ini HANYA mengisi lebar kartu/.stage (bukan area maroon di luar),
+     tapi posisinya fixed relatif ke viewport sehingga tetap diam di tempat
+     walau konten di dalam kartu discroll. Lebar & breakpoint-nya sengaja
+     dibuat identik dengan .stage supaya selalu pas menempel di baliknya. */
   #siteBg{
     position:fixed; inset:0; z-index:0;
+    max-width:520px; margin:0 auto;
     background: url('/photos/bgweb.jpeg') center center/cover no-repeat;
     pointer-events:none;
+    transition:max-width .2s;
   }
   #siteBg::after{
     content:"";
@@ -50,8 +56,11 @@
     background:
       radial-gradient(circle at 15% 8%, rgba(201,161,74,0.12), transparent 45%),
       radial-gradient(circle at 85% 92%, rgba(110,31,43,0.12), transparent 45%),
-      rgba(75,25,30,0.28);
+      rgba(75,25,30,0.14);
   }
+  @media (min-width:700px){ #siteBg{ max-width:680px; } }
+  @media (min-width:1000px){ #siteBg{ max-width:840px; } }
+  @media (min-width:1300px){ #siteBg{ max-width:1000px; } }
   .stage{
     max-width:520px;
     margin:0 auto;
@@ -64,15 +73,6 @@
     min-height:100vh;
     box-shadow: 0 0 60px rgba(0,0,0,0.35);
     transition: max-width .2s;
-  }
-  @media (min-width:700px){
-    .stage{ max-width:680px; }
-  }
-  @media (min-width:1000px){
-    .stage{ max-width:840px; }
-  }
-  @media (min-width:1300px){
-    .stage{ max-width:1000px; }
   }
   h1,h2,h3,.script{font-family:'Playfair Display',serif;}
   .script-name{font-family:'Italianno',cursive; font-weight:400;}
