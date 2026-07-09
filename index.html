@@ -307,7 +307,7 @@
   }
   section:not(#hero)::before{ top:-14px; left:-20px; background-image:url("/photos/florals/floral-tl.png?v=2"); background-position:top left; }
   section:not(#hero)::after{ bottom:-18px; right:-22px; width:210px; height:200px; background-image:url("/photos/florals/floral-br.png?v=2"); background-position:bottom right; }
-  section:not(#hero) > *{ position:relative; z-index:1; }
+  section:not(#hero) > *:not(.section-bg){ position:relative; z-index:1; }
   @media (min-width:700px){
     section:not(#hero)::before{ width:230px; height:216px; }
     section:not(#hero)::after{ width:280px; height:266px; }
