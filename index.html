@@ -231,13 +231,46 @@
     width:44px; height:44px; border-radius:50%;
     background:var(--maroon); color:var(--gold-soft);
     border:1px solid var(--gold-soft);
-    display:flex; align-items:center; justify-content:center;
+    align-items:center; justify-content:center;
     cursor:pointer; box-shadow:var(--shadow);
-    transition:.3s;
+    transition:opacity .5s var(--ease), transform .5s var(--ease);
+    display:none; opacity:0; transform:scale(.6);
   }
+  #musicToggle.visible{ display:flex; }
+  #musicToggle.visible.show-in{ opacity:1; transform:scale(1); }
   #musicToggle svg{ width:18px; height:18px; }
   #musicToggle.spin svg{ animation: spin 4s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- loading screen ---------- */
+  #loadingScreen{
+    position:fixed; inset:0; z-index:200;
+    background:var(--maroon-deep);
+    color:var(--cream);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    transition: opacity .8s var(--ease), visibility .8s var(--ease);
+  }
+  #loadingScreen.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+  #loadingScreen .ls-eyebrow{
+    font-family:'Jost',sans-serif; font-size:.68rem; letter-spacing:.32em;
+    text-transform:uppercase; color:var(--gold-soft); margin-bottom:10px;
+  }
+  #loadingScreen .ls-title{
+    font-family:'Playfair Display',serif; font-style:italic; font-weight:500;
+    font-size:1.3rem; letter-spacing:.08em; color:var(--cream); margin-bottom:18px;
+  }
+  #loadingScreen .ls-percent{
+    font-family:'Jost',sans-serif; font-size:.78rem; letter-spacing:.15em;
+    color:var(--gold-soft); font-variant-numeric:tabular-nums;
+  }
+  #loadingScreen .ls-bar{
+    width:120px; height:1px; background:rgba(227,205,147,0.25); margin-top:14px; position:relative; overflow:hidden;
+  }
+  #loadingScreen .ls-bar-fill{
+    position:absolute; top:0; left:0; height:100%; width:0%;
+    background:var(--gold-soft); transition:width .25s var(--ease);
+  }
 
   /* ---------- sections ---------- */
   section{ position:relative; padding:12px 24px; overflow:hidden; scroll-snap-align:start; scroll-snap-stop:normal; will-change:transform,opacity; transform:translateZ(0); }
@@ -646,6 +679,13 @@
 
 <div class="stage">
 
+  <!-- ============ LOADING SCREEN ============ -->
+  <div id="loadingScreen">
+    <div class="ls-eyebrow">The Wedding of</div>
+    <div class="ls-title">Dimas &amp; Nia</div>
+    <div class="ls-percent" id="lsPercent">0%</div>
+    <div class="ls-bar"><div class="ls-bar-fill" id="lsBarFill"></div></div>
+  </div>
 
   <!-- ============ COVER ============ -->
   <div id="cover">
@@ -1091,10 +1131,68 @@
       document.getElementById('cover').classList.add('opened');
       document.body.style.overflow = 'auto';
       if (music.paused) playMusic();
+      // Tampilkan tombol musik hanya SETELAH undangan dibuka
+      musicBtn.classList.add('visible');
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ musicBtn.classList.add('show-in'); });
+      });
     }, 350);
   });
   document.body.style.overflow = 'hidden';
   window.scrollTo(0, 0);
+
+  // ---- Loading screen: preload aset penting sebelum cover ditampilkan ----
+  (function(){
+    const assets = [
+      '/photos/coverdepan.jpeg',
+      '/photos/bg-couple-full2.png',
+      '/photos/dimas.jpg',
+      '/photos/nia.jpg',
+      '/photos/bg-livestream.jpg',
+      '/photos/bg-gift-floral.png',
+      '/photos/rsvp.jpg',
+      'https://i.ytimg.com/vi/gIrDLOLmKq4/hqdefault.jpg'
+    ];
+    const loadingScreen = document.getElementById('loadingScreen');
+    const lsPercent = document.getElementById('lsPercent');
+    const lsBarFill = document.getElementById('lsBarFill');
+    let loaded = 0;
+    const total = assets.length;
+
+    function updateProgress(){
+      loaded++;
+      const pct = Math.min(100, Math.round((loaded / total) * 100));
+      lsPercent.textContent = pct + '%';
+      lsBarFill.style.width = pct + '%';
+    }
+
+    function finishLoading(){
+      lsPercent.textContent = '100%';
+      lsBarFill.style.width = '100%';
+      setTimeout(function(){
+        loadingScreen.classList.add('hidden');
+      }, 250);
+    }
+
+    if (total === 0){
+      finishLoading();
+    } else {
+      let doneCount = 0;
+      assets.forEach(function(src){
+        const img = new Image();
+        const settle = function(){
+          updateProgress();
+          doneCount++;
+          if (doneCount === total) finishLoading();
+        };
+        img.onload = settle;
+        img.onerror = settle;
+        img.src = src;
+      });
+      // Fallback: jangan sampai loading screen macet jika ada aset yang gagal/lambat
+      setTimeout(finishLoading, 7000);
+    }
+  })();
 
   // ---- Reveal on scroll ----
   const revealEls = document.querySelectorAll('.reveal');
