@@ -81,21 +81,6 @@
   .bl{bottom:14px; left:14px; transform:scaleY(-1);}
   .br{bottom:14px; right:14px; transform:scale(-1,-1);}
 
-  /* ---------- permanent corner florals di puncak kartu (hasil "morph" dari floral bloom) ---------- */
-  #cornerOrnTL, #cornerOrnTR{
-    position:absolute; top:6px; width:86px; height:86px; z-index:5;
-    pointer-events:none; opacity:0;
-  }
-  #cornerOrnTL{ left:2px; }
-  #cornerOrnTR{ right:2px; }
-  #cornerOrnTL .co-inner, #cornerOrnTR .co-inner{
-    width:100%; height:100%; transform:scale(.94); transition:opacity .7s var(--ease), transform .7s var(--ease);
-    opacity:.001;
-  }
-  #cornerOrnTL .co-inner svg, #cornerOrnTR .co-inner svg{ width:100%; height:100%; overflow:visible; }
-  #cornerOrnTL.show, #cornerOrnTR.show{ opacity:1; transition:opacity .3s ease; }
-  #cornerOrnTL.show .co-inner, #cornerOrnTR.show .co-inner{ opacity:1; transform:scale(1); }
-
   /* ----------  ---------- */
   #cover{
     position:fixed; inset:0; z-index:50;
@@ -113,47 +98,7 @@
   #cover .cover-overlay{ display:none; }
   #cover .cover-title, #cover .cover-to, #cover .cover-guest{ text-shadow: 0 2px 16px rgba(0,0,0,.5); }
 
-  /* ---------- WELCOME INTRO: bunga foto asli muncul satu-persatu di tiap pojok, lalu teks tengah ---------- */
-  #floralIntro{
-    position:fixed; inset:0; z-index:70;
-    background:
-      radial-gradient(circle at 25% 15%, rgba(201,161,74,0.16), transparent 42%),
-      radial-gradient(circle at 80% 90%, rgba(110,31,43,0.09), transparent 40%),
-      var(--cream-deep);
-    overflow:hidden;
-    opacity:0; pointer-events:none;
-    transition:opacity .5s ease;
-  }
-  #floralIntro.show{ opacity:1; pointer-events:auto; }
-  #floralIntro.fade-out{ transition:opacity 1.05s var(--ease), filter 1.05s var(--ease); opacity:0; filter:blur(6px); }
-  /* Saat settle: p1 & p2 (bunga pojok ATAS) TIDAK ikut memudar — mereka justru bergerak/morph
-     menuju posisi permanen di pojok kartu (lihat #cornerOrnTL/TR & playFloralBloom di JS). */
-  #floralIntro.settling .fl-piece:not(.fl-p1):not(.fl-p2){ transition:opacity .9s var(--ease); opacity:0; }
-  #floralIntro.settling .fl-center{ transition:opacity .7s var(--ease); opacity:0; }
-  #floralIntro.settling .fl-p1, #floralIntro.settling .fl-p2{ transition:transform 1s var(--ease), opacity 1s var(--ease); }
-
-  .fl-piece{
-    position:absolute; opacity:0; transform:scale(.7);
-    transition:opacity .9s var(--ease), transform .9s var(--ease);
-    will-change:transform,opacity; pointer-events:none;
-  }
-  .fl-piece img{ display:block; width:100%; height:auto; }
-  .fl-p1{ top:-16px; left:-16px; width:180px; transform-origin:top left; }
-  .fl-p2{ top:-16px; right:-16px; width:180px; transform-origin:top right; }
-  .fl-p3{ bottom:-16px; left:-16px; width:210px; transform-origin:bottom left; }
-  .fl-p4{ bottom:-16px; right:-16px; width:210px; transform-origin:bottom right; }
-  @media (min-width:700px){
-    .fl-p1, .fl-p2{ width:230px; }
-    .fl-p3, .fl-p4{ width:270px; }
-  }
-
-  /* reveal satu-per-satu: kiri-atas -> kanan-atas -> kiri-bawah -> kanan-bawah */
-  #floralIntro.show .fl-piece{ opacity:1; transform:scale(1); }
-  #floralIntro.show .fl-p1{ transition-delay:.15s; }
-  #floralIntro.show .fl-p2{ transition-delay:.55s; }
-  #floralIntro.show .fl-p3{ transition-delay:.95s; }
-  #floralIntro.show .fl-p4{ transition-delay:1.35s; }
-
+  /* ---------- WELCOME INTRO: teks tengah muncul setelah cover dibuka ---------- */
   .fl-center{
     position:absolute; inset:0; z-index:2;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -297,41 +242,21 @@
   /* ---------- sections ---------- */
   section{ position:relative; padding:12px 24px; overflow:hidden; scroll-snap-align:start; scroll-snap-stop:normal; will-change:transform,opacity; transform:translateZ(0); }
 
-  /* ---------- hiasan bunga tipis di tiap pojok section, biar halaman nggak polos ---------- */
-  section:not(#hero)::before,
-  section:not(#hero)::after{
-    content:"";
-    position:absolute; width:170px; height:160px;
-    background-repeat:no-repeat; background-size:contain;
-    opacity:.85; pointer-events:none; z-index:0;
-  }
-  section:not(#hero)::before{ top:-14px; left:-20px; background-image:url("/photos/florals/floral-tl.png?v=2"); background-position:top left; }
-  section:not(#hero)::after{ bottom:-18px; right:-22px; width:210px; height:200px; background-image:url("/photos/florals/floral-br.png?v=2"); background-position:bottom right; }
   section:not(#hero) > *:not(.section-bg){ position:relative; z-index:1; }
-  @media (min-width:700px){
-    section:not(#hero)::before{ width:230px; height:216px; }
-    section:not(#hero)::after{ width:280px; height:266px; }
-  }
-  #couple::before, #couple::after{ display:none; }
-
-  /* #hero tidak ikut aturan umum di atas (sudah punya bunga sendiri di pojok ATAS via
-     #cornerOrnTL/TR), tapi pojok BAWAH-nya perlu hiasan bunga sendiri juga supaya tidak kosong. */
-  #hero::before, #hero::after{
-    content:""; position:absolute; width:170px; height:160px;
-    background-repeat:no-repeat; background-size:contain;
-    opacity:.85; pointer-events:none; z-index:2;
-  }
-  #hero::before{ bottom:-14px; left:-20px; background-image:url("/photos/florals/floral-bl.png?v=2"); background-position:bottom left; }
-  #hero::after{ bottom:-18px; right:-22px; width:210px; height:200px; background-image:url("/photos/florals/floral-br.png?v=2"); background-position:bottom right; }
   #hero > *{ position:relative; z-index:1; }
-  @media (min-width:700px){
-    #hero::before{ width:230px; height:216px; }
-    #hero::after{ width:280px; height:266px; }
-  }
 
   /* Custom background photo/video per section (lihat SECTION_BACKGROUNDS di script) */
-  .section-bg{ position:absolute; inset:0; z-index:0; overflow:hidden; }
-  .section-bg img, .section-bg video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .section-bg{
+    position:absolute; inset:0; z-index:0; overflow:hidden;
+    transform:translate3d(0,0,0); -webkit-transform:translate3d(0,0,0);
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    contain:paint;
+  }
+  .section-bg img, .section-bg video{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transform:translate3d(0,0,0); -webkit-transform:translate3d(0,0,0);
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  }
   .section-bg::after{
     content:""; position:absolute; inset:0;
     background:var(--section-bg-tint, rgba(251,245,234,0.86));
@@ -610,29 +535,20 @@
   }
   .copy-btn.copied{ background:var(--sage); border-color:var(--sage); color:#fff;}
 
-  /* RSVP / WISHES — professional card layout on brand maroon background */
+  /* RSVP / WISHES — background pakai foto rsvp.jpg, ditinta gelap supaya teks cream tetap kebaca */
   #rsvp{
     position:relative;
     color:var(--cream);
     padding:12px 28px 40px;
     background:
-      radial-gradient(circle at 18% 12%, rgba(201,161,74,.14), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(201,161,74,.08), transparent 42%),
+      linear-gradient(180deg, rgba(20,10,10,.72) 0%, rgba(20,10,10,.8) 45%, var(--maroon-deep) 100%),
+      url('/photos/rsvp.jpg') center 20%/cover no-repeat,
       var(--maroon-deep);
-  }
-  .rsvp-photo-frame{
-    width:150px; height:150px; margin:0 auto 22px; position:relative; z-index:1;
-    border-radius:50%; padding:6px;
-    background:linear-gradient(160deg, var(--gold-soft), var(--gold) 60%, var(--gold-soft));
-    box-shadow:0 14px 30px -10px rgba(0,0,0,.55), 0 4px 10px rgba(0,0,0,.35);
-  }
-  .rsvp-photo-frame img{
-    width:100%; height:100%; object-fit:cover; border-radius:50%;
-    display:block; border:3px solid var(--maroon-deep);
   }
   #rsvp .eyebrow{ color:var(--gold-soft); opacity:1; position:relative; z-index:1; }
   #rsvp h2{ text-align:center; color:var(--cream); font-size:1.9rem; margin:8px 0 8px; position:relative; z-index:1;}
   #rsvp p.lead{ text-align:center; font-size:.85rem; opacity:.92; max-width:320px; margin:0 auto 30px; line-height:1.7; color:var(--cream); position:relative; z-index:1;}
+
 
   /* elevated 3D card holding the form */
   .rsvp-card{
@@ -719,30 +635,6 @@
 
 <div class="stage">
 
-  <!-- ============ PERMANENT CORNER FLORALS (tujuan "morph" dari floral bloom, menempel di puncak kartu) ============ -->
-  <div id="cornerOrnTL" aria-hidden="true"><div class="co-inner">
-    <img src="/photos/florals/floral-tl.png?v=2" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left;">
-  </div></div>
-  <div id="cornerOrnTR" aria-hidden="true"><div class="co-inner">
-    <img src="/photos/florals/floral-tr.png?v=2" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top right;">
-  </div></div>
-
-  <!-- ============ FLORAL BLOOM TRANSITION (main setelah "Buka Undangan" ditekan) ============ -->
-  <div id="floralIntro" aria-hidden="true">
-    <div class="fl-piece fl-p1"><img src="/photos/florals/floral-tl.png?v=2" alt=""></div>
-    <div class="fl-piece fl-p2"><img src="/photos/florals/floral-tr.png?v=2" alt=""></div>
-    <div class="fl-piece fl-p3"><img src="/photos/florals/floral-bl.png?v=2" alt=""></div>
-    <div class="fl-piece fl-p4"><img src="/photos/florals/floral-br.png?v=2" alt=""></div>
-
-    <div class="fl-center">
-      <span class="fl-eyebrow">The Wedding Of</span>
-      <h1 class="fl-names">Dimas &amp; Nia</h1>
-      <p class="fl-quote">
-        "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan agar kamu hidup tenang bersamanya. Dia jadikan pula di antaramu rasa cinta dan kasih sayang."
-        <span class="fl-quote-src">QS. Ar-Rum : 21</span>
-      </p>
-    </div>
-  </div>
 
   <!-- ============ COVER ============ -->
   <div id="cover">
@@ -936,9 +828,6 @@
 
   <!-- ============ RSVP / WISHES ============ -->
   <section id="rsvp" class="reveal">
-    <div class="rsvp-photo-frame">
-      <img src="/photos/rsvp.jpg" alt="Dimas &amp; Nia" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none'">
-    </div>
     <span class="eyebrow" style="text-align:center; display:block;">RSVP</span>
     <h2>Konfirmasi &amp; Doa Restu</h2>
     <p class="lead">Mohon konfirmasi kehadiran serta titipkan doa restu untuk kami berdua.</p>
@@ -1012,61 +901,6 @@
   // Jika ?to= berupa kode tamu (mis. 001, 002), ambil nama dari /api/guest/:code.
   // Jika bukan berupa kode (mis. ?to=Budi+Santoso langsung), tampilkan apa adanya (mode tanpa database).
 
-  // ---- Welcome intro: bunga foto asli muncul satu-persatu di 4 pojok, lalu teks "Welcome to
-  // Our Wedding / Dimas & Nia" reveal di tengah, baru overlay memudar menampilkan halaman web ----
-  function playFloralBloom(){
-    const overlay = document.getElementById('floralIntro');
-    if (!overlay) return;
-    const p1 = overlay.querySelector('.fl-p1');
-    const p2 = overlay.querySelector('.fl-p2');
-    const cornerTL = document.getElementById('cornerOrnTL');
-    const cornerTR = document.getElementById('cornerOrnTR');
-
-    overlay.style.display = 'block';
-    overlay.setAttribute('aria-hidden', 'false');
-    requestAnimationFrame(function(){
-      overlay.classList.add('show');
-    });
-
-    setTimeout(function(){
-      // 1) Fade semua elemen KECUALI bunga pojok atas (p1 & p2) — mereka akan "morph" (bergerak),
-      //    bukan menghilang.
-      overlay.classList.add('settling');
-
-      // 2) FLIP: hitung posisi p1/p2 saat ini vs posisi target permanennya di puncak kartu,
-      //    lalu animasikan transform-nya supaya terasa seperti bunga yang sama berpindah/menyusut
-      //    ke pojok atas undangan, bukan hilang lalu muncul elemen baru.
-      if (p1 && p2 && cornerTL && cornerTR){
-        [[p1, cornerTL], [p2, cornerTR]].forEach(function(pair){
-          const src = pair[0], dst = pair[1];
-          const rSrc = src.getBoundingClientRect();
-          const rDst = dst.getBoundingClientRect();
-          const dx = (rDst.left + rDst.width/2) - (rSrc.left + rSrc.width/2);
-          const dy = (rDst.top + rDst.height/2) - (rSrc.top + rSrc.height/2);
-          const scale = rDst.width / rSrc.width;
-          src.style.transitionDelay = '0s'; // lepas dari delay reveal awal, serahkan ke transition di bawah
-          src.style.transformOrigin = 'center center';
-          src.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')';
-          src.style.opacity = '.85';
-        });
-      }
-
-      setTimeout(function(){
-        // 3) Begitu bunga pojok "sampai" di posisi target, langsung tampilkan versi permanennya
-        //    (artwork identik, jadi transisinya mulus/tanpa kedip) sebelum overlay disembunyikan.
-        if (cornerTL) cornerTL.classList.add('show');
-        if (cornerTR) cornerTR.classList.add('show');
-
-        overlay.classList.add('fade-out');
-        // Tunggu transisi opacity/blur (1.05s) selesai TOTAL sebelum overlay disembunyikan,
-        // supaya tidak ada "patahan" di akhir animasi.
-        setTimeout(function(){
-          overlay.style.display = 'none';
-          overlay.setAttribute('aria-hidden', 'true');
-        }, 1080);
-      }, 1000);
-    }, 3800);
-  }
 
   const params = new URLSearchParams(location.search);
   const to = params.get('to');
@@ -1229,10 +1063,6 @@
       document.getElementById('cover').classList.add('opened');
       document.body.style.overflow = 'auto';
       if (music.paused) playMusic();
-      const cornerTL = document.getElementById('cornerOrnTL');
-      const cornerTR = document.getElementById('cornerOrnTR');
-      if (cornerTL) cornerTL.classList.add('show');
-      if (cornerTR) cornerTR.classList.add('show');
     }, 350);
   });
   document.body.style.overflow = 'hidden';
