@@ -562,7 +562,7 @@
       0 -1px 0 rgba(0,0,0,.06) inset;
     border:1px solid rgba(201,161,74,.25);
   }
-  form#wishForm{ display:flex; flex-direction:column; gap:16px; }
+  .rsvp-card form{ display:flex; flex-direction:column; gap:16px; }
   .field label{ display:block; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--maroon); margin-bottom:7px; font-weight:600;}
   .field input, .field select, .field textarea{
     width:100%; border:1px solid rgba(110,31,43,.22); background:#fff;
@@ -585,9 +585,9 @@
   }
   .submit-btn:hover{ background:var(--gold-soft); transform:translateY(-1px); }
   .submit-btn:disabled{ opacity:.5; cursor:default; }
-  #wishStatus{ font-size:.78rem; text-align:center; min-height:1.2em; color:var(--maroon); }
-  #wishStatus.ok{ color:var(--sage,#5a7052); }
-  #wishStatus.err{ color:#a33; }
+  .form-status{ font-size:.78rem; text-align:center; min-height:1.2em; color:var(--maroon); }
+  .form-status.ok{ color:var(--sage,#5a7052); }
+  .form-status.err{ color:#a33; }
 
   .wish-list{ margin-top:34px; display:flex; flex-direction:column; gap:14px; max-height:380px; overflow-y:auto; padding-right:4px; position:relative; z-index:1;}
   .wish-item{ border-bottom:1px solid rgba(251,245,234,.25); padding-bottom:12px; }
@@ -597,6 +597,17 @@
   .w-tag.tidak{ background:rgba(251,245,234,.12); color:var(--cream); }
   .wish-item p{ font-size:.83rem; line-height:1.6; margin:6px 0 0; opacity:.9; color:var(--cream);}
   .wish-empty{ text-align:center; font-size:.8rem; opacity:.75; padding:20px 0; color:var(--cream);}
+
+  /* section Ucapan & Doa (terpisah dari RSVP) */
+  #wishes{
+    text-align:center;
+    background:var(--cream-deep);
+  }
+  #wishes h2{ color:var(--maroon-deep); font-size:1.9rem; margin:8px 0 8px; }
+  #wishes p.lead{ font-size:.85rem; opacity:.85; max-width:320px; margin:0 auto 30px; line-height:1.7; color:var(--ink); }
+  #wishes .wish-list{ text-align:left; }
+  #wishes .wish-item .w-name{ color:var(--maroon-deep); }
+  #wishes .wish-item p{ color:var(--ink); opacity:.85; }
 
   /* CLOSING */
   #closing{
@@ -826,11 +837,40 @@
     </div>
   </section>
 
-  <!-- ============ RSVP / WISHES ============ -->
+  <!-- ============ RSVP ============ -->
   <section id="rsvp" class="reveal">
     <span class="eyebrow" style="text-align:center; display:block;">RSVP</span>
-    <h2>Konfirmasi &amp; Doa Restu</h2>
-    <p class="lead">Mohon konfirmasi kehadiran serta titipkan doa restu untuk kami berdua.</p>
+    <h2>Konfirmasi Kehadiran</h2>
+    <p class="lead">Mohon konfirmasi kehadiran Anda untuk melengkapi persiapan kami.</p>
+    <div class="rsvp-card">
+    <form id="rsvpForm">
+      <div class="field">
+        <label for="rName">Nama</label>
+        <input id="rName" name="name" type="text" required maxlength="60" placeholder="Nama Anda">
+      </div>
+      <div class="field">
+        <label for="rAttend">Konfirmasi Kehadiran</label>
+        <select id="rAttend" name="attendance" required>
+          <option value="hadir">Saya akan hadir</option>
+          <option value="tidak">Tidak Bisa Hadir</option>
+          <option value="ragu">Masih Ragu</option>
+        </select>
+      </div>
+      <div class="field" id="rCountField">
+        <label for="rCount">Jumlah Tamu Hadir</label>
+        <input id="rCount" name="guestCount" type="number" min="1" max="10" value="1">
+      </div>
+      <button class="submit-btn" type="submit" id="rSubmit">Kirim Konfirmasi</button>
+      <div id="rsvpStatus" class="form-status"></div>
+    </form>
+    </div>
+  </section>
+
+  <!-- ============ UCAPAN & DOA ============ -->
+  <section id="wishes" class="reveal">
+    <span class="eyebrow" style="text-align:center; display:block;">Ucapan &amp; Doa</span>
+    <h2>Ucapan &amp; Doa</h2>
+    <p class="lead">Sampaikan doa dan ucapan terbaik untuk kami di sini.</p>
     <div class="rsvp-card">
     <form id="wishForm">
       <div class="field">
@@ -838,23 +878,11 @@
         <input id="wName" name="name" type="text" required maxlength="60" placeholder="Nama Anda">
       </div>
       <div class="field">
-        <label for="wAttend">Konfirmasi Kehadiran</label>
-        <select id="wAttend" name="attendance" required>
-          <option value="hadir">Saya akan hadir</option>
-          <option value="tidak">Tidak Bisa Hadir</option>
-          <option value="ragu">Masih Ragu</option>
-        </select>
-      </div>
-      <div class="field" id="wCountField">
-        <label for="wCount">Jumlah Tamu Hadir</label>
-        <input id="wCount" name="guestCount" type="number" min="1" max="10" value="1">
-      </div>
-      <div class="field">
         <label for="wMsg">Doa &amp; Ucapan</label>
         <textarea id="wMsg" name="message" required maxlength="500" placeholder="Tuliskan doa dan ucapan terbaik Anda..."></textarea>
       </div>
       <button class="submit-btn" type="submit" id="wSubmit">Kirim</button>
-      <div id="wishStatus"></div>
+      <div id="wishStatus" class="form-status"></div>
     </form>
     </div>
 
@@ -1282,7 +1310,54 @@
     });
   });
 
-  // ---- Wishes: load + submit ----
+  // ---- RSVP form: nama, konfirmasi kehadiran, jumlah tamu ----
+  const rsvpForm = document.getElementById('rsvpForm');
+  const rsvpStatus = document.getElementById('rsvpStatus');
+  const rSubmit = document.getElementById('rSubmit');
+
+  const rAttendEl = document.getElementById('rAttend');
+  const rCountField = document.getElementById('rCountField');
+  function syncCountField(){
+    rCountField.style.display = rAttendEl.value === 'hadir' ? '' : 'none';
+  }
+  rAttendEl.addEventListener('change', syncCountField);
+  syncCountField();
+
+  rsvpForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    rSubmit.disabled = true;
+    rsvpStatus.className = 'form-status';
+    rsvpStatus.textContent = 'Mengirim...';
+
+    const payload = {
+      name: document.getElementById('rName').value.trim(),
+      attendance: document.getElementById('rAttend').value,
+      guestCount: document.getElementById('rAttend').value === 'hadir'
+        ? (parseInt(document.getElementById('rCount').value, 10) || 1)
+        : undefined,
+      message: ''
+    };
+
+    try{
+      const res = await fetch('/api/wishes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('failed');
+      rsvpStatus.className = 'form-status ok';
+      rsvpStatus.textContent = 'Terima kasih atas konfirmasinya!';
+      rsvpForm.reset();
+      syncCountField();
+    }catch(err){
+      rsvpStatus.className = 'form-status err';
+      rsvpStatus.textContent = 'Gagal mengirim. Silakan coba lagi.';
+    }finally{
+      rSubmit.disabled = false;
+    }
+  });
+
+  // ---- Ucapan & Doa: load + submit (nama + pesan saja, tanpa status kehadiran) ----
   const wishList = document.getElementById('wishList');
   const wishForm = document.getElementById('wishForm');
   const wishStatus = document.getElementById('wishStatus');
@@ -1293,15 +1368,14 @@
   }
 
   function renderWishes(items){
-    if (!items || items.length === 0){
+    const withMessage = (items || []).filter(w => w.message && w.message.trim());
+    if (withMessage.length === 0){
       wishList.innerHTML = '<div class="wish-empty">Belum ada ucapan. Jadilah yang pertama!</div>';
       return;
     }
-    wishList.innerHTML = items.map(w => `
+    wishList.innerHTML = withMessage.map(w => `
       <div class="wish-item">
-        <div class="w-name">${escapeHtml(w.name)} <span class="w-tag ${w.attendance==='hadir'?'hadir':'tidak'}">${
-          w.attendance === 'hadir' ? `Hadir${w.guest_count > 1 ? ' · ' + w.guest_count + ' orang' : ''}` : (w.attendance === 'tidak' ? 'Tidak Hadir' : 'Ragu')
-        }</span></div>
+        <div class="w-name">${escapeHtml(w.name)}</div>
         <p>${escapeHtml(w.message)}</p>
       </div>
     `).join('');
@@ -1319,26 +1393,14 @@
   }
   loadWishes();
 
-  const wAttendEl = document.getElementById('wAttend');
-  const wCountField = document.getElementById('wCountField');
-  function syncCountField(){
-    wCountField.style.display = wAttendEl.value === 'hadir' ? '' : 'none';
-  }
-  wAttendEl.addEventListener('change', syncCountField);
-  syncCountField();
-
   wishForm.addEventListener('submit', async function(e){
     e.preventDefault();
     wishSubmit.disabled = true;
-    wishStatus.className = '';
+    wishStatus.className = 'form-status';
     wishStatus.textContent = 'Mengirim...';
 
     const payload = {
       name: document.getElementById('wName').value.trim(),
-      attendance: document.getElementById('wAttend').value,
-      guestCount: document.getElementById('wAttend').value === 'hadir'
-        ? (parseInt(document.getElementById('wCount').value, 10) || 1)
-        : undefined,
       message: document.getElementById('wMsg').value.trim()
     };
 
@@ -1349,12 +1411,12 @@
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('failed');
-      wishStatus.className = 'ok';
+      wishStatus.className = 'form-status ok';
       wishStatus.textContent = 'Terima kasih atas doa & ucapannya!';
       wishForm.reset();
       loadWishes();
     }catch(err){
-      wishStatus.className = 'err';
+      wishStatus.className = 'form-status err';
       wishStatus.textContent = 'Gagal mengirim. Silakan coba lagi.';
     }finally{
       wishSubmit.disabled = false;
