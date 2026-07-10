@@ -377,18 +377,13 @@
       radial-gradient(circle at 20% 10%, rgba(201,161,74,0.14), transparent 40%),
       radial-gradient(circle at 85% 85%, rgba(110,31,43,0.08), transparent 40%),
       radial-gradient(rgba(110,31,43,0.10) 1px, transparent 1px),
-      url('/photos/bg-couple-full2.png') center top/100% auto no-repeat,
+      url('/photos/bg-couple-full2.png') center top/100% 100% no-repeat,
       var(--cream-deep);
-    /* background-size is width-locked (100% auto), so its rendered height is
-       always min(100vw,520px) * (1738/905). Give the section that same
-       min-height so the art is never cut off at the bottom regardless of
-       how short the card content is. */
-    min-height:calc(min(100vw, 520px) * 1.921);
   }
   /* the art already renders "MEMPELAI" as a title, so the coded eyebrow text
      for this section is not shown again (avoids the duplicated title) */
   #couple .eyebrow{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
-  .couple-wrap{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:14px; width:100%; }
+  .couple-wrap{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:8px; width:100%; }
   .couple-card{
     box-sizing:border-box;
     /* Measured directly from the art: the cream frame box spans x=246..672 of a
@@ -405,11 +400,11 @@
     box-shadow:var(--shadow);
   }
   .couple-card:first-of-type{
-    margin-top:44px;
+    margin-top:30px;
   }
   .couple-photo{
     width:68%; aspect-ratio:1/1; height:auto; border-radius:50%;
-    margin:14px auto 14px; position:relative;
+    margin:14px auto 10px; position:relative;
     background:linear-gradient(160deg,var(--gold-soft),var(--cream-deep));
     border:3px solid var(--gold);
     display:flex; align-items:center; justify-content:center;
