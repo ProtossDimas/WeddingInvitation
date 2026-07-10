@@ -680,16 +680,26 @@
 
   /* CLOSING */
   #closing{
-    text-align:center; color:var(--cream); padding:12px 28px;
+    text-align:center; color:var(--cream); padding:36px 28px 30px;
     background:
       radial-gradient(circle at 25% 20%, rgba(201,161,74,0.15), transparent 42%),
       radial-gradient(circle at 80% 85%, rgba(201,161,74,0.08), transparent 38%),
       var(--maroon-deep);
   }
-  #closing .amp{ font-family:'Italianno',cursive; font-size:2.4rem; color:var(--gold-soft); display:block; margin-bottom:10px;}
-  #closing h2{ font-size:1.6rem; margin:0 0 14px;}
-  #closing p{ font-size:.84rem; opacity:.8; line-height:1.8; max-width:300px; margin:0 auto;}
-  #closing .signature{ margin-top:30px; font-family:'Italianno',cursive; font-size:1.8rem; color:var(--gold-soft);}
+  #closing p.closing-note{ font-size:.84rem; opacity:.85; line-height:1.8; max-width:340px; margin:0 auto 22px; }
+  #closing .closing-photo{
+    max-width:340px; margin:0 auto 26px;
+    border-radius:28px; overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  #closing .closing-photo img{
+    display:block; width:100%; height:auto; aspect-ratio:4/5; object-fit:cover;
+  }
+  #closing h2{
+    font-size:1.5rem; margin:6px 0 0; letter-spacing:.03em;
+    text-transform:uppercase; line-height:1.35; font-weight:700;
+  }
+  #closing .signature{ margin-top:14px; font-family:'Italianno',cursive; font-size:2.6rem; color:var(--gold-soft);}
   footer{ text-align:center; padding:18px; font-size:.65rem; opacity:.5; background:var(--maroon-deep); color:var(--cream); letter-spacing:.06em;}
 
   /* ---------- Desktop / tablet scaling ---------- */
@@ -972,9 +982,11 @@
 
   <!-- ============ CLOSING ============ -->
   <section id="closing">
-    <span class="amp">&amp;</span>
-    <h2>Terima Kasih</h2>
-    <p>Merupakan kebahagiaan serta kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami.</p>
+    <p class="closing-note">Menjadi sebuah kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dalam hari bahagia kami. Terima kasih atas segala ucapan, doa, dan perhatian yang diberikan.</p>
+    <div class="closing-photo">
+      <img src="/photos/closing.jpg" alt="Dimas & Nia">
+    </div>
+    <h2>See You On<br>Our Big Day!</h2>
     <div class="signature">Dimas &amp; Nia</div>
   </section>
 
