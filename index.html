@@ -1374,9 +1374,10 @@
 
         const absD = Math.abs(d);
         const scale = 1 - Math.min(absD, 1) * 0.06;
-        const translate = d * 34;
-
-        sec.style.transform = `translateY(${translate}px) scale(${scale})`;
+        // translateY dihapus: itu yang bikin antar-section kelihatan renggang/berjarak
+        // saat discroll (section di atas & bawah titik tengah bergerak berlawanan arah).
+        // Cukup scale halus saja supaya tetap ada rasa "ppt-slide" tanpa celah.
+        sec.style.transform = `scale(${scale})`;
       });
     }
 
