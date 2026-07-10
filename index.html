@@ -379,20 +379,24 @@
       radial-gradient(rgba(110,31,43,0.10) 1px, transparent 1px),
       url('/photos/bg-couple-full2.png') center top/100% auto no-repeat,
       var(--cream-deep);
+    /* background-size is width-locked (100% auto), so its rendered height is
+       always min(100vw,520px) * (1738/905). Give the section that same
+       min-height so the art is never cut off at the bottom regardless of
+       how short the card content is. */
+    min-height:calc(min(100vw, 520px) * 1.921);
   }
   /* the art already renders "MEMPELAI" as a title, so the coded eyebrow text
      for this section is not shown again (avoids the duplicated title) */
   #couple .eyebrow{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
-  .couple-wrap{
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:14px; width:100%;
-    transform:translateX(4%); /* nudge right to line up with the frame in the art */
-  }
+  .couple-wrap{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:14px; width:100%; }
   .couple-card{
     box-sizing:border-box;
-    /* frame in the art spans ~27.2%-74.4% of the image width -> ~47.2% wide,
-       centered. .stage caps the whole layout at 520px, so mirror that cap here. */
-    width:calc(0.472 * min(100vw, 520px));
+    /* Measured directly from the art: the cream frame box spans x=246..672 of a
+       905px-wide image, i.e. starts at 27.18% and is 47.07% wide. Anchoring to
+       the left edge (rather than centering) keeps it locked to the frame even
+       though section side-padding changes across breakpoints. */
+    width:calc(0.4707 * min(100vw, 520px));
+    margin-left:calc(0.2718 * min(100vw, 520px) - 24px);
     text-align:center;
     background:linear-gradient(165deg, var(--cream-deep) 0%, #E9D9BC 100%);
     border:1px solid rgba(201,161,74,0.4);
@@ -421,7 +425,10 @@
     font-size:.78rem; line-height:1.35; color:var(--maroon-deep); opacity:.9;
     max-width:100%; margin:0 auto;
   }
-  .couple-and{ text-align:center; font-family:'Italianno',cursive; font-size:2.4rem; color:var(--gold); margin:0; transform:translateX(4%); }
+  .couple-and{
+    align-self:center; text-align:center; font-family:'Italianno',cursive;
+    font-size:2.4rem; color:var(--gold); margin:0;
+  }
   .couple-ig{
     display:inline-flex; align-items:center; gap:6px;
     background:var(--maroon-deep); color:var(--cream);
@@ -736,12 +743,14 @@
     .event-card{ flex:1; }
     .gallery-grid{ padding-left:56px; padding-right:56px; column-count:3; }
     #gallery .eyebrow, #gallery h2{ padding-left:56px; padding-right:56px; }
+    .couple-card{ margin-left:calc(0.2718 * min(100vw, 520px) - 56px); }
   }
   @media (min-width:1000px){
     section{ padding-left:80px; padding-right:80px; }
     #hero h1{ font-size:3.6rem; }
     #gallery .eyebrow, #gallery h2{ padding-left:80px; padding-right:80px; }
     .gallery-grid{ padding-left:80px; padding-right:80px; column-count:4; }
+    .couple-card{ margin-left:calc(0.2718 * min(100vw, 520px) - 80px); }
   }
 </style>
 </head>
