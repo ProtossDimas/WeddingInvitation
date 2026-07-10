@@ -367,56 +367,66 @@
   }
 
   /* COUPLE */
+  /* The background art has a baked-in "MEMPELAI" title + a narrow cream frame box.
+     background-size is locked to 100% width (instead of "cover") so that frame
+     always sits at the exact same % position/width of the section on every
+     device. The card below is then sized with calc(...% of that same width)
+     so it always lines up inside the frame instead of overflowing it. */
   #couple{
     background:
       radial-gradient(circle at 20% 10%, rgba(201,161,74,0.14), transparent 40%),
       radial-gradient(circle at 85% 85%, rgba(110,31,43,0.08), transparent 40%),
       radial-gradient(rgba(110,31,43,0.10) 1px, transparent 1px),
-      url('/photos/bg-couple-full2.png') center top/cover no-repeat,
+      url('/photos/bg-couple-full2.png') center top/100% auto no-repeat,
       var(--cream-deep);
   }
-  .couple-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; width:100%; }
+  /* the art already renders "MEMPELAI" as a title, so the coded eyebrow text
+     for this section is not shown again (avoids the duplicated title) */
+  #couple .eyebrow{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+  .couple-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; width:100%; }
   .couple-card{
     box-sizing:border-box;
-    width:100%; max-width:340px;
+    /* frame in the art spans ~27.2%-74.4% of the image width -> ~47.2% wide,
+       centered. .stage caps the whole layout at 520px, so mirror that cap here. */
+    width:calc(0.472 * min(100vw, 520px));
     text-align:center;
     background:linear-gradient(165deg, var(--cream-deep) 0%, #E9D9BC 100%);
     border:1px solid rgba(201,161,74,0.4);
-    border-radius:22px; padding:206px 24px 32px;
-    position:relative; margin-top:56px;
+    border-radius:18px; padding:22px 12px 22px;
+    position:relative; margin-top:20px;
     box-shadow:var(--shadow);
   }
   .couple-photo{
-    width:184px; height:224px; border-radius:50% / 44%;
-    position:absolute; top:-56px; left:50%; transform:translateX(-50%);
+    width:78%; aspect-ratio:82/100; height:auto; border-radius:50% / 44%;
+    margin:0 auto 16px; position:relative;
     background:linear-gradient(160deg,var(--gold-soft),var(--cream-deep));
     border:3px solid var(--gold);
     display:flex; align-items:center; justify-content:center;
     overflow:hidden; box-shadow:0 20px 34px -16px rgba(76,20,29,0.4);
-    font-family:'Playfair Display',serif; font-size:2.6rem; color:var(--maroon);
+    font-family:'Playfair Display',serif; font-size:2rem; color:var(--maroon);
   }
   .couple-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 15%; }
-  .couple-card h3{ font-size:1.28rem; color:var(--maroon-deep); margin:0 0 12px; font-weight:600; line-height:1.3;}
+  .couple-card h3{ font-size:1.05rem; color:var(--maroon-deep); margin:0 0 10px; font-weight:600; line-height:1.3;}
   .couple-card h3::after{
-    content:""; display:block; width:70px; height:1px; background:var(--maroon);
-    opacity:.4; margin:12px auto 0;
+    content:""; display:block; width:56px; height:1px; background:var(--maroon);
+    opacity:.4; margin:10px auto 0;
   }
   .couple-card .role{ display:none; }
   .couple-card p{
     font-family:'Playfair Display',serif; font-style:italic;
-    font-size:.96rem; line-height:1.55; color:var(--maroon-deep); opacity:.9;
-    max-width:230px; margin:0 auto;
+    font-size:.82rem; line-height:1.5; color:var(--maroon-deep); opacity:.9;
+    max-width:100%; margin:0 auto;
   }
   .couple-and{ text-align:center; font-family:'Italianno',cursive; font-size:2.4rem; color:var(--gold); margin:0;}
   .couple-ig{
-    display:inline-flex; align-items:center; gap:8px;
+    display:inline-flex; align-items:center; gap:6px;
     background:var(--maroon-deep); color:var(--cream);
-    padding:10px 20px; border-radius:999px; margin-top:20px;
-    font-size:.78rem; letter-spacing:.03em; text-decoration:none;
-    transition:.3s;
+    padding:8px 14px; border-radius:999px; margin-top:16px;
+    font-size:.68rem; letter-spacing:.02em; text-decoration:none;
+    transition:.3s; max-width:100%;
   }
   .couple-ig:hover{ background:var(--maroon); }
-  .couple-ig svg{ width:16px; height:16px; }
+  .couple-ig svg{ width:14px; height:14px; flex-shrink:0; }
 
   /* STORY */
   #story{
@@ -726,7 +736,6 @@
   @media (min-width:1000px){
     section{ padding-left:80px; padding-right:80px; }
     #hero h1{ font-size:3.6rem; }
-    .couple-card{ max-width:340px; }
     #gallery .eyebrow, #gallery h2{ padding-left:80px; padding-right:80px; }
     .gallery-grid{ padding-left:80px; padding-right:80px; column-count:4; }
   }
