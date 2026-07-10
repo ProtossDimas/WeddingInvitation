@@ -50,6 +50,9 @@
     pointer-events:none;
     transition:max-width .2s;
   }
+  #siteBg.is-zooming{
+    position:absolute;
+  }
   #siteBg::after{
     content:"";
     position:absolute; inset:0;
@@ -1585,6 +1588,46 @@
       wishSubmit.disabled = false;
     }
   });
+})();
+</script>
+<script>
+(function(){
+  // ---- Cegah glitch/lag saat pinch-zoom: sementara lepas position:fixed dari
+  //      background pas ada gesture 2 jari, lalu kembalikan lagi setelah selesai. ----
+  const siteBg = document.getElementById('siteBg');
+  if(!siteBg) return;
+  let zooming = false;
+
+  function startZoom(){
+    if(zooming) return;
+    zooming = true;
+    siteBg.style.top = -window.scrollY + 'px';
+    siteBg.classList.add('is-zooming');
+  }
+  function endZoom(){
+    if(!zooming) return;
+    zooming = false;
+    siteBg.classList.remove('is-zooming');
+    siteBg.style.top = '';
+  }
+
+  document.addEventListener('touchstart', function(e){
+    if(e.touches && e.touches.length > 1) startZoom();
+  }, { passive:true });
+
+  document.addEventListener('touchmove', function(e){
+    if(e.touches && e.touches.length > 1) startZoom();
+  }, { passive:true });
+
+  document.addEventListener('touchend', function(e){
+    if(!e.touches || e.touches.length < 2) endZoom();
+  }, { passive:true });
+
+  document.addEventListener('touchcancel', endZoom, { passive:true });
+
+  // Safari iOS: gesture events fire for pinch even with 1 recorded touch point
+  document.addEventListener('gesturestart', startZoom, { passive:true });
+  document.addEventListener('gestureend', endZoom, { passive:true });
 })();
 </script>
 </body>
