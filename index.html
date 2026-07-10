@@ -375,8 +375,10 @@
       url('/photos/bg-couple-full2.png') center top/cover no-repeat,
       var(--cream-deep);
   }
-  .couple-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; }
+  .couple-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; width:100%; }
   .couple-card{
+    box-sizing:border-box;
+    width:100%; max-width:340px;
     text-align:center;
     background:linear-gradient(165deg, var(--cream-deep) 0%, #E9D9BC 100%);
     border:1px solid rgba(201,161,74,0.4);
