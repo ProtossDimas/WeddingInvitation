@@ -51,7 +51,7 @@
     transition:max-width .2s;
   }
   #siteBg.is-zooming{
-    position:absolute;
+    position:absolute; max-width:none; margin:0; transition:none;
   }
   #siteBg::after{
     content:"";
@@ -1592,42 +1592,40 @@
 </script>
 <script>
 (function(){
-  // ---- Cegah glitch/lag saat pinch-zoom: sementara lepas position:fixed dari
-  //      background pas ada gesture 2 jari, lalu kembalikan lagi setelah selesai. ----
+  // ---- Cegah glitch/lag saat pinch-zoom + pan: pantau visualViewport terus-menerus
+  //      (bukan cuma start/end gesture) supaya background tetap sinkron walau
+  //      user geser-geser selagi zoom in. ----
   const siteBg = document.getElementById('siteBg');
-  if(!siteBg) return;
-  let zooming = false;
+  if(!siteBg || !window.visualViewport) return;
+  const vv = window.visualViewport;
+  let rafId = null;
 
-  function startZoom(){
-    if(zooming) return;
-    zooming = true;
-    siteBg.style.top = -window.scrollY + 'px';
-    siteBg.classList.add('is-zooming');
+  function apply(){
+    rafId = null;
+    const scale = vv.scale || 1;
+    if(scale > 1.02){
+      siteBg.classList.add('is-zooming');
+      siteBg.style.top = (window.scrollY + vv.offsetTop) + 'px';
+      siteBg.style.left = (window.scrollX + vv.offsetLeft) + 'px';
+      siteBg.style.right = 'auto';
+      siteBg.style.bottom = 'auto';
+      siteBg.style.width = vv.width + 'px';
+      siteBg.style.height = vv.height + 'px';
+    } else {
+      siteBg.classList.remove('is-zooming');
+      siteBg.style.top = '';
+      siteBg.style.left = '';
+      siteBg.style.right = '';
+      siteBg.style.bottom = '';
+      siteBg.style.width = '';
+      siteBg.style.height = '';
+    }
   }
-  function endZoom(){
-    if(!zooming) return;
-    zooming = false;
-    siteBg.classList.remove('is-zooming');
-    siteBg.style.top = '';
+  function schedule(){
+    if(rafId === null) rafId = requestAnimationFrame(apply);
   }
-
-  document.addEventListener('touchstart', function(e){
-    if(e.touches && e.touches.length > 1) startZoom();
-  }, { passive:true });
-
-  document.addEventListener('touchmove', function(e){
-    if(e.touches && e.touches.length > 1) startZoom();
-  }, { passive:true });
-
-  document.addEventListener('touchend', function(e){
-    if(!e.touches || e.touches.length < 2) endZoom();
-  }, { passive:true });
-
-  document.addEventListener('touchcancel', endZoom, { passive:true });
-
-  // Safari iOS: gesture events fire for pinch even with 1 recorded touch point
-  document.addEventListener('gesturestart', startZoom, { passive:true });
-  document.addEventListener('gestureend', endZoom, { passive:true });
+  vv.addEventListener('resize', schedule);
+  vv.addEventListener('scroll', schedule);
 })();
 </script>
 </body>
