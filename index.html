@@ -404,7 +404,7 @@
   }
   .couple-photo{
     width:112%; aspect-ratio:1/1; height:auto; border-radius:50%;
-    margin:calc(-0.0385 * min(100vw, 520px)) auto 10px; position:relative; left:calc(-0.0212 * min(100vw, 520px));
+    margin:calc(-0.0385 * min(100vw, 520px)) auto 10px; position:relative; left:calc(-0.0187 * min(100vw, 520px));
     background:linear-gradient(160deg,var(--gold-soft),var(--cream-deep));
     border:3px solid var(--gold);
     display:flex; align-items:center; justify-content:center;
@@ -1019,26 +1019,7 @@
   <footer>&copy; 2026. Dimas &amp; Nia Wedding</footer>
 </div>
 
-<script>
-(function(){
-  // ---- Cegah pinch-zoom (iOS: event.scale, Android/Chrome: touches.length>1) ----
-  document.addEventListener('touchmove', function (event) {
-    if ((event.scale !== undefined && event.scale !== 1) || (event.touches && event.touches.length > 1)) {
-      event.preventDefault();
-    }
-  }, { passive: false });
 
-  // ---- Cegah double-tap zoom ----
-  let lastTouchEnd = 0;
-  document.addEventListener('touchend', function (event) {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-      event.preventDefault();
-    }
-    lastTouchEnd = now;
-  }, { passive: false });
-})();
-</script>
 <script>
 (function(){
   // ---- Guest name from ?to= ----
