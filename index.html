@@ -338,6 +338,20 @@
     .reveal > *:not(.section-bg){ opacity:1; transform:none; transition:none; }
   }
 
+  /* Fly-in per teks (granular): dipasang lewat JS ke elemen teks individual
+     (judul, eyebrow, paragraf, label, item timeline, dll) supaya tiap tulisan
+     "kejut" muncul satu-satu saat di-scroll, bukan cuma serentak per section. */
+  .fly-text{
+    opacity:0;
+    transform:translateY(22px);
+    transition:opacity .85s cubic-bezier(.16,.8,.24,1), transform .85s cubic-bezier(.16,.8,.24,1);
+    will-change:opacity, transform;
+  }
+  .fly-text.show{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .fly-text{ opacity:1; transform:none; transition:none; }
+  }
+
   .divider{
     width:1px; height:46px; background:linear-gradient(var(--gold), transparent);
     margin:0 auto;
@@ -1271,6 +1285,54 @@
   }
   window.addEventListener('load', forceShowIfNear, { once:true });
   setTimeout(forceShowIfNear, 1200); // fallback tunggal, cukup sekali (baris 4000ms lama dihapus - redundan)
+
+  // ---- Fly-in per teks (granular, "kejutan" satu-satu saat discroll) ----
+  (function(){
+    // Kumpulan selector teks yang ingin dianimasikan satu-satu.
+    // Sengaja tidak menyentuh elemen yang sudah jadi direct-child dari .reveal
+    // (itu sudah kebagian fly-in dari sistem .reveal di atas) — target di sini
+    // fokus ke teks yang bersarang lebih dalam (di dalam wrapper/card/list).
+    const selectors = [
+      '.couple-ig',
+      '.t-item .t-year, .t-item p',
+      '.countdown-title, .cd-box',
+      '.event-card .ev-name, .event-card .ev-date, .event-card .ev-time, .event-card .ev-place, .event-card .btn-line',
+      '.gallery-caption',
+      '.info-label, .info-value',
+      '.bank-card .bank-name, .bank-card .bank-num, .bank-card .bank-holder',
+      '#rsvp .field, #rsvp .lead',
+      '#wishes .lead'
+    ].join(', ');
+
+    const els = Array.from(document.querySelectorAll(selectors));
+    els.forEach((el, i) => {
+      el.classList.add('fly-text');
+      const siblingsIdx = Array.prototype.indexOf.call(el.parentElement ? el.parentElement.children : [], el);
+      const delay = Math.min(0.5, 0.05 * (siblingsIdx >= 0 ? siblingsIdx : (i % 6)));
+      el.style.transitionDelay = delay + 's';
+    });
+
+    const textIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('show');
+          textIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
+
+    els.forEach(el => textIO.observe(el));
+
+    function forceShowTextIfNear(){
+      els.forEach(el => {
+        if (el.classList.contains('show')) return;
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 1.15 && r.bottom > -200) el.classList.add('show');
+      });
+    }
+    window.addEventListener('load', forceShowTextIfNear, { once:true });
+    setTimeout(forceShowTextIfNear, 1200);
+  })();
 
   // ---- Utility: debounce (dipakai untuk resize, BUKAN untuk scroll) ----
   function debounce(fn, wait){
