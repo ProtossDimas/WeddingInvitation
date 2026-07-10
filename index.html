@@ -1271,7 +1271,10 @@
   // ---- Reveal on scroll ----
   const revealEls = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{ if (e.isIntersecting) e.target.classList.add('show'); });
+    entries.forEach(e=>{
+      if (e.isIntersecting) e.target.classList.add('show');
+      else e.target.classList.remove('show');
+    });
   }, { threshold: 0.15 });
   revealEls.forEach(el=>io.observe(el));
   // Safety net: force-show any reveal section that's already near/in view but wasn't caught in time
@@ -1316,7 +1319,8 @@
       entries.forEach(e => {
         if (e.isIntersecting) {
           e.target.classList.add('show');
-          textIO.unobserve(e.target);
+        } else {
+          e.target.classList.remove('show');
         }
       });
     }, { threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
