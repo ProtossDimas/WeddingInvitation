@@ -594,7 +594,16 @@
     padding:22px; max-width:320px; margin:0 auto 14px;
     display:flex; align-items:center; justify-content:space-between; gap:12px;
   }
-  .bank-info{ text-align:left; }
+  .bank-info{ text-align:left; display:flex; align-items:center; gap:12px; }
+  .bank-logo{
+    width:48px; height:48px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:#fff; border:1px solid var(--gold-soft);
+    box-shadow:0 2px 6px rgba(0,0,0,.08);
+    overflow:hidden; padding:6px;
+  }
+  .bank-logo img{ width:100%; height:100%; object-fit:contain; }
+  .bank-info .bank-text{ display:flex; flex-direction:column; }
   .bank-info .bank-name{ font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--sage);}
   .bank-info .bank-num{ font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--maroon-deep); margin:2px 0;}
   .bank-info .bank-holder{ font-size:.78rem; opacity:.75;}
@@ -884,17 +893,6 @@
         <a class="btn-pill" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">Buka</a>
       </div>
     </div>
-    <div class="lp-block">
-      <h2>Photobooth Online</h2>
-      <p class="lead">Abadikan momen Anda dan bagikan langsung dari ponsel, kapan saja selama acara berlangsung.</p>
-      <div class="info-card">
-        <div>
-          <div class="info-label">📸 Photobooth</div>
-          <div class="info-value">Ambil Foto</div>
-        </div>
-        <a class="btn-pill" href="https://photobooth-7tr.pages.dev/" target="_blank" rel="noopener">Buka</a>
-      </div>
-    </div>
   </section>
 
   <div id="lightbox" class="lightbox" aria-hidden="true">
@@ -909,17 +907,23 @@
     <p class="lead">Doa dan kehadiran Anda adalah hadiah terbaik bagi kami. Namun jika ingin memberi tanda kasih, dapat melalui:</p>
     <div class="bank-card">
       <div class="bank-info">
-        <div class="bank-name">Bank BRI</div>
-        <div class="bank-num">154901026468504</div>
-        <div class="bank-holder">Sismadinia</div>
+        <div class="bank-logo"><img src="assets/bank-bri.png" alt="Bank BRI" loading="lazy"></div>
+        <div class="bank-text">
+          <div class="bank-name">Bank BRI</div>
+          <div class="bank-num">154901026468504</div>
+          <div class="bank-holder">Sismadinia</div>
+        </div>
       </div>
       <button class="copy-btn" id="copyBank" data-num="154901026468504">Salin</button>
     </div>
         <div class="bank-card">
       <div class="bank-info">
-        <div class="bank-name">Bank Mandiri</div>
-        <div class="bank-num">1410016933558</div>
-        <div class="bank-holder">Dimas Alfian Wahyudi</div>
+        <div class="bank-logo"><img src="assets/bank-mandiri.png" alt="Bank Mandiri" loading="lazy"></div>
+        <div class="bank-text">
+          <div class="bank-name">Bank Mandiri</div>
+          <div class="bank-num">1410016933558</div>
+          <div class="bank-holder">Dimas Alfian Wahyudi</div>
+        </div>
       </div>
       <button class="copy-btn" id="copyBank" data-num="1410016933558">Salin</button>
     </div>
