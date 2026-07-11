@@ -100,15 +100,15 @@
       url('/photos/coverdepan.jpeg') center center/cover no-repeat,
       var(--cream);
     color:var(--cream);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; padding:32px;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    text-align:center; padding:32px; padding-bottom:56px;
     transition: transform 1.1s var(--ease), opacity 1s var(--ease);
     overflow:hidden;
   }
   #cover.opened{ transform:translateY(-100%); opacity:0; pointer-events:none; }
   #cover .cover-overlay{ display:none; }
   #cover .cover-title, #cover .cover-to, #cover .cover-guest, #cover .cover-names-sub, #cover .cover-date-sub{ text-shadow: 0 2px 16px rgba(0,0,0,.5); }
-  #cover .cover-title{ margin-top:-32px; margin-bottom:10px; }
+  #cover .cover-title{ margin-top:0; margin-bottom:10px; }
   #cover .cover-names-sub{
     font-family:'Italianno',cursive; font-size:2.1rem; line-height:1; color:var(--maroon-deep);
     position:relative; z-index:2; margin-top:2px;
@@ -118,7 +118,7 @@
     font-family:'Jost',sans-serif; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase;
     color:var(--cream); opacity:.9; position:relative; z-index:2; margin-top:8px;
   }
-  #cover .cover-to{ margin-top:134px; font-family:'Playfair Display',serif; font-style:italic; font-size:1.15rem; color:var(--maroon-deep); text-shadow:0 2px 10px rgba(255,255,255,.55), 0 1px 4px rgba(0,0,0,.25); }
+  #cover .cover-to{ margin-top:22px; font-family:'Playfair Display',serif; font-style:italic; font-size:1.15rem; color:var(--maroon-deep); text-shadow:0 2px 10px rgba(255,255,255,.55), 0 1px 4px rgba(0,0,0,.25); }
   #cover .cover-guest{ font-size:1.15rem; }
   #cover .open-btn{ font-size:.78rem; }
 
