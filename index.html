@@ -108,6 +108,10 @@
   #cover.opened{ transform:translateY(-100%); opacity:0; pointer-events:none; }
   #cover .cover-overlay{ display:none; }
   #cover .cover-title, #cover .cover-to, #cover .cover-guest, #cover .cover-names-sub, #cover .cover-date-sub{ text-shadow: 0 2px 16px rgba(0,0,0,.5); }
+  #cover .cover-top-block{
+    position:absolute; left:0; right:0; top:96px;
+    display:flex; flex-direction:column; align-items:center; z-index:2;
+  }
   #cover .cover-title{ margin-top:0; margin-bottom:10px; }
   #cover .cover-names-sub{
     font-family:'Italianno',cursive; font-size:2.1rem; line-height:1; color:var(--maroon-deep);
@@ -821,9 +825,11 @@
 
   <!-- ============ COVER ============ -->
   <div id="cover">
-    <h1 class="cover-title">The Beginning<br>of Forever</h1>
-    <div class="cover-names-sub">Dimas &amp; Nia</div>
-    <div class="cover-date-sub">Sabtu, 01 Agustus 2026</div>
+    <div class="cover-top-block">
+      <h1 class="cover-title">The Beginning<br>of Forever</h1>
+      <div class="cover-names-sub">Dimas &amp; Nia</div>
+      <div class="cover-date-sub">Sabtu, 01 Agustus 2026</div>
+    </div>
 
     <div class="cover-to">Kepada Yth</div>
     <div class="cover-guest" id="guestName">Tamu Undangan</div>
