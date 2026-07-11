@@ -107,7 +107,17 @@
   }
   #cover.opened{ transform:translateY(-100%); opacity:0; pointer-events:none; }
   #cover .cover-overlay{ display:none; }
-  #cover .cover-title, #cover .cover-to, #cover .cover-guest{ text-shadow: 0 2px 16px rgba(0,0,0,.5); }
+  #cover .cover-title, #cover .cover-to, #cover .cover-guest, #cover .cover-names-sub, #cover .cover-date-sub{ text-shadow: 0 2px 16px rgba(0,0,0,.5); }
+  #cover .cover-title{ margin-top:-32px; margin-bottom:10px; }
+  #cover .cover-names-sub{
+    font-family:'Italianno',cursive; font-size:2.1rem; line-height:1; color:var(--gold-soft);
+    position:relative; z-index:2; margin-top:2px;
+  }
+  #cover .cover-date-sub{
+    font-family:'Jost',sans-serif; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase;
+    color:var(--cream); opacity:.9; position:relative; z-index:2; margin-top:8px;
+  }
+  #cover .cover-to{ margin-top:54px; font-family:'Playfair Display',serif; font-style:italic; }
 
   /* ---------- WELCOME INTRO: teks tengah muncul setelah cover dibuka ---------- */
   .fl-center{
@@ -612,7 +622,22 @@
   .lightbox-content img, .lightbox-content video{ max-width:100%; max-height:88vh; border-radius:10px; display:block; margin:0 auto; }
   .lightbox-close{
     position:absolute; top:18px; right:22px; background:none; border:none;
-    color:var(--cream); font-size:2rem; line-height:1; cursor:pointer;
+    color:var(--cream); font-size:2rem; line-height:1; cursor:pointer; z-index:2;
+  }
+  .lightbox-nav{
+    position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+    width:42px; height:42px; border-radius:50%;
+    background:rgba(43,26,26,0.55); border:1px solid rgba(251,245,234,0.35);
+    color:var(--cream); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .25s var(--ease);
+  }
+  .lightbox-nav:hover{ background:rgba(43,26,26,0.8); }
+  .lightbox-nav svg{ width:22px; height:22px; }
+  .lightbox-prev{ left:14px; }
+  .lightbox-next{ right:14px; }
+  @media (min-width:700px){
+    .lightbox-prev{ left:28px; }
+    .lightbox-next{ right:28px; }
   }
 
   /* GIFT */
@@ -651,6 +676,13 @@
     text-transform:uppercase; cursor:pointer; white-space:nowrap;
   }
   .copy-btn.copied{ background:var(--sage); border-color:var(--sage); color:#fff;}
+  .gift-address-card{
+    background:var(--cream); border:1px solid var(--gold-soft); border-radius:18px;
+    padding:22px; max-width:320px; margin:0 auto 14px;
+    display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center;
+  }
+  .gift-address-card .bank-name{ font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--sage); }
+  .gift-address-card .gift-address-text{ font-family:'Playfair Display',serif; font-size:.95rem; color:var(--maroon-deep); line-height:1.6; }
 
   /* RSVP / WISHES — background pakai foto rsvp.jpg, ditinta gelap supaya teks cream tetap kebaca */
   #rsvp{
@@ -787,6 +819,8 @@
   <!-- ============ COVER ============ -->
   <div id="cover">
     <h1 class="cover-title">The Beginning<br>of Forever</h1>
+    <div class="cover-names-sub">Dimas &amp; Nia</div>
+    <div class="cover-date-sub">Sabtu, 01 Agustus 2026</div>
 
     <div class="cover-to">Kepada Yth</div>
     <div class="cover-guest" id="guestName">Tamu Undangan</div>
@@ -937,6 +971,12 @@
 
   <div id="lightbox" class="lightbox" aria-hidden="true">
     <button id="lightboxClose" class="lightbox-close" aria-label="Tutup">&times;</button>
+    <button id="lightboxPrev" class="lightbox-nav lightbox-prev" aria-label="Sebelumnya">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button id="lightboxNext" class="lightbox-nav lightbox-next" aria-label="Selanjutnya">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
     <div class="lightbox-content" id="lightboxContent"></div>
   </div>
 
@@ -954,7 +994,7 @@
           <div class="bank-holder">Sismadinia</div>
         </div>
       </div>
-      <button class="copy-btn" id="copyBank" data-num="154901026468504">Salin</button>
+      <button class="copy-btn" data-num="154901026468504">Salin</button>
     </div>
         <div class="bank-card">
       <div class="bank-info">
@@ -965,7 +1005,12 @@
           <div class="bank-holder">Dimas Alfian Wahyudi</div>
         </div>
       </div>
-      <button class="copy-btn" id="copyBank" data-num="1410016933558">Salin</button>
+      <button class="copy-btn" data-num="1410016933558">Salin</button>
+    </div>
+    <div class="gift-address-card">
+      <div class="bank-name">Kirim Kado</div>
+      <div class="gift-address-text">Perumahan Maharani Village Blok B6, Cigugur Girang, Parongpong, Kab. Bandung Barat</div>
+      <button class="copy-btn" data-text="Perumahan Maharani Village Blok B6, Cigugur Girang, Parongpong, Kab. Bandung Barat">Salin</button>
     </div>
   </section>
 
@@ -1494,11 +1539,22 @@
   const galleryGrid = document.getElementById('galleryGrid');
   const lightbox = document.getElementById('lightbox');
   const lightboxContent = document.getElementById('lightboxContent');
+  const lightboxPrev = document.getElementById('lightboxPrev');
+  const lightboxNext = document.getElementById('lightboxNext');
 
-  function openLightbox(item){
+  let galleryItems = [];
+  let currentLightboxIndex = 0;
+
+  function renderLightbox(index){
+    if (!galleryItems.length) return;
+    currentLightboxIndex = (index + galleryItems.length) % galleryItems.length;
+    const item = galleryItems[currentLightboxIndex];
     lightboxContent.innerHTML = item.type === 'video'
       ? `<video src="${item.url}" controls autoplay playsinline></video>`
       : `<img src="${item.url}" alt="">`;
+  }
+  function openLightbox(index){
+    renderLightbox(index);
     lightbox.classList.add('open');
     lightbox.setAttribute('aria-hidden', 'false');
   }
@@ -1507,8 +1563,33 @@
     lightbox.setAttribute('aria-hidden', 'true');
     lightboxContent.innerHTML = '';
   }
+  function showPrev(){ renderLightbox(currentLightboxIndex - 1); }
+  function showNext(){ renderLightbox(currentLightboxIndex + 1); }
+
   document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  lightboxPrev.addEventListener('click', e => { e.stopPropagation(); showPrev(); });
+  lightboxNext.addEventListener('click', e => { e.stopPropagation(); showNext(); });
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft') showPrev();
+    else if (e.key === 'ArrowRight') showNext();
+    else if (e.key === 'Escape') closeLightbox();
+  });
+
+  // touch swipe support
+  let touchStartX = 0, touchStartY = 0;
+  lightbox.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive:true });
+  lightbox.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+      if (dx < 0) showNext(); else showPrev();
+    }
+  }, { passive:true });
 
   function buildGalleryItem(item, index){
     const div = document.createElement('div');
@@ -1518,28 +1599,30 @@
     } else {
       div.innerHTML = `<img src="${item.url}" alt="" loading="lazy" decoding="async">`;
     }
-    div.addEventListener('click', () => openLightbox(item));
+    div.addEventListener('click', () => openLightbox(index));
     return div;
   }
 
   function loadGallery(){
-    const found = GALLERY_FILES.map(galleryItemFromFilename);
+    galleryItems = GALLERY_FILES.map(galleryItemFromFilename);
     galleryGrid.innerHTML = '';
-    if (found.length === 0){
+    if (galleryItems.length === 0){
       galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Tambahkan nama file ke daftar GALLERY_FILES di kode.</span></div>';
       return;
     }
-    found.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx)));
+    galleryItems.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx)));
   }
   loadGallery();
 
-  // ---- Copy bank number ----
-  const copyBtn = document.getElementById('copyBank');
-  copyBtn.addEventListener('click', function(){
-    navigator.clipboard.writeText(copyBtn.dataset.num).then(()=>{
-      copyBtn.textContent = 'Tersalin!';
-      copyBtn.classList.add('copied');
-      setTimeout(()=>{ copyBtn.textContent='Salin'; copyBtn.classList.remove('copied'); }, 1800);
+  // ---- Copy bank number / address ----
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const text = btn.dataset.text || btn.dataset.num;
+      navigator.clipboard.writeText(text).then(()=>{
+        btn.textContent = 'Tersalin!';
+        btn.classList.add('copied');
+        setTimeout(()=>{ btn.textContent='Salin'; btn.classList.remove('copied'); }, 1800);
+      });
     });
   });
 
