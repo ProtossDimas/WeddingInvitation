@@ -522,11 +522,16 @@ async function handlePostWish(request, env, context) {
   if (!name || name.length > MAX_NAME) {
     return badRequest("Nama tidak valid.");
   }
-  if (!ALLOWED_ATTENDANCE.includes(attendance)) {
+  // attendance boleh kosong (form Ucapan & Doa tidak mengisi status kehadiran)
+  if (attendance && !ALLOWED_ATTENDANCE.includes(attendance)) {
     return badRequest("Status kehadiran tidak valid.");
   }
-  if (!message || message.length > MAX_MESSAGE) {
-    return badRequest("Ucapan tidak valid.");
+  // message boleh kosong (form RSVP tidak mengisi ucapan), tapi tetap dibatasi panjangnya
+  if (message.length > MAX_MESSAGE) {
+    return badRequest("Ucapan terlalu panjang.");
+  }
+  if (!attendance && !message) {
+    return badRequest("Isi minimal status kehadiran atau ucapan.");
   }
 
   try {
