@@ -638,14 +638,45 @@
   #gift{
     text-align:center;
     position:relative;
+    padding:0 20px 40px;
     background:
       radial-gradient(circle at 15% 85%, rgba(201,161,74,0.10), transparent 40%),
       radial-gradient(circle at 90% 10%, rgba(110,31,43,0.06), transparent 38%),
       linear-gradient(180deg, rgba(250,244,232,.18) 0%, rgba(250,244,232,.28) 100%);
   }
-  #gift h2{ color:var(--cream); font-size:1.9rem; margin:8px 0 14px; text-shadow:0 2px 14px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.35);}
-  #gift p.lead{ font-size:.86rem; opacity:.95; color:var(--cream); max-width:320px; margin:0 auto 26px; line-height:1.7; text-shadow:0 1px 10px rgba(0,0,0,.35);}
-  #gift .eyebrow{ color:var(--cream); text-shadow:0 1px 10px rgba(0,0,0,.35); font-size:.7rem; }
+  #gift .eyebrow{ color:var(--gold-soft); font-size:.7rem; position:relative; z-index:1; }
+  .gift-card{
+    background:var(--maroon-deep);
+    border-radius:16px;
+    padding:34px 26px 30px;
+    box-shadow:0 16px 30px -16px rgba(20,8,10,.55);
+    position:relative;
+  }
+  .gift-divider{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:18px; }
+  .gift-divider span{ width:52px; height:1px; background:rgba(227,205,147,.5); }
+  .gift-divider svg{ width:20px; height:20px; fill:var(--gold-soft); flex-shrink:0; }
+  .gift-title{
+    font-family:'Italianno', cursive; font-size:3rem; line-height:1;
+    color:var(--cream); margin:0 0 18px;
+  }
+  #gift p.lead{ font-size:.9rem; font-style:italic; opacity:.92; color:var(--cream); max-width:320px; margin:0 auto 26px; line-height:1.8; }
+  .gift-show-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--cream); color:var(--maroon-deep); border:none;
+    border-radius:999px; padding:14px 26px; font-size:.8rem; letter-spacing:.04em;
+    font-weight:600; cursor:pointer; transition:transform .25s var(--ease), background .25s var(--ease);
+  }
+  .gift-show-btn:hover{ background:var(--cream-deep); transform:translateY(-1px); }
+  .gift-show-btn svg{ width:18px; height:18px; }
+  .gift-show-btn .gift-btn-label-close{ display:none; }
+  .gift-show-btn.is-open .gift-btn-label-open{ display:none; }
+  .gift-show-btn.is-open .gift-btn-label-close{ display:inline; }
+  .gift-details{
+    max-height:0; overflow:hidden; opacity:0;
+    transition:max-height .5s var(--ease), opacity .4s var(--ease), margin-top .5s var(--ease);
+    margin-top:0;
+  }
+  .gift-details.is-open{ max-height:900px; opacity:1; margin-top:26px; }
   .bank-card{
     background:var(--cream); border:1px solid var(--gold-soft); border-radius:18px;
     padding:22px; max-width:320px; margin:0 auto 14px;
@@ -835,7 +866,7 @@
       <div class="cover-eyebrow">The Wedding Of</div>
       <h1 class="cover-title">Dimas<span class="amp">&amp;</span>Nia</h1>
       <p class="cover-quote">
-        "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan agar kamu hidup tenang bersamanya. Dia jadikan pula di antaramu rasa cinta dan kasih sayang."
+        "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya. Dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
         <span class="cover-quote-src">QS. Ar-Rum : 21</span>
       </p>
     </div>
@@ -895,7 +926,7 @@
       <div class="t-item">
         <span class="t-year">“Our Forever Begins”</span>
         <h4>Melangkah ke Pelaminan</h4>
-        <p>Kini, dengan niat yang sama dan doa yang menyertai, kami memilih untuk menyempurnakan perjalanan ini dalam ikatan suci pernikahan Sebagai awal baru untuk berbagi hidup, tumbuh, dan menua bersama,dengan harapan selalu berjalan seiring dalam ridho-Nya.</p>
+        <p>Kini, dengan niat yang sama dan doa yang menyertai, kami memilih untuk menyempurnakan kisah ini dalam ikatan suci pernikahan. Sebuah awal baru untuk berbagi hidup, bertumbuh, dan menua bersama, seraya berharap setiap langkah kami senantiasa berada dalam ridha-Nya.</p>
       </div>
     </div>
   </section>
@@ -979,35 +1010,49 @@
 
   <!-- ============ GIFT ============ -->
   <section id="gift" class="reveal">
-    <span class="eyebrow">Tanda Kasih</span>
-    <h2>Kirim Hadiah</h2>
-    <p class="lead">Doa dan kehadiran Anda adalah hadiah terbaik bagi kami. Namun jika ingin memberi tanda kasih, dapat melalui:</p>
-    <div class="bank-card">
-      <div class="bank-info">
-        <div class="bank-logo"><img src="photos/BRI.png" alt="Bank BRI" loading="lazy"></div>
-        <div class="bank-text">
-          <div class="bank-name">Bank BRI</div>
-          <div class="bank-num">154901026468504</div>
-          <div class="bank-holder">Sismadinia</div>
-        </div>
+    <div class="gift-card">
+      <span class="eyebrow">Tanda Kasih</span>
+      <div class="gift-divider">
+        <span></span>
+        <svg viewBox="0 0 24 24"><path d="M12 21s-6.72-4.35-9.33-8.1C1.02 10.1 1.6 6.7 4.6 5.1c2.2-1.15 4.6-.4 6 1.2l1.4 1.6 1.4-1.6c1.4-1.6 3.8-2.35 6-1.2 3 1.6 3.58 5 1.73 7.9C18.72 16.65 12 21 12 21z"/></svg>
+        <span></span>
       </div>
-      <button class="copy-btn" data-num="154901026468504">Salin</button>
-    </div>
+      <h2 class="gift-title">Wedding Gift</h2>
+      <p class="lead">Doa dan restu Anda adalah hadiah terbaik bagi kami. Namun jika ingin memberi lebih, kami dengan senang hati menerimanya sebagai pelengkap kebahagiaan kami.</p>
+      <button class="gift-show-btn" id="giftShowBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 12v10H4V12M2 7h20v5H2V7zm10 0V5a2.5 2.5 0 0 0-5 0v2m5 0V5a2.5 2.5 0 0 1 5 0v2m-5 0v13"/></svg>
+        <span class="gift-btn-label-open">Show Gift</span>
+        <span class="gift-btn-label-close">Tutup</span>
+      </button>
+      <div class="gift-details" id="giftDetails">
         <div class="bank-card">
-      <div class="bank-info">
-        <div class="bank-logo"><img src="photos/Mandiri.png" alt="Bank Mandiri" loading="lazy"></div>
-        <div class="bank-text">
-          <div class="bank-name">Bank Mandiri</div>
-          <div class="bank-num">1410016933558</div>
-          <div class="bank-holder">Dimas Alfian Wahyudi</div>
+          <div class="bank-info">
+            <div class="bank-logo"><img src="photos/BRI.png" alt="Bank BRI" loading="lazy"></div>
+            <div class="bank-text">
+              <div class="bank-name">Bank BRI</div>
+              <div class="bank-num">154901026468504</div>
+              <div class="bank-holder">Sismadinia</div>
+            </div>
+          </div>
+          <button class="copy-btn" data-num="154901026468504">Salin</button>
+        </div>
+        <div class="bank-card">
+          <div class="bank-info">
+            <div class="bank-logo"><img src="photos/Mandiri.png" alt="Bank Mandiri" loading="lazy"></div>
+            <div class="bank-text">
+              <div class="bank-name">Bank Mandiri</div>
+              <div class="bank-num">1410016933558</div>
+              <div class="bank-holder">Dimas Alfian Wahyudi</div>
+            </div>
+          </div>
+          <button class="copy-btn" data-num="1410016933558">Salin</button>
+        </div>
+        <div class="gift-address-card">
+          <div class="bank-name">Kirim Kado</div>
+          <div class="gift-address-text">Perumahan Maharani Village Blok B6, Cigugur Girang, Parongpong, Kab. Bandung Barat</div>
+          <button class="copy-btn" data-text="Perumahan Maharani Village Blok B6, Cigugur Girang, Parongpong, Kab. Bandung Barat">Salin</button>
         </div>
       </div>
-      <button class="copy-btn" data-num="1410016933558">Salin</button>
-    </div>
-    <div class="gift-address-card">
-      <div class="bank-name">Kirim Kado</div>
-      <div class="gift-address-text">Perumahan Maharani Village Blok B6, Cigugur Girang, Parongpong, Kab. Bandung Barat</div>
-      <button class="copy-btn" data-text="Perumahan Maharani Village Blok B6, Cigugur Girang, Parongpong, Kab. Bandung Barat">Salin</button>
     </div>
   </section>
 
@@ -1852,6 +1897,17 @@
   }
   loadGallery();
   window.addEventListener('resize', () => goToSlide(gcCurrent));
+
+  // ---- Gift: tombol "Show Gift" untuk buka/tutup detail rekening & alamat ----
+  (function(){
+    const btn = document.getElementById('giftShowBtn');
+    const details = document.getElementById('giftDetails');
+    if (!btn || !details) return;
+    btn.addEventListener('click', function(){
+      const isOpen = details.classList.toggle('is-open');
+      btn.classList.toggle('is-open', isOpen);
+    });
+  })();
 
   // ---- Copy bank number / address ----
   document.querySelectorAll('.copy-btn').forEach(function(btn){
