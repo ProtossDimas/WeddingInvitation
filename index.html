@@ -499,23 +499,6 @@
   }
   .btn-line:hover{ background:var(--maroon); color:var(--cream); }
 
-  /* YOUTUBE VIDEO */
-  .video-frame{
-    position:relative; width:100%; max-width:420px; margin:20px auto 0;
-    aspect-ratio:16/9; border-radius:18px; overflow:hidden;
-    border:1px solid var(--gold-soft); box-shadow:0 12px 30px rgba(110,31,43,0.12);
-  }
-  .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-  .video-thumb{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; cursor:pointer; }
-  .video-play-btn{
-    position:absolute; inset:0; margin:auto; width:64px; height:46px;
-    background:none; border:0; padding:0; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
-    transition:transform .25s var(--ease);
-  }
-  .video-play-btn:hover{ transform:scale(1.08); }
-
   /* LIVE STREAMING */
   #livestream-photobooth{
     text-align:center;
@@ -875,12 +858,12 @@
       <div class="t-item">
         <span class="t-year">“When We Met”</span>
         <h4>Awal Bertemu</h4>
-        <p>Dari layar yang sunyi, dua nama saling mengenal tanpa suara. Sebuah pertemuan yang tidak disengaja menjadi awal dari jalan yang telah takdir siapkan</p>
+        <p>Kami pertama kali saling mengenal melalui media sosial. Beberapa waktu kemudian, kami bertemu secara tidak sengaja karena urusan pekerjaan. Dari pertemuan itu, kami merasa nyaman saat berbincang dan mulai saling mengenal lebih dekat.</p>
       </div>
       <div class="t-item">
         <span class="t-year">“Becoming Us”</span>
         <h4>Saling Meyakinkan</h4>
-        <p>Seiring berjalannya waktu, kami belajar saling mengenal. Bukan hanya tentang bahagia, tetapi juga tentang perbedaan, jarak, dan doa. Dari semua itu, kami semakin yakin akan tujuan yang sama</p>
+        <p>Meski harus menjalani hubungan jarak jauh, kami tetap menjaga komunikasi dan saling mendukung. Seiring berjalannya waktu, kami semakin yakin akan tujuan yang sama</p>
       </div>
       <div class="t-item">
         <span class="t-year">“A Sacred Promise”</span>
@@ -938,15 +921,6 @@
 
   <!-- ============ VIDEO, LIVE STREAMING & PHOTOBOOTH ============ -->
   <section id="livestream-photobooth" class="reveal">
-    <div class="lp-block" id="video">
-      <h2>Our Video</h2>
-      <div class="video-frame" id="videoFrame" data-yt-id="gIrDLOLmKq4">
-        <img class="video-thumb" src="https://i.ytimg.com/vi/gIrDLOLmKq4/hqdefault.jpg" alt="Wedding Video" loading="lazy" decoding="async">
-        <button class="video-play-btn" id="videoPlayBtn" aria-label="Putar video" type="button">
-          <svg viewBox="0 0 68 48" width="56" height="40"><path d="M66.5 7.7c-.8-2.9-2.6-5.2-5-6.1C57.4 0 34 0 34 0S10.6 0 6.5 1.6c-2.4.9-4.2 3.2-5 6.1C0 12 0 24 0 24s0 12 1.5 16.3c.8 2.9 2.6 5.1 5 6.1C10.6 48 34 48 34 48s23.4 0 27.5-1.6c2.4-.9 4.2-3.2 5-6.1C68 36 68 24 68 24s0-12-1.5-16.3z" fill="rgba(43,26,26,.72)"/><path d="M45 24 27 14v20z" fill="#fbf5ea"/></svg>
-        </button>
-      </div>
-    </div>
     <div class="lp-block">
       <h2>Live Streaming</h2>
       <p class="lead">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
@@ -1182,55 +1156,6 @@
     }
   });
   window.addEventListener('pagehide', function(){ music.pause(); });
-
-  // ---- YouTube video: lazy-load, matikan musik latar sementara saat diputar ----
-  let musicWasPlayingBeforeVideo = false;
-  let ytPlayer = null;
-  const videoFrame = document.getElementById('videoFrame');
-  const videoPlayBtn = document.getElementById('videoPlayBtn');
-
-  function loadYouTubeAPI(cb){
-    if (window.YT && window.YT.Player){ cb(); return; }
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(tag);
-    window.onYouTubeIframeAPIReady = cb;
-  }
-
-  function startVideo(){
-    const ytId = videoFrame.dataset.ytId;
-    videoFrame.querySelector('.video-thumb').remove();
-    videoPlayBtn.remove();
-    const iframe = document.createElement('iframe');
-    iframe.id = 'ytVideo';
-    iframe.src = `https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=1`;
-    iframe.title = 'Wedding Video';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    iframe.allowFullscreen = true;
-    videoFrame.appendChild(iframe);
-
-    loadYouTubeAPI(function(){
-      ytPlayer = new YT.Player('ytVideo', {
-        events: {
-          onStateChange: function(e){
-            if (e.data === YT.PlayerState.PLAYING){
-              if (!music.paused){
-                musicWasPlayingBeforeVideo = true;
-                music.pause();
-              }
-            } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED){
-              if (musicWasPlayingBeforeVideo){
-                musicWasPlayingBeforeVideo = false;
-                playMusic();
-              }
-            }
-          }
-        }
-      });
-    });
-  }
-  videoPlayBtn.addEventListener('click', startVideo);
-  videoFrame.querySelector('.video-thumb').addEventListener('click', startVideo);
 
   // ---- Cover open ----
   document.getElementById('openBtn').addEventListener('click', function(){
