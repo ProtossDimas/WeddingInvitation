@@ -1584,14 +1584,15 @@
   (function(){
     const MIN_SCALE = 1, MAX_SCALE = 4;
     let scale = 1, panX = 0, panY = 0;
-    let startDist = 0, startScale = 1;
     let isDragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
     let lastTapTime = 0;
     let activeTouches = 0;
+    let prevDist = 0, prevMidX = 0, prevMidY = 0;
 
     function initPinch(t1, t2){
-      startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      startScale = scale;
+      prevDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      prevMidX = (t1.clientX + t2.clientX) / 2;
+      prevMidY = (t1.clientY + t2.clientY) / 2;
       isDragging = false;
     }
     function initSingleDrag(t){
@@ -1612,7 +1613,7 @@
     }
     window.resetZoom = function(){
       scale = 1; panX = 0; panY = 0;
-      isDragging = false; startDist = 0; activeTouches = 0;
+      isDragging = false; prevDist = 0; activeTouches = 0;
       const img = currentImg();
       if (img){ img.style.transform = ''; img.classList.remove('is-zoomed','is-dragging'); }
     };
@@ -1695,12 +1696,27 @@
         e.preventDefault();
         return;
       }
-      if (e.touches.length === 2 && startDist > 0){
+      if (e.touches.length === 2 && prevDist > 0){
         e.preventDefault();
         const [t1, t2] = e.touches;
         const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
         const midX = (t1.clientX + t2.clientX) / 2, midY = (t1.clientY + t2.clientY) / 2;
-        setZoomAt(startScale * (dist / startDist), midX, midY);
+        const img = currentImg();
+        if (img){
+          const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * (dist / prevDist)));
+          const rect = img.getBoundingClientRect();
+          const offsetX = prevMidX - (rect.left + rect.width / 2);
+          const offsetY = prevMidY - (rect.top + rect.height / 2);
+          const ratio = newScale / scale;
+          // anchor zoom di titik tengah 2 jari sebelumnya, lalu tambahkan pergeseran titik tengah
+          // (delta midpoint) supaya menggeser gambar sambil pinch juga ikut kebaca, bukan cuma skalanya.
+          panX = panX * ratio - offsetX * (ratio - 1) + (midX - prevMidX);
+          panY = panY * ratio - offsetY * (ratio - 1) + (midY - prevMidY);
+          scale = newScale;
+          clampPan();
+          applyTransform();
+        }
+        prevDist = dist; prevMidX = midX; prevMidY = midY;
       } else if (isDragging && e.touches.length === 1){
         e.preventDefault();
         panX = panStartX + (e.touches[0].clientX - dragStartX);
@@ -1716,9 +1732,9 @@
         initSingleDrag(e.touches[0]);
       } else if (e.touches.length === 0){
         isDragging = false;
-        startDist = 0;
+        prevDist = 0;
       } else {
-        startDist = 0;
+        prevDist = 0;
       }
     }, { passive:true });
 
