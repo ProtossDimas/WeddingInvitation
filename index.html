@@ -603,8 +603,11 @@
     opacity:0; visibility:hidden; transition:opacity .25s var(--ease);
   }
   .lightbox.open{ opacity:1; visibility:visible; }
-  .lightbox-content{ max-width:100%; max-height:100%; }
-  .lightbox-content img, .lightbox-content video{ max-width:100%; max-height:88vh; border-radius:10px; display:block; margin:0 auto; }
+  .lightbox-content{ max-width:100%; max-height:100%; overflow:hidden; }
+  .lightbox-content img{ max-width:100%; max-height:88vh; border-radius:10px; display:block; margin:0 auto; cursor:zoom-in; touch-action:none; transform-origin:center center; will-change:transform; }
+  .lightbox-content img.is-zoomed{ cursor:grab; }
+  .lightbox-content img.is-dragging{ cursor:grabbing; }
+  .lightbox-content video{ max-width:100%; max-height:88vh; border-radius:10px; display:block; margin:0 auto; }
   .lightbox-close{
     position:absolute; top:18px; right:22px; background:none; border:none;
     color:var(--cream); font-size:2rem; line-height:1; cursor:pointer; z-index:2;
@@ -844,7 +847,7 @@
         <div class="couple-photo"><img id="couplePhotoDimas" src="/photos/dimas.jpg" alt="Dimas Alfian Wahyudi" loading="lazy" decoding="async" onerror="this.parentElement.textContent='D'"></div>
         <span class="script-name">Dimas</span>
         <h3>Dimas Alfian Wahyudi</h3>
-        <p>Putra dari :<br>Bapak Amad Sayudi<br>&amp; Ibu Alfinah</p>
+        <p>Putra Pertama dari :<br>Bapak Amad Sayudi<br>&amp; Ibu Alfinah</p>
         <a class="couple-ig" href="https://instagram.com/dimasalfw" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.72 0-3.06.01-4.12.06-1.06.05-1.79.22-2.43.47-.66.26-1.22.6-1.77 1.16-.56.55-.9 1.11-1.16 1.77-.25.64-.42 1.37-.47 2.43C2 8.94 2 9.28 2 12s.01 3.06.06 4.12c.05 1.06.22 1.79.47 2.43.26.66.6 1.22 1.16 1.77.55.56 1.11.9 1.77 1.16.64.25 1.37.42 2.43.47C8.94 22 9.28 22 12 22s3.06-.01 4.12-.06c1.06-.05 1.79-.22 2.43-.47.66-.26 1.22-.6 1.77-1.16.56-.55.9-1.11 1.16-1.77.25-.64.42-1.37.47-2.43.05-1.06.06-1.4.06-4.12s-.01-3.06-.06-4.12c-.05-1.06-.22-1.79-.47-2.43-.26-.66-.6-1.22-1.16-1.77-.55-.56-1.11-.9-1.77-1.16-.64-.25-1.37-.42-2.43-.47C15.06 2.01 14.72 2 12 2zm0 1.8c2.67 0 2.99.01 4.04.06.98.04 1.5.21 1.85.34.47.18.8.4 1.15.75.35.35.57.68.75 1.15.13.35.3.87.34 1.85.05 1.05.06 1.37.06 4.04s-.01 2.99-.06 4.04c-.04.98-.21 1.5-.34 1.85-.18.47-.4.8-.75 1.15-.35.35-.68.57-1.15.75-.35.13-.87.3-1.85.34-1.05.05-1.37.06-4.04.06s-2.99-.01-4.04-.06c-.98-.04-1.5-.21-1.85-.34-.47-.18-.8-.4-1.15-.75-.35-.35-.57-.68-.75-1.15-.13-.35-.3-.87-.34-1.85-.05-1.05-.06-1.37-.06-4.04s.01-2.99.06-4.04c.04-.98.21-1.5.34-1.85.18-.47.4-.8.75-1.15.35-.35.68-.57 1.15-.75.35-.13.87-.3 1.85-.34C9.01 3.81 9.33 3.8 12 3.8zm0 3.06a5.14 5.14 0 100 10.28 5.14 5.14 0 000-10.28zm0 8.48a3.34 3.34 0 110-6.68 3.34 3.34 0 010 6.68zm5.34-8.68a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg>
           dimasalfw
@@ -855,7 +858,7 @@
         <div class="couple-photo"><img id="couplePhotoNia" src="/photos/nia.jpg" alt="Sismadinia" loading="lazy" decoding="async" onerror="this.parentElement.textContent='N'"></div>
         <span class="script-name">Nia</span>
         <h3>Sismadinia</h3>
-        <p>Putri dari :<br>Bapak Syamsul Bakhri<br>&amp; Ibu Ismiyati</p>
+        <p>Putri Pertama dari :<br>Bapak Syamsul Bakhri<br>&amp; Ibu Ismiyati</p>
         <a class="couple-ig" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.72 0-3.06.01-4.12.06-1.06.05-1.79.22-2.43.47-.66.26-1.22.6-1.77 1.16-.56.55-.9 1.11-1.16 1.77-.25.64-.42 1.37-.47 2.43C2 8.94 2 9.28 2 12s.01 3.06.06 4.12c.05 1.06.22 1.79.47 2.43.26.66.6 1.22 1.16 1.77.55.56 1.11.9 1.77 1.16.64.25 1.37.42 2.43.47C8.94 22 9.28 22 12 22s3.06-.01 4.12-.06c1.06-.05 1.79-.22 2.43-.47.66-.26 1.22-.6 1.77-1.16.56-.55.9-1.11 1.16-1.77.25-.64.42-1.37.47-2.43.05-1.06.06-1.4.06-4.12s-.01-3.06-.06-4.12c-.05-1.06-.22-1.79-.47-2.43-.26-.66-.6-1.22-1.16-1.77-.55-.56-1.11-.9-1.77-1.16-.64-.25-1.37-.42-2.43-.47C15.06 2.01 14.72 2 12 2zm0 1.8c2.67 0 2.99.01 4.04.06.98.04 1.5.21 1.85.34.47.18.8.4 1.15.75.35.35.57.68.75 1.15.13.35.3.87.34 1.85.05 1.05.06 1.37.06 4.04s-.01 2.99-.06 4.04c-.04.98-.21 1.5-.34 1.85-.18.47-.4.8-.75 1.15-.35.35-.68.57-1.15.75-.35.13-.87.3-1.85.34-1.05.05-1.37.06-4.04.06s-2.99-.01-4.04-.06c-.98-.04-1.5-.21-1.85-.34-.47-.18-.8-.4-1.15-.75-.35-.35-.57-.68-.75-1.15-.13-.35-.3-.87-.34-1.85-.05-1.05-.06-1.37-.06-4.04s.01-2.99.06-4.04c.04-.98.21-1.5.34-1.85.18-.47.4-.8.75-1.15.35-.35.68-.57 1.15-.75.35-.13.87-.3 1.85-.34C9.01 3.81 9.33 3.8 12 3.8zm0 3.06a5.14 5.14 0 100 10.28 5.14 5.14 0 000-10.28zm0 8.48a3.34 3.34 0 110-6.68 3.34 3.34 0 010 6.68zm5.34-8.68a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg>
           ssmadnia14
@@ -1539,6 +1542,7 @@
     lightboxContent.innerHTML = item.type === 'video'
       ? `<video src="${item.url}" controls autoplay playsinline></video>`
       : `<img src="${item.url}" alt="">`;
+    resetZoom();
   }
   function openLightbox(index){
     renderLightbox(index);
@@ -1551,6 +1555,7 @@
     lightboxContent.innerHTML = '';
     lightboxPrev.style.display = '';
     lightboxNext.style.display = '';
+    resetZoom();
   }
   function showPrev(){ renderLightbox(currentLightboxIndex - 1); }
   function showNext(){ renderLightbox(currentLightboxIndex + 1); }
@@ -1563,11 +1568,141 @@
     lightbox.setAttribute('aria-hidden', 'false');
     lightboxPrev.style.display = 'none';
     lightboxNext.style.display = 'none';
+    resetZoom();
   }
   [['couplePhotoDimas'], ['couplePhotoNia']].forEach(([id]) => {
     const img = document.getElementById(id);
     if (img) img.addEventListener('click', () => openSingleImageLightbox(img.currentSrc || img.src, img.alt));
   });
+
+  // ---- Zoom & pan untuk gambar di dalam lightbox (pinch, double-click/double-tap, scroll, drag) ----
+  (function(){
+    const MIN_SCALE = 1, MAX_SCALE = 4;
+    let scale = 1, panX = 0, panY = 0;
+    let startDist = 0, startScale = 1;
+    let isDragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
+    let lastTapTime = 0;
+
+    function currentImg(){
+      const img = lightboxContent.querySelector('img');
+      return img || null;
+    }
+    function applyTransform(){
+      const img = currentImg();
+      if (!img) return;
+      img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      img.classList.toggle('is-zoomed', scale > 1.01);
+    }
+    window.resetZoom = function(){
+      scale = 1; panX = 0; panY = 0;
+      const img = currentImg();
+      if (img){ img.style.transform = ''; img.classList.remove('is-zoomed','is-dragging'); }
+    };
+    function clampPan(){
+      const img = currentImg();
+      if (!img) return;
+      const rect = img.getBoundingClientRect();
+      const contentRect = lightboxContent.getBoundingClientRect();
+      const overW = Math.max(0, (rect.width - contentRect.width) / 2);
+      const overH = Math.max(0, (rect.height - contentRect.height) / 2);
+      panX = Math.max(-overW, Math.min(overW, panX));
+      panY = Math.max(-overH, Math.min(overH, panY));
+    }
+    function setZoomAt(newScale, clientX, clientY){
+      const img = currentImg();
+      if (!img) return;
+      newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+      if (newScale === 1){ resetZoom(); applyTransform(); return; }
+      const rect = img.getBoundingClientRect();
+      const offsetX = clientX - (rect.left + rect.width/2);
+      const offsetY = clientY - (rect.top + rect.height/2);
+      const ratio = newScale / scale;
+      panX = panX * ratio - offsetX * (ratio - 1);
+      panY = panY * ratio - offsetY * (ratio - 1);
+      scale = newScale;
+      clampPan();
+      applyTransform();
+    }
+
+    // Double-click (desktop) & double-tap (mobile) untuk toggle zoom in/out
+    lightboxContent.addEventListener('dblclick', e => {
+      if (e.target.tagName !== 'IMG') return;
+      e.preventDefault();
+      if (scale > 1.01) { resetZoom(); applyTransform(); }
+      else setZoomAt(2.4, e.clientX, e.clientY);
+    });
+    lightboxContent.addEventListener('touchend', e => {
+      if (e.target.tagName !== 'IMG') return;
+      const now = Date.now();
+      if (now - lastTapTime < 300 && e.changedTouches.length === 1){
+        const t = e.changedTouches[0];
+        if (scale > 1.01) { resetZoom(); applyTransform(); }
+        else setZoomAt(2.4, t.clientX, t.clientY);
+      }
+      lastTapTime = now;
+    });
+
+    // Scroll wheel zoom (desktop)
+    lightboxContent.addEventListener('wheel', e => {
+      if (e.target.tagName !== 'IMG') return;
+      e.preventDefault();
+      const delta = -e.deltaY * 0.0025;
+      setZoomAt(scale + delta, e.clientX, e.clientY);
+    }, { passive:false });
+
+    // Pinch-to-zoom (mobile)
+    lightboxContent.addEventListener('touchstart', e => {
+      if (e.target.tagName !== 'IMG') return;
+      if (e.touches.length === 2){
+        const [t1, t2] = e.touches;
+        startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        startScale = scale;
+      } else if (e.touches.length === 1 && scale > 1.01){
+        isDragging = true;
+        dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY;
+        panStartX = panX; panStartY = panY;
+      }
+    }, { passive:true });
+    lightboxContent.addEventListener('touchmove', e => {
+      if (e.target.tagName !== 'IMG' && !isDragging) return;
+      if (e.touches.length === 2 && startDist > 0){
+        e.preventDefault();
+        const [t1, t2] = e.touches;
+        const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        const midX = (t1.clientX + t2.clientX) / 2, midY = (t1.clientY + t2.clientY) / 2;
+        setZoomAt(startScale * (dist / startDist), midX, midY);
+      } else if (isDragging && e.touches.length === 1){
+        e.preventDefault();
+        panX = panStartX + (e.touches[0].clientX - dragStartX);
+        panY = panStartY + (e.touches[0].clientY - dragStartY);
+        clampPan();
+        applyTransform();
+      }
+    }, { passive:false });
+    lightboxContent.addEventListener('touchend', () => { isDragging = false; startDist = 0; }, { passive:true });
+
+    // Drag pan pakai mouse (desktop) saat sudah zoom
+    lightboxContent.addEventListener('mousedown', e => {
+      if (e.target.tagName !== 'IMG' || scale <= 1.01) return;
+      isDragging = true;
+      dragStartX = e.clientX; dragStartY = e.clientY;
+      panStartX = panX; panStartY = panY;
+      e.target.classList.add('is-dragging');
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      panX = panStartX + (e.clientX - dragStartX);
+      panY = panStartY + (e.clientY - dragStartY);
+      clampPan();
+      applyTransform();
+    });
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      const img = currentImg();
+      if (img) img.classList.remove('is-dragging');
+    });
+  })();
 
   document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
