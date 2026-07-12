@@ -1786,11 +1786,17 @@
   function updateActiveThumb(){
     gcThumbs.querySelectorAll('.gc-thumb').forEach((el, i) => el.classList.toggle('active', i === gcCurrent));
     const activeThumb = gcThumbs.children[gcCurrent];
-    if (activeThumb) activeThumb.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+    if (activeThumb){
+      // geser hanya strip thumbnail secara horizontal (scrollTo pada elemen itu sendiri),
+      // JANGAN pakai scrollIntoView karena itu bisa ikut menggeser halaman secara vertikal.
+      const target = activeThumb.offsetLeft - (gcThumbs.clientWidth - activeThumb.clientWidth) / 2;
+      gcThumbs.scrollTo({ left: target, behavior:'smooth' });
+    }
   }
+  let gcVisible = false;
   function startGcAutoplay(){
     stopGcAutoplay();
-    if (galleryItems.length < 2) return;
+    if (!gcVisible || galleryItems.length < 2) return;
     gcAutoplayTimer = setInterval(() => goToSlide(gcCurrent + 1), GC_AUTOPLAY_MS);
   }
   function stopGcAutoplay(){
@@ -1813,7 +1819,23 @@
   gcNext.addEventListener('click', () => { goToSlide(gcCurrent + 1); restartGcAutoplayLater(); });
   ['touchstart','mousedown'].forEach(evt => gcTrack.addEventListener(evt, stopGcAutoplay, { passive:true }));
   ['touchend','mouseup'].forEach(evt => gcTrack.addEventListener(evt, restartGcAutoplayLater, { passive:true }));
-  document.addEventListener('visibilitychange', () => { if (document.hidden) stopGcAutoplay(); else startGcAutoplay(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopGcAutoplay(); else if (gcVisible) startGcAutoplay(); });
+
+  // Autoplay HANYA aktif kalau section galeri sedang benar-benar terlihat di layar.
+  // Ini mencegah carousel "menarik" halaman turun ke galeri saat baru buka undangan.
+  const gcSection = document.getElementById('gallery');
+  if (gcSection && 'IntersectionObserver' in window){
+    const gcSectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        gcVisible = entry.isIntersecting;
+        if (gcVisible) startGcAutoplay(); else stopGcAutoplay();
+      });
+    }, { threshold: 0.5 });
+    gcSectionObserver.observe(gcSection);
+  } else {
+    // fallback kalau IntersectionObserver tidak tersedia
+    gcVisible = true;
+  }
 
   function loadGallery(){
     galleryItems = GALLERY_FILES.map(galleryItemFromFilename);
@@ -1828,7 +1850,6 @@
       gcThumbs.appendChild(buildCarouselThumb(item, idx));
     });
     updateActiveThumb();
-    startGcAutoplay();
   }
   loadGallery();
   window.addEventListener('resize', () => goToSlide(gcCurrent));
