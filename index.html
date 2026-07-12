@@ -544,40 +544,63 @@
     font-size:1.15rem; color:var(--cream); opacity:.95; margin:0 0 26px; padding:0 30px; line-height:1.6;
     text-shadow:0 1px 10px rgba(0,0,0,.4), 0 1px 4px rgba(0,0,0,.35);
   }
-  .gallery-grid{
-    display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;
-    padding:14px 16px 12px; width:100%; max-width:100%;
-  }
-  .g-item{
-    width:100%; aspect-ratio:3/4; margin-bottom:0;
-    background:var(--cream);
-    border-radius:14px; overflow:hidden;
-    display:block;
-    color:var(--maroon); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
-    cursor:pointer; position:relative;
+  /* ---- Gallery carousel: 1 foto besar + auto-slide + strip thumbnail ---- */
+  .gallery-carousel{ width:100%; padding:10px 20px 12px; }
+  .gc-main{ position:relative; border-radius:18px; overflow:hidden; background:rgba(0,0,0,.15);
     box-shadow:
       0 1px 1px rgba(76,20,29,.1),
-      0 10px 18px -12px rgba(43,20,20,.45),
-      0 3px 6px -3px rgba(43,20,20,.28);
-    transition:transform .35s var(--ease), box-shadow .35s var(--ease);
+      0 14px 26px -14px rgba(20,8,10,.55),
+      0 4px 10px -4px rgba(20,8,10,.35);
   }
-  .g-item:hover{
-    transform:translateY(-4px);
-    box-shadow:
-      0 2px 2px rgba(76,20,29,.12),
-      0 20px 28px -14px rgba(43,20,20,.5),
-      0 6px 12px -6px rgba(43,20,20,.32);
-    z-index:4;
+  .gc-track{
+    display:flex; width:100%; aspect-ratio:3/4; overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
   }
-  .g-item:active{ transform:scale(.98); }
-  .g-item .g-photo-wrap{ width:100%; height:100%; position:relative; overflow:hidden; background:var(--cream); z-index:1; }
-  .g-item img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; background:var(--cream); }
-  .g-item video{ width:100%; height:100%; object-fit:cover; display:block; background:var(--cream); }
-  .g-item .play-badge{
-    position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center;
-    background:rgba(43,26,29,0.18); z-index:2;
+  .gc-track::-webkit-scrollbar{ display:none; }
+  .gc-slide{
+    flex:0 0 100%; width:100%; height:100%; scroll-snap-align:center;
+    position:relative; cursor:pointer; background:var(--maroon-deep);
   }
-  .g-item .play-badge svg{ width:34px; height:34px; fill:rgba(251,245,234,0.92); filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+  .gc-slide img, .gc-slide video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gc-slide .play-badge{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:rgba(43,26,29,0.18);
+  }
+  .gc-slide .play-badge svg{ width:44px; height:44px; fill:rgba(251,245,234,0.92); filter:drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+  .gc-arrow{
+    position:absolute; top:50%; transform:translateY(-50%); z-index:3;
+    width:38px; height:38px; border-radius:50%; border:none;
+    background:rgba(20,10,10,0.35); color:var(--cream);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    backdrop-filter:blur(2px); transition:background .25s var(--ease);
+  }
+  .gc-arrow:hover{ background:rgba(20,10,10,0.55); }
+  .gc-arrow svg{ width:20px; height:20px; }
+  .gc-prev{ left:12px; }
+  .gc-next{ right:12px; }
+  .gc-scroll-hint{
+    position:absolute; bottom:10px; left:50%; transform:translateX(-50%); z-index:3;
+    width:30px; height:30px; border-radius:50%; background:rgba(20,10,10,0.35);
+    display:flex; align-items:center; justify-content:center; color:var(--cream);
+    animation:gc-bounce 1.8s ease-in-out infinite;
+  }
+  .gc-scroll-hint svg{ width:16px; height:16px; }
+  @keyframes gc-bounce{ 0%,100%{ transform:translateX(-50%) translateY(0); } 50%{ transform:translateX(-50%) translateY(4px); } }
+  .gc-thumbs{
+    display:flex; gap:8px; margin-top:12px; padding:2px; overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .gc-thumbs::-webkit-scrollbar{ display:none; }
+  .gc-thumb{
+    flex:0 0 auto; width:64px; height:64px; border-radius:10px; overflow:hidden;
+    cursor:pointer; position:relative; border:2px solid transparent;
+    opacity:.6; transition:opacity .25s var(--ease), border-color .25s var(--ease);
+  }
+  .gc-thumb img, .gc-thumb video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gc-thumb.active{ opacity:1; border-color:var(--gold-soft); }
+  .gc-thumb .play-badge{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(43,26,29,0.25); }
+  .gc-thumb .play-badge svg{ width:18px; height:18px; fill:rgba(251,245,234,0.92); }
 
 
   .lightbox{
@@ -760,14 +783,14 @@
     #hero .quote{ max-width:460px; font-size:1rem; }
     .event-cards{ flex-direction:row; }
     .event-card{ flex:1; }
-    .gallery-grid{ padding-left:56px; padding-right:56px; column-count:3; }
+    .gallery-carousel{ padding-left:56px; padding-right:56px; }
     #gallery .eyebrow, #gallery h2{ padding-left:56px; padding-right:56px; }
   }
   @media (min-width:1000px){
     section{ padding-left:80px; padding-right:80px; }
     #hero h1{ font-size:3.6rem; }
     #gallery .eyebrow, #gallery h2{ padding-left:80px; padding-right:80px; }
-    .gallery-grid{ padding-left:80px; padding-right:80px; column-count:4; }
+    .gallery-carousel{ padding-left:80px; padding-right:80px; max-width:520px; margin:0 auto; }
   }
 </style>
 </head>
@@ -914,8 +937,18 @@
     <span class="eyebrow" style="text-align:center; display:block;">Galeri</span>
     <h2>Our Moments</h2>
     <p class="gallery-caption">I would rather share one lifetime with you than face all the ages of this world alone.</p>
-    <div class="gallery-grid" id="galleryGrid">
-      <div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Memuat galeri...</span></div>
+    <div class="gallery-carousel" id="galleryCarousel">
+      <div class="gc-main">
+        <button class="gc-arrow gc-prev" id="gcPrev" aria-label="Sebelumnya">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="gc-track" id="gcTrack"></div>
+        <button class="gc-arrow gc-next" id="gcNext" aria-label="Berikutnya">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <div class="gc-scroll-hint"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg></div>
+      </div>
+      <div class="gc-thumbs" id="gcThumbs"></div>
     </div>
   </section>
 
@@ -1451,7 +1484,6 @@
     };
   }
 
-  const galleryGrid = document.getElementById('galleryGrid');
   const lightbox = document.getElementById('lightbox');
   const lightboxContent = document.getElementById('lightboxContent');
   const lightboxPrev = document.getElementById('lightboxPrev');
@@ -1475,6 +1507,7 @@
     renderLightbox(index);
     lightbox.classList.add('open');
     lightbox.setAttribute('aria-hidden', 'false');
+    if (typeof stopGcAutoplay === 'function') stopGcAutoplay();
   }
   function closeLightbox(){
     lightbox.classList.remove('open');
@@ -1484,6 +1517,7 @@
     lightboxNext.style.display = '';
     isSingleMode = false;
     resetZoom();
+    if (typeof startGcAutoplay === 'function') startGcAutoplay();
   }
   function showPrev(){ if (isSingleMode) return; renderLightbox(currentLightboxIndex - 1); }
   function showNext(){ if (isSingleMode) return; renderLightbox(currentLightboxIndex + 1); }
@@ -1712,9 +1746,17 @@
     }
   }, { passive:true });
 
-  function buildGalleryItem(item, index){
+  const gcTrack = document.getElementById('gcTrack');
+  const gcThumbs = document.getElementById('gcThumbs');
+  const gcPrev = document.getElementById('gcPrev');
+  const gcNext = document.getElementById('gcNext');
+  let gcCurrent = 0;
+  let gcAutoplayTimer = null;
+  const GC_AUTOPLAY_MS = 3500;
+
+  function buildCarouselSlide(item, index){
     const div = document.createElement('div');
-    div.className = 'g-item';
+    div.className = 'gc-slide';
     if (item.type === 'video'){
       div.innerHTML = `<video src="${item.url}" muted playsinline preload="metadata"></video><div class="play-badge"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
     } else {
@@ -1723,17 +1765,73 @@
     div.addEventListener('click', () => openLightbox(index));
     return div;
   }
+  function buildCarouselThumb(item, index){
+    const div = document.createElement('div');
+    div.className = 'gc-thumb';
+    if (item.type === 'video'){
+      div.innerHTML = `<video src="${item.url}" muted playsinline preload="metadata"></video><div class="play-badge"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+    } else {
+      div.innerHTML = `<img src="${item.url}" alt="" loading="lazy" decoding="async">`;
+    }
+    div.addEventListener('click', () => goToSlide(index));
+    return div;
+  }
+  function goToSlide(index){
+    if (!galleryItems.length) return;
+    gcCurrent = (index + galleryItems.length) % galleryItems.length;
+    const slideWidth = gcTrack.clientWidth;
+    gcTrack.scrollTo({ left: gcCurrent * slideWidth, behavior:'smooth' });
+    updateActiveThumb();
+  }
+  function updateActiveThumb(){
+    gcThumbs.querySelectorAll('.gc-thumb').forEach((el, i) => el.classList.toggle('active', i === gcCurrent));
+    const activeThumb = gcThumbs.children[gcCurrent];
+    if (activeThumb) activeThumb.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  }
+  function startGcAutoplay(){
+    stopGcAutoplay();
+    if (galleryItems.length < 2) return;
+    gcAutoplayTimer = setInterval(() => goToSlide(gcCurrent + 1), GC_AUTOPLAY_MS);
+  }
+  function stopGcAutoplay(){
+    if (gcAutoplayTimer){ clearInterval(gcAutoplayTimer); gcAutoplayTimer = null; }
+  }
+  function restartGcAutoplayLater(){
+    stopGcAutoplay();
+    startGcAutoplay();
+  }
+  let gcScrollDebounce = null;
+  gcTrack.addEventListener('scroll', () => {
+    clearTimeout(gcScrollDebounce);
+    gcScrollDebounce = setTimeout(() => {
+      const slideWidth = gcTrack.clientWidth || 1;
+      gcCurrent = Math.round(gcTrack.scrollLeft / slideWidth);
+      updateActiveThumb();
+    }, 100);
+  }, { passive:true });
+  gcPrev.addEventListener('click', () => { goToSlide(gcCurrent - 1); restartGcAutoplayLater(); });
+  gcNext.addEventListener('click', () => { goToSlide(gcCurrent + 1); restartGcAutoplayLater(); });
+  ['touchstart','mousedown'].forEach(evt => gcTrack.addEventListener(evt, stopGcAutoplay, { passive:true }));
+  ['touchend','mouseup'].forEach(evt => gcTrack.addEventListener(evt, restartGcAutoplayLater, { passive:true }));
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopGcAutoplay(); else startGcAutoplay(); });
 
   function loadGallery(){
     galleryItems = GALLERY_FILES.map(galleryItemFromFilename);
-    galleryGrid.innerHTML = '';
+    gcTrack.innerHTML = '';
+    gcThumbs.innerHTML = '';
     if (galleryItems.length === 0){
-      galleryGrid.innerHTML = '<div class="g-item"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center;">Belum ada foto. Tambahkan nama file ke daftar GALLERY_FILES di kode.</span></div>';
+      gcTrack.innerHTML = '<div class="gc-slide"><span style="font-size:.7rem; opacity:.6; padding:8px; text-align:center; display:block;">Belum ada foto. Tambahkan nama file ke daftar GALLERY_FILES di kode.</span></div>';
       return;
     }
-    galleryItems.forEach((item, idx) => galleryGrid.appendChild(buildGalleryItem(item, idx)));
+    galleryItems.forEach((item, idx) => {
+      gcTrack.appendChild(buildCarouselSlide(item, idx));
+      gcThumbs.appendChild(buildCarouselThumb(item, idx));
+    });
+    updateActiveThumb();
+    startGcAutoplay();
   }
   loadGallery();
+  window.addEventListener('resize', () => goToSlide(gcCurrent));
 
   // ---- Copy bank number / address ----
   document.querySelectorAll('.copy-btn').forEach(function(btn){
