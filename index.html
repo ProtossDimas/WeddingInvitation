@@ -1534,6 +1534,7 @@
 
   let galleryItems = [];
   let currentLightboxIndex = 0;
+  let isSingleMode = false;
 
   function renderLightbox(index){
     if (!galleryItems.length) return;
@@ -1545,6 +1546,7 @@
     resetZoom();
   }
   function openLightbox(index){
+    isSingleMode = false;
     renderLightbox(index);
     lightbox.classList.add('open');
     lightbox.setAttribute('aria-hidden', 'false');
@@ -1555,14 +1557,17 @@
     lightboxContent.innerHTML = '';
     lightboxPrev.style.display = '';
     lightboxNext.style.display = '';
+    isSingleMode = false;
     resetZoom();
   }
-  function showPrev(){ renderLightbox(currentLightboxIndex - 1); }
-  function showNext(){ renderLightbox(currentLightboxIndex + 1); }
+  function showPrev(){ if (isSingleMode) return; renderLightbox(currentLightboxIndex - 1); }
+  function showNext(){ if (isSingleMode) return; renderLightbox(currentLightboxIndex + 1); }
 
   // Lightbox untuk foto tunggal (mis. foto mempelai di section Bride and Groom):
-  // pakai lightbox yang sama tapi tombol prev/next disembunyikan karena cuma 1 foto.
+  // pakai lightbox yang sama tapi tombol prev/next & swipe/geser dimatikan total,
+  // jadi foto ini murni cuma bisa di-zoom, tidak nyambung/geser ke foto gallery.
   function openSingleImageLightbox(url, alt){
+    isSingleMode = true;
     lightboxContent.innerHTML = `<img src="${url}" alt="${alt || ''}">`;
     lightbox.classList.add('open');
     lightbox.setAttribute('aria-hidden', 'false');
@@ -1722,6 +1727,7 @@
     touchStartY = e.changedTouches[0].clientY;
   }, { passive:true });
   lightbox.addEventListener('touchend', e => {
+    if (isSingleMode) return;
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
