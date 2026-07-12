@@ -1587,6 +1587,18 @@
     let startDist = 0, startScale = 1;
     let isDragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
     let lastTapTime = 0;
+    let activeTouches = 0;
+
+    function initPinch(t1, t2){
+      startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      startScale = scale;
+      isDragging = false;
+    }
+    function initSingleDrag(t){
+      isDragging = true;
+      dragStartX = t.clientX; dragStartY = t.clientY;
+      panStartX = panX; panStartY = panY;
+    }
 
     function currentImg(){
       const img = lightboxContent.querySelector('img');
@@ -1600,6 +1612,7 @@
     }
     window.resetZoom = function(){
       scale = 1; panX = 0; panY = 0;
+      isDragging = false; startDist = 0; activeTouches = 0;
       const img = currentImg();
       if (img){ img.style.transform = ''; img.classList.remove('is-zoomed','is-dragging'); }
     };
@@ -1659,17 +1672,29 @@
     lightboxContent.addEventListener('touchstart', e => {
       if (e.target.tagName !== 'IMG') return;
       if (e.touches.length === 2){
-        const [t1, t2] = e.touches;
-        startDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-        startScale = scale;
+        initPinch(e.touches[0], e.touches[1]);
       } else if (e.touches.length === 1 && scale > 1.01){
-        isDragging = true;
-        dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY;
-        panStartX = panX; panStartY = panY;
+        initSingleDrag(e.touches[0]);
       }
+      activeTouches = e.touches.length;
     }, { passive:true });
     lightboxContent.addEventListener('touchmove', e => {
       if (e.target.tagName !== 'IMG' && !isDragging) return;
+      // Jumlah jari berubah di tengah gesture (mis. pinch 2 jari -> angkat 1 jari untuk geser,
+      // atau sebaliknya). touchstart tidak terpanggil lagi untuk jari yang masih menempel,
+      // jadi baseline-nya harus disegarkan di sini supaya lanjut mulus tanpa "lompat".
+      if (e.touches.length !== activeTouches){
+        if (e.touches.length === 2){
+          initPinch(e.touches[0], e.touches[1]);
+        } else if (e.touches.length === 1 && scale > 1.01){
+          initSingleDrag(e.touches[0]);
+        } else {
+          isDragging = false;
+        }
+        activeTouches = e.touches.length;
+        e.preventDefault();
+        return;
+      }
       if (e.touches.length === 2 && startDist > 0){
         e.preventDefault();
         const [t1, t2] = e.touches;
@@ -1684,7 +1709,18 @@
         applyTransform();
       }
     }, { passive:false });
-    lightboxContent.addEventListener('touchend', () => { isDragging = false; startDist = 0; }, { passive:true });
+    lightboxContent.addEventListener('touchend', e => {
+      activeTouches = e.touches.length;
+      if (e.touches.length === 1 && scale > 1.01){
+        // masih ada 1 jari tersisa & sedang zoom -> lanjutkan geser tanpa lompat
+        initSingleDrag(e.touches[0]);
+      } else if (e.touches.length === 0){
+        isDragging = false;
+        startDist = 0;
+      } else {
+        startDist = 0;
+      }
+    }, { passive:true });
 
     // Drag pan pakai mouse (desktop) saat sudah zoom
     lightboxContent.addEventListener('mousedown', e => {
