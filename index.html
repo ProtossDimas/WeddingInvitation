@@ -337,7 +337,7 @@
   .reveal > *:not(.section-bg){
     opacity:0;
     transform:translateY(30px);
-    transition:opacity 1s cubic-bezier(.16,.8,.24,1), transform 1s cubic-bezier(.16,.8,.24,1);
+    transition:opacity 1.4s cubic-bezier(.16,.8,.24,1), transform 1.4s cubic-bezier(.16,.8,.24,1);
     will-change:opacity, transform;
   }
   .reveal.show > *:not(.section-bg){
@@ -345,12 +345,12 @@
     transform:translateY(0);
   }
   /* stagger halus per elemen supaya isi section muncul beruntun, bukan serentak */
-  .reveal > *:not(.section-bg):nth-child(1){ transition-delay:.05s; }
-  .reveal > *:not(.section-bg):nth-child(2){ transition-delay:.15s; }
-  .reveal > *:not(.section-bg):nth-child(3){ transition-delay:.25s; }
-  .reveal > *:not(.section-bg):nth-child(4){ transition-delay:.35s; }
-  .reveal > *:not(.section-bg):nth-child(5){ transition-delay:.45s; }
-  .reveal > *:not(.section-bg):nth-child(n+6){ transition-delay:.5s; }
+  .reveal > *:not(.section-bg):nth-child(1){ transition-delay:.1s; }
+  .reveal > *:not(.section-bg):nth-child(2){ transition-delay:.25s; }
+  .reveal > *:not(.section-bg):nth-child(3){ transition-delay:.4s; }
+  .reveal > *:not(.section-bg):nth-child(4){ transition-delay:.55s; }
+  .reveal > *:not(.section-bg):nth-child(5){ transition-delay:.7s; }
+  .reveal > *:not(.section-bg):nth-child(n+6){ transition-delay:.75s; }
   @media (prefers-reduced-motion: reduce){
     .reveal > *:not(.section-bg){ opacity:1; transform:none; transition:none; }
   }
@@ -419,8 +419,8 @@
   .couple-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 20%; }
   .couple-card .script-name{
     display:block; font-family:'Italianno',cursive; font-size:2.6rem;
-    line-height:1; color:var(--gold-soft); margin:0 0 6px;
-    text-shadow:0 2px 10px rgba(0,0,0,.35);
+    line-height:1; color:var(--maroon-deep); margin:0 0 6px;
+    text-shadow:0 2px 14px rgba(255,255,255,.7);
   }
   .couple-card h3{ font-size:1.15rem; color:var(--cream); margin:0 0 16px; font-weight:600; line-height:1.3; text-shadow:0 2px 10px rgba(0,0,0,.4);}
   .couple-card .role{
@@ -434,7 +434,7 @@
   }
   .couple-and{
     align-self:center; text-align:center; font-family:'Italianno',cursive;
-    font-size:2.6rem; color:var(--gold-soft); margin:22px 0; text-shadow:0 2px 10px rgba(0,0,0,.4);
+    font-size:2.6rem; color:var(--maroon-deep); margin:22px 0; text-shadow:0 2px 10px rgba(255,255,255,.6);
   }
   .couple-ig{
     display:inline-flex; align-items:center; gap:6px;
@@ -836,7 +836,7 @@
   <!-- ============ COUPLE ============ -->
   <section id="couple" class="reveal">
     <div style="text-align:center; margin-bottom:8px;">
-      <h2 class="script" style="font-family:'Italianno',cursive; font-size:2.6rem; color:var(--gold-soft); margin:0 0 6px; text-shadow:0 2px 10px rgba(0,0,0,.4);">Bride and Groom</h2>
+      <h2 class="script" style="font-family:'Italianno',cursive; font-size:2.6rem; color:var(--maroon-deep); margin:0 0 6px; text-shadow:0 2px 14px rgba(255,255,255,.7);">Bride and Groom</h2>
       <p style="font-family:'Jost',sans-serif; font-size:.8rem; color:var(--cream); opacity:.95; max-width:320px; margin:0 auto; line-height:1.5; text-shadow:0 1px 8px rgba(0,0,0,.4);">Maha suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan, Ya Allah rahmatillah pernikahan kami</p>
     </div>
     <div class="couple-wrap">
