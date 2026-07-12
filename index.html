@@ -398,71 +398,54 @@
   }
 
   /* COUPLE */
-  /* The background art has a baked-in "MEMPELAI" title + a narrow cream frame box.
-     background-size is locked to 100% width (instead of "cover") so that frame
-     always sits at the exact same % position/width of the section on every
-     device. The card below is then sized with calc(...% of that same width)
-     so it always lines up inside the frame instead of overflowing it. */
   #couple{
     background:
       radial-gradient(circle at 20% 10%, rgba(201,161,74,0.14), transparent 40%),
       radial-gradient(circle at 85% 85%, rgba(110,31,43,0.08), transparent 40%),
       radial-gradient(rgba(110,31,43,0.10) 1px, transparent 1px),
-      url('/photos/bg-couple-full2.png') center top/100% 100% no-repeat,
       var(--cream-deep);
   }
-  /* the art already renders "MEMPELAI" as a title, so the coded eyebrow text
-     for this section is not shown again (avoids the duplicated title) */
-  #couple .eyebrow{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
-  .couple-wrap{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:8px; width:100%; }
+  .couple-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; width:100%; }
   .couple-card{
     box-sizing:border-box;
-    /* Measured directly from the art: the cream frame box spans x=246..672 of a
-       905px-wide image, i.e. starts at 27.18% and is 47.07% wide. Anchoring to
-       the left edge (rather than centering) keeps it locked to the frame even
-       though section side-padding changes across breakpoints. */
-    width:calc(0.4707 * min(100vw, 520px) - 48px);
-    margin-left:calc(0.2718 * min(100vw, 520px) + 0px);
+    width:100%;
     text-align:center;
-    background:linear-gradient(165deg, var(--cream-deep) 0%, #E9D9BC 100%);
-    border:1px solid rgba(201,161,74,0.4);
-    border-radius:18px; padding:16px 12px 16px;
-    position:relative; margin-top:14px;
-    box-shadow:var(--shadow);
+    position:relative; margin-top:38px;
   }
-  .couple-card:first-of-type{
-    margin-top:30px;
-  }
+  .couple-card:first-of-type{ margin-top:6px; }
   .couple-photo{
-    width:112%; aspect-ratio:1/1; height:auto; border-radius:50%;
-    margin:calc(-0.0385 * min(100vw, 520px)) auto 10px; position:relative; left:calc(-0.0187 * min(100vw, 520px));
+    width:100%; aspect-ratio:3/4; height:auto; border-radius:44px;
+    margin:0 auto 22px;
     background:linear-gradient(160deg,var(--gold-soft),var(--cream-deep));
-    border:3px solid var(--gold);
+    border:6px solid var(--cream);
     display:flex; align-items:center; justify-content:center;
-    overflow:hidden; box-shadow:0 20px 34px -16px rgba(76,20,29,0.4);
-    font-family:'Playfair Display',serif; font-size:2rem; color:var(--maroon);
+    overflow:hidden; box-shadow:0 24px 46px -20px rgba(76,20,29,0.4);
+    font-family:'Playfair Display',serif; font-size:2.4rem; color:var(--maroon);
   }
-  .couple-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 15%; }
-  .couple-card h3{ font-size:1rem; color:var(--maroon-deep); margin:0 0 8px; font-weight:600; line-height:1.25;}
-  .couple-card h3::after{
-    content:""; display:block; width:50px; height:1px; background:var(--maroon);
-    opacity:.4; margin:8px auto 0;
+  .couple-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 20%; }
+  .couple-card .script-name{
+    display:block; font-family:'Italianno',cursive; font-size:2.6rem;
+    line-height:1; color:var(--maroon-deep); margin:0 0 6px;
   }
-  .couple-card .role{ display:none; }
+  .couple-card h3{ font-size:1.15rem; color:var(--maroon-deep); margin:0 0 16px; font-weight:600; line-height:1.3;}
+  .couple-card .role{
+    display:block; font-family:'Jost',sans-serif; text-transform:uppercase;
+    letter-spacing:.08em; font-size:.68rem; color:var(--maroon); opacity:.75; margin:0 0 6px;
+  }
   .couple-card p{
     font-family:'Playfair Display',serif; font-style:italic;
-    font-size:.78rem; line-height:1.35; color:var(--maroon-deep); opacity:.9;
+    font-size:.85rem; line-height:1.5; color:var(--maroon-deep); opacity:.9;
     max-width:100%; margin:0 auto;
   }
   .couple-and{
     align-self:center; text-align:center; font-family:'Italianno',cursive;
-    font-size:2.4rem; color:var(--gold); margin:0;
+    font-size:2.6rem; color:var(--gold); margin:22px 0;
   }
   .couple-ig{
     display:inline-flex; align-items:center; gap:6px;
     background:var(--maroon-deep); color:var(--cream);
-    padding:6px 12px; border-radius:999px; margin-top:10px;
-    font-size:.65rem; letter-spacing:.02em; text-decoration:none;
+    padding:7px 14px; border-radius:999px; margin-top:14px;
+    font-size:.7rem; letter-spacing:.02em; text-decoration:none;
     transition:.3s; max-width:100%;
   }
   .couple-ig:hover{ background:var(--maroon); }
@@ -798,14 +781,12 @@
     .event-card{ flex:1; }
     .gallery-grid{ padding-left:56px; padding-right:56px; column-count:3; }
     #gallery .eyebrow, #gallery h2{ padding-left:56px; padding-right:56px; }
-    .couple-card{ margin-left:calc(0.2718 * min(100vw, 520px) - 48px); }
   }
   @media (min-width:1000px){
     section{ padding-left:80px; padding-right:80px; }
     #hero h1{ font-size:3.6rem; }
     #gallery .eyebrow, #gallery h2{ padding-left:80px; padding-right:80px; }
     .gallery-grid{ padding-left:80px; padding-right:80px; column-count:4; }
-    .couple-card{ margin-left:calc(0.2718 * min(100vw, 520px) - 72px); }
   }
 </style>
 </head>
@@ -859,24 +840,27 @@
 
   <!-- ============ COUPLE ============ -->
   <section id="couple" class="reveal">
-    <div style="text-align:center; margin-bottom:36px;">
-      <span class="eyebrow" style="color:var(--maroon);">Mempelai</span>
+    <div style="text-align:center; margin-bottom:8px;">
+      <h2 class="script" style="font-family:'Italianno',cursive; font-size:2.6rem; color:var(--maroon-deep); margin:0 0 6px;">Bride and Groom</h2>
+      <p style="font-family:'Jost',sans-serif; font-size:.8rem; color:var(--maroon-deep); opacity:.85; max-width:320px; margin:0 auto; line-height:1.5;">Maha suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan, Ya Allah rahmatillah pernikahan kami</p>
     </div>
     <div class="couple-wrap">
       <div class="couple-card">
         <div class="couple-photo"><img src="/photos/dimas.jpg" alt="Dimas Alfian Wahyudi" loading="lazy" decoding="async" onerror="this.parentElement.textContent='D'"></div>
+        <span class="script-name">Dimas</span>
         <h3>Dimas Alfian Wahyudi</h3>
-        <p>Putra dari<br>Bapak Amad Sayudi<br>&amp;<br>Ibu Alfinah</p>
+        <p>Putra Pertama dari :<br>Bapak Amad Sayudi<br>&amp; Ibu Alfinah</p>
         <a class="couple-ig" href="https://instagram.com/dimasalfw" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.72 0-3.06.01-4.12.06-1.06.05-1.79.22-2.43.47-.66.26-1.22.6-1.77 1.16-.56.55-.9 1.11-1.16 1.77-.25.64-.42 1.37-.47 2.43C2 8.94 2 9.28 2 12s.01 3.06.06 4.12c.05 1.06.22 1.79.47 2.43.26.66.6 1.22 1.16 1.77.55.56 1.11.9 1.77 1.16.64.25 1.37.42 2.43.47C8.94 22 9.28 22 12 22s3.06-.01 4.12-.06c1.06-.05 1.79-.22 2.43-.47.66-.26 1.22-.6 1.77-1.16.56-.55.9-1.11 1.16-1.77.25-.64.42-1.37.47-2.43.05-1.06.06-1.4.06-4.12s-.01-3.06-.06-4.12c-.05-1.06-.22-1.79-.47-2.43-.26-.66-.6-1.22-1.16-1.77-.55-.56-1.11-.9-1.77-1.16-.64-.25-1.37-.42-2.43-.47C15.06 2.01 14.72 2 12 2zm0 1.8c2.67 0 2.99.01 4.04.06.98.04 1.5.21 1.85.34.47.18.8.4 1.15.75.35.35.57.68.75 1.15.13.35.3.87.34 1.85.05 1.05.06 1.37.06 4.04s-.01 2.99-.06 4.04c-.04.98-.21 1.5-.34 1.85-.18.47-.4.8-.75 1.15-.35.35-.68.57-1.15.75-.35.13-.87.3-1.85.34-1.05.05-1.37.06-4.04.06s-2.99-.01-4.04-.06c-.98-.04-1.5-.21-1.85-.34-.47-.18-.8-.4-1.15-.75-.35-.35-.57-.68-.75-1.15-.13-.35-.3-.87-.34-1.85-.05-1.05-.06-1.37-.06-4.04s.01-2.99.06-4.04c.04-.98.21-1.5.34-1.85.18-.47.4-.8.75-1.15.35-.35.68-.57 1.15-.75.35-.13.87-.3 1.85-.34C9.01 3.81 9.33 3.8 12 3.8zm0 3.06a5.14 5.14 0 100 10.28 5.14 5.14 0 000-10.28zm0 8.48a3.34 3.34 0 110-6.68 3.34 3.34 0 010 6.68zm5.34-8.68a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg>
           dimasalfw
         </a>
       </div>
-      <p class="couple-and" style="margin:6px 0;">&amp;</p>
+      <p class="couple-and">&amp;</p>
       <div class="couple-card">
         <div class="couple-photo"><img src="/photos/nia.jpg" alt="Sismadinia" loading="lazy" decoding="async" onerror="this.parentElement.textContent='N'"></div>
+        <span class="script-name">Nia</span>
         <h3>Sismadinia</h3>
-        <p>Putri dari<br>Bapak Syamsul Bakhri<br>&amp;<br>Ibu Ismiyati</p>
+        <p>Putri Pertama dari :<br>Bapak Syamsul Bakhri<br>&amp; Ibu Ismiyati</p>
         <a class="couple-ig" href="https://instagram.com/ssmadnia14" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-2.72 0-3.06.01-4.12.06-1.06.05-1.79.22-2.43.47-.66.26-1.22.6-1.77 1.16-.56.55-.9 1.11-1.16 1.77-.25.64-.42 1.37-.47 2.43C2 8.94 2 9.28 2 12s.01 3.06.06 4.12c.05 1.06.22 1.79.47 2.43.26.66.6 1.22 1.16 1.77.55.56 1.11.9 1.77 1.16.64.25 1.37.42 2.43.47C8.94 22 9.28 22 12 22s3.06-.01 4.12-.06c1.06-.05 1.79-.22 2.43-.47.66-.26 1.22-.6 1.77-1.16.56-.55.9-1.11 1.16-1.77.25-.64.42-1.37.47-2.43.05-1.06.06-1.4.06-4.12s-.01-3.06-.06-4.12c-.05-1.06-.22-1.79-.47-2.43-.26-.66-.6-1.22-1.16-1.77-.55-.56-1.11-.9-1.77-1.16-.64-.25-1.37-.42-2.43-.47C15.06 2.01 14.72 2 12 2zm0 1.8c2.67 0 2.99.01 4.04.06.98.04 1.5.21 1.85.34.47.18.8.4 1.15.75.35.35.57.68.75 1.15.13.35.3.87.34 1.85.05 1.05.06 1.37.06 4.04s-.01 2.99-.06 4.04c-.04.98-.21 1.5-.34 1.85-.18.47-.4.8-.75 1.15-.35.35-.68.57-1.15.75-.35.13-.87.3-1.85.34-1.05.05-1.37.06-4.04.06s-2.99-.01-4.04-.06c-.98-.04-1.5-.21-1.85-.34-.47-.18-.8-.4-1.15-.75-.35-.35-.57-.68-.75-1.15-.13-.35-.3-.87-.34-1.85-.05-1.05-.06-1.37-.06-4.04s.01-2.99.06-4.04c.04-.98.21-1.5.34-1.85.18-.47.4-.8.75-1.15.35-.35.68-.57 1.15-.75.35-.13.87-.3 1.85-.34C9.01 3.81 9.33 3.8 12 3.8zm0 3.06a5.14 5.14 0 100 10.28 5.14 5.14 0 000-10.28zm0 8.48a3.34 3.34 0 110-6.68 3.34 3.34 0 010 6.68zm5.34-8.68a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg>
           ssmadnia14
@@ -1273,7 +1257,6 @@
   (function(){
     const assets = [
       '/photos/coverdepan.jpeg',
-      '/photos/bg-couple-full2.png',
       '/photos/dimas.jpg',
       '/photos/nia.jpg',
       '/photos/bg-livestream.jpg',
