@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Italianno&family=Allura&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Alex+Brush&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Italianno&display=swap" rel="stylesheet">
 <style>
   :root{
     --cream:#FBF5EA;
@@ -34,6 +34,9 @@
     --font-script:'Italianno',cursive;
     --font-copy:'Cormorant Garamond',serif;
     --font-label:'Jost',sans-serif;
+    /* ---- Judul section (screenshot: "Wedding" tipis-lebar + "Event" script besar) ---- */
+    --font-title:'Italiana',serif;
+    --font-title-accent:'Alex Brush',cursive;
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth; overflow-x:hidden; max-width:100%; scroll-snap-type:y proximity;}
@@ -80,6 +83,9 @@
     transition: max-width .2s;
   }
   h1,h2,h3,.script{font-family:'Playfair Display',serif;}
+  .script{font-family:'Italianno',cursive; font-weight:400;}
+  /* ---- Judul full-script ala kata ke-2 di screenshot ("Event"): dipakai Alex Brush ---- */
+  .title-fx{ font-family:var(--font-title-accent); font-weight:400; }
   .script-name{font-family:'Italianno',cursive; font-weight:400;}
   .eyebrow{
     font-family:'Jost',sans-serif;
@@ -666,7 +672,7 @@
   .gift-divider span{ width:52px; height:1px; background:rgba(227,205,147,.5); }
   .gift-divider svg{ width:20px; height:20px; fill:var(--gold-soft); flex-shrink:0; }
   .gift-title{
-    font-family:'Playfair Display', serif; font-size:2.2rem; line-height:1.15;
+    font-size:2.2rem; line-height:1.15;
     color:var(--cream); margin:0 0 18px;
   }
   #gift p.lead{ font-family:var(--font-copy); font-size:1.08rem; font-style:italic; opacity:.92; color:var(--cream); max-width:320px; margin:0 auto 26px; line-height:1.8; }
@@ -856,7 +862,7 @@
   <!-- ============ COVER ============ -->
   <div id="cover">
     <div class="cover-top-block">
-      <h1 class="cover-title" style="font-family:'Cormorant Garamond',serif; font-weight:500; text-shadow:0 1px 3px rgba(0,0,0,.3);">The Beginning<br><span style="display:block; margin:2px 0 -10px; position:relative; z-index:2;"><span style="font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:500; font-size:.42em;">of</span></span><span style="display:block; font-family:'Allura',cursive; font-weight:400; font-size:1.7em; line-height:.85; text-shadow:0 1px 2px rgba(0,0,0,.25);">Forever</span></h1>
+      <h1 class="cover-title">The Beginning<br>of Forever</h1>
       <div class="cover-names-sub">Dimas &amp; Nia</div>
       <div class="cover-date-sub">Sabtu, 01 Agustus 2026</div>
     </div>
@@ -890,7 +896,7 @@
   <!-- ============ COUPLE ============ -->
   <section id="couple" class="reveal">
     <div style="text-align:center; margin-bottom:8px;">
-      <h2 class="script" style="font-family:'Italianno',cursive; font-size:2.2rem; color:var(--maroon-deep); margin:0 0 6px; text-shadow:0 2px 14px rgba(255,255,255,.7);">Bride and Groom</h2>
+      <h2 class="script" style="font-family:'Alex Brush',cursive; font-size:2.2rem; color:var(--maroon-deep); margin:0 0 6px; text-shadow:0 2px 14px rgba(255,255,255,.7);">Bride and Groom</h2>
       <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.05rem; color:var(--cream); opacity:.95; max-width:320px; margin:0 auto; line-height:1.6; text-shadow:0 1px 8px rgba(0,0,0,.4);">Maha suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan, Ya Allah rahmatillah pernikahan kami</p>
     </div>
     <div class="couple-wrap">
@@ -921,7 +927,7 @@
   <!-- ============ STORY ============ -->
   <section id="story" class="reveal">
     <span class="eyebrow">Sekilas Cerita</span>
-    <h2>Kisah Kami</h2>
+    <h2 class="title-fx">Kisah Kami</h2>
     <div class="timeline">
       <div class="t-item">
         <span class="t-year">“When We Met”</span>
@@ -949,7 +955,7 @@
   <!-- ============ EVENT ============ -->
   <section id="event" class="reveal">
     <span class="eyebrow">Save The Date</span>
-    <h2>Ngunduh Mantu</h2>
+    <h2 class="title-fx">Ngunduh Mantu</h2>
 
     <p class="countdown-title">Menuju Ngunduh Mantu</p>
     <div class="countdown" id="countdown">
@@ -980,7 +986,7 @@
   <!-- ============ GALLERY ============ -->
   <section id="gallery" class="reveal">
     <span class="eyebrow" style="text-align:center; display:block;">Galeri</span>
-    <h2>Our Moments</h2>
+    <h2 class="title-fx">Our Moments</h2>
     <p class="gallery-caption">I would rather share one lifetime with you than face all the ages of this world alone.</p>
     <div class="gallery-carousel" id="galleryCarousel">
       <div class="gc-main">
@@ -1000,7 +1006,7 @@
   <!-- ============ VIDEO, LIVE STREAMING & PHOTOBOOTH ============ -->
   <section id="livestream-photobooth" class="reveal">
     <div class="lp-block">
-      <h2>Live Streaming</h2>
+      <h2 class="title-fx">Live Streaming</h2>
       <p class="lead">Bagi yang belum berkesempatan hadir, kami akan menyiarkan acara secara langsung melalui Instagram.</p>
       <div class="info-card">
         <div>
@@ -1032,7 +1038,7 @@
         <svg viewBox="0 0 24 24"><path d="M12 21s-6.72-4.35-9.33-8.1C1.02 10.1 1.6 6.7 4.6 5.1c2.2-1.15 4.6-.4 6 1.2l1.4 1.6 1.4-1.6c1.4-1.6 3.8-2.35 6-1.2 3 1.6 3.58 5 1.73 7.9C18.72 16.65 12 21 12 21z"/></svg>
         <span></span>
       </div>
-      <h2 class="gift-title">Wedding Gift</h2>
+      <h2 class="gift-title title-fx">Wedding Gift</h2>
       <p class="lead">Doa dan restu anda adalah hadiah terbaik bagi kami. Namun jika memberi adalah tanda kasih anda, anda dapat mengirimkannya melalui:</p>
       <button class="gift-show-btn" id="giftShowBtn" type="button">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 12v10H4V12M2 7h20v5H2V7zm10 0V5a2.5 2.5 0 0 0-5 0v2m5 0V5a2.5 2.5 0 0 1 5 0v2m-5 0v13"/></svg>
@@ -1074,7 +1080,7 @@
   <!-- ============ RSVP ============ -->
   <section id="rsvp" class="reveal">
     <span class="eyebrow" style="text-align:center; display:block;">RSVP</span>
-    <h2>Konfirmasi Kehadiran</h2>
+    <h2 class="title-fx">Konfirmasi Kehadiran</h2>
     <p class="lead">Mohon konfirmasi kehadiran Anda untuk melengkapi persiapan kami.</p>
     <div class="rsvp-card">
     <form id="rsvpForm">
@@ -1102,7 +1108,7 @@
 
   <!-- ============ UCAPAN & DOA ============ -->
   <section id="wishes" class="reveal">
-    <h2>Ucapan &amp; Doa</h2>
+    <h2 class="title-fx">Ucapan &amp; Doa</h2>
     <p class="lead">Sampaikan doa dan ucapan terbaik untuk kami di sini.</p>
     <div class="rsvp-card">
     <form id="wishForm">
