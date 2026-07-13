@@ -1,187 +1,99 @@
 # Undangan Pernikahan — Nia & Dimas
 
-Website undangan pernikahan digital, dengan fitur:
+Website undangan pernikahan digital untuk acara **1 Agustus 2026, Bandung**. Dibangun dengan HTML/CSS/JS statis dan Cloudflare Pages Functions sebagai backend ringan.
+
+Fitur utama:
+
 - Halaman undangan statis (cover, profil mempelai, galeri foto/video, cerita, lokasi, hadiah)
-- RSVP & ucapan tamu (disimpan ke Cloudflare D1)
-- Nama tamu personal otomatis tampil di cover undangan (`?to=001`), **diambil langsung dari file Excel di repo** — tidak perlu database atau script import untuk daftar tamu.
+- Nama tamu personal otomatis tampil di cover undangan lewat parameter URL (`?to=...`)
+- RSVP & ucapan tamu, tersimpan ke **Google Sheets** (bukan database terpisah — cukup buka spreadsheet untuk lihat semua respon)
+- Notifikasi real-time setiap ada RSVP/ucapan baru, dikirim lewat **Fonnte (WhatsApp)** dan **Telegram Bot** sebagai jalur cadangan
+- Galeri foto/video dengan lightbox (swipe & keyboard navigation, pinch-to-zoom untuk foto)
+- Animasi scroll (fly-in effect) dan musik latar dengan autoplay
 
 ---
 
 ## 1. Struktur folder
 
 ```
-wedding-invitation/
-├── index.html                  ← halaman undangan (statis)
-├── package.json                ← daftar dependency (wajib, untuk library baca Excel)
-├── functions/
-│   └── [[catchall]].js         ← Pages Function: endpoint /api/wishes & /api/guest/:code
-├── data/
-│   └── daftar-tamu.xlsx        ← DAFTAR TAMU — cukup edit & upload file ini untuk update tamu
-├── photos/                     ← isi dengan foto/video kamu
-│   ├── nia.jpg
-│   ├── dimas.jpg
-│   ├── cover.jpg                (opsional, background halaman sampul)
-│   ├── foto1.jpg, foto2.jpg, ...
-│   └── video1.mp4, video2.mp4, ...
-└── music.mp3                    ← (opsional) musik latar
+WeddingInvitation/
+├── index.html          ← halaman undangan (statis)
+├── _headers             ← konfigurasi header Cloudflare Pages (caching, dsb.)
+├── functions/            ← Cloudflare Pages Functions (backend: API RSVP/ucapan, integrasi Google Sheets, Fonnte, Telegram)
+├── photos/               ← foto mempelai & galeri
+├── videos/               ← video galeri
+├── music/                ← musik latar undangan
+└── README.md
 ```
 
 ---
 
-## 2. Format file Excel daftar tamu (`data/daftar-tamu.xlsx`)
+## 2. Konfigurasi (Environment Variables)
 
-Ini **satu-satunya tempat** kamu mengatur siapa saja tamu undangan dan link personalnya. Tidak perlu sentuh kode sama sekali.
+Fitur backend membutuhkan beberapa environment variable / secret yang diset di **Cloudflare Pages → Settings → Environment variables**:
 
-### Aturan kolom
+| Variable | Keterangan |
+| --- | --- |
+| Kredensial Google Service Account | Untuk akses Google Sheets API (baca/tulis data RSVP & daftar tamu) |
+| ID Google Spreadsheet | Spreadsheet tujuan penyimpanan RSVP & ucapan |
+| Token Fonnte | Untuk kirim notifikasi WhatsApp saat ada RSVP/ucapan baru |
+| Token Bot Telegram & Chat ID | Untuk kirim notifikasi cadangan lewat Telegram |
 
-| Kolom | Wajib? | Keterangan |
-|---|---|---|
-| `Kode` | Tidak | Boleh dikosongkan. Kalau kosong, otomatis di-generate `001`, `002`, `003`, ... sesuai urutan baris di Excel. Kalau diisi manual, boleh teks apa saja (misal `vip-budi`), asal tidak ada yang sama persis di baris lain. |
-| `Nama` | **Ya** | Nama tamu yang akan muncul di cover undangan. Baris tanpa nama akan dilewati (diabaikan). |
-| `Grup` | Tidak | Bebas isi apa saja, misal "Keluarga", "Teman Kantor", "Teman Kuliah". Saat ini belum ditampilkan di halaman, tapi sudah disiapkan kalau suatu saat mau dipakai (misal filter/grouping). |
+> Catatan: saat membuat/menyalin token bot Telegram, cek ulang karakternya — huruf `I` (i besar) dan `l` (L kecil) sering terlihat mirip dan menyebabkan token gagal terautentikasi.
 
-Catatan penting:
-- Nama kolom **tidak case-sensitive** dan boleh diketik dalam Bahasa Inggris juga: `Code`/`Kode`, `Name`/`Nama`, `Group`/`Grup`/`Kelompok` — semua dikenali otomatis.
-- Urutan kolom **bebas**, tidak harus Kode-Nama-Grup.
-- Sheet yang dibaca adalah **sheet pertama** di file Excel (kalau ada beberapa tab/sheet, pastikan data tamu ada di tab paling kiri).
-- Baris pertama harus berisi nama-nama kolom (header), bukan data tamu.
-
-### Contoh isi `data/daftar-tamu.xlsx`
-
-| Kode | Nama | Grup |
-|---|---|---|
-| 001 | Budi Santoso | Keluarga |
-| 002 | Siti Aminah | Teman Kantor |
-| *(kosong)* | Andi Wijaya | Teman Kuliah |
-
-Baris ketiga sengaja tanpa Kode → sistem otomatis memberi kode lanjutan (misalnya `003`, mengikuti urutan baris setelah kode-kode yang sudah dipakai).
-
-File contoh siap pakai sudah disediakan — tinggal buka di Excel/Google Sheets, edit isinya, lalu save dengan nama & lokasi yang sama: `data/daftar-tamu.xlsx`.
-
-### Cara dapat link personal per tamu
-
-Link ke setiap tamu mengikuti pola:
-
-```
-https://NAMA-PROJECT.pages.dev/?to=KODE
-```
-
-Contoh, kalau project Cloudflare Pages kamu bernama `undangan-nia-dimas` dan kode tamu `001`:
-
-```
-https://undangan-nia-dimas.pages.dev/?to=001
-```
-
-Saat link dibuka, halaman akan otomatis ambil nama tamu dari Excel berdasarkan kode tersebut, dan menampilkannya di cover ("Kepada Bapak/Ibu Budi Santoso").
-
-> Mode tanpa kode tetap didukung sebagai fallback: `?to=Budi+Santoso` (nama langsung ditulis di URL) akan tetap tampil kalau kode tidak ditemukan.
-
-### Cara update daftar tamu setelah website sudah online
-
-1. Buka `data/daftar-tamu.xlsx` di komputer kamu (lewat GitHub: download, atau edit langsung kalau pakai GitHub Desktop/clone lokal).
-2. Tambah/ubah/hapus baris tamu.
-3. Save file, lalu **upload/push ulang ke GitHub** menimpa file lama di path yang sama.
-4. Cloudflare Pages otomatis mendeteksi perubahan dan **re-deploy otomatis** (biasanya selesai dalam 1–2 menit).
-5. Selesai — tidak perlu jalankan command apa pun.
+Setelah environment variable diset, lakukan re-deploy (misalnya lewat "Retry deployment" atau push commit baru) agar terbaca oleh Functions.
 
 ---
 
-## 3. Setup database D1 (khusus untuk fitur RSVP & ucapan tamu)
-
-Database ini **hanya** untuk menyimpan ucapan/RSVP yang diisi tamu lewat form di halaman undangan — bukan untuk daftar tamu (daftar tamu sudah dari Excel, lihat bagian 2).
-
-```bash
-npx wrangler d1 create undangan-db
-```
-
-Catat `database_id` yang muncul di output, lalu buat tabelnya:
-
-```bash
-npx wrangler d1 execute undangan-db --remote --command="
-CREATE TABLE IF NOT EXISTS wishes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  attendance TEXT NOT NULL,
-  message TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-"
-```
-
-(Tabel `guests` dari versi sebelumnya **tidak diperlukan lagi** — boleh dihapus kalau masih ada: `DROP TABLE IF EXISTS guests;`)
-
----
-
-## 4. Deploy ke Cloudflare Pages
-
-### Lewat dashboard (disarankan, paling mudah)
+## 3. Deploy ke Cloudflare Pages
 
 1. Push seluruh folder project ini ke repository GitHub.
 2. Di Cloudflare dashboard → **Pages → Create a project → Connect to Git** → pilih repo ini.
 3. Build settings:
    - **Framework preset:** None
-   - **Build command:** (kosongkan)
+   - **Build command:** (kosongkan, atau `npm install` jika ada `package.json`)
    - **Build output directory:** `/` (root)
-4. Klik **Save and Deploy**. Cloudflare akan otomatis menjalankan `npm install` (membaca `package.json`) sebelum deploy, sehingga library `xlsx` ikut terpasang.
-5. Setelah project pertama kali jadi, masuk ke **Settings → Functions → D1 database bindings** → tambahkan:
-   - Variable name: `DB`
-   - D1 database: `undangan-db`
-6. **Re-deploy** (trigger deployment baru, misalnya lewat tombol "Retry deployment" atau push commit kosong) agar binding D1 aktif.
-
-### Lewat CLI (alternatif)
-
-```bash
-npx wrangler pages deploy . --project-name=undangan-nia-dimas
-```
-
-Binding D1 untuk Pages tetap perlu diatur lewat dashboard (langkah 5–6 di atas), karena binding Pages tidak otomatis terbaca dari `wrangler.toml` seperti di Workers biasa.
+4. Klik **Save and Deploy**.
+5. Set semua environment variable pada bagian 2 di atas, lalu re-deploy.
 
 ---
 
-## 5. Kustomisasi konten undangan
+## 4. Kustomisasi konten
 
-Semua teks ada langsung di `index.html`. Cari dan ganti bagian:
+Sebagian besar teks dan konfigurasi ada langsung di `index.html`. Bagian yang umum diubah:
 
-- Nama orang tua mempelai (`[Nama Ayah]`, `[Nama Ibu]`)
-- Tanggal & jam acara — cari teks `12 September 2026`, dan baris `target = new Date('2026-09-12T08:00:00+07:00')` di bagian script (untuk countdown)
-- Alamat lokasi acara + link Google Maps (`https://maps.google.com/?q=Bandung`)
-- Nomor rekening & nama bank di bagian `#gift`
-- Cerita di bagian `#story`
+- Nama mempelai, orang tua, dan tanggal/jam acara (termasuk target countdown)
+- Alamat lokasi acara + link Google Maps
+- Nomor rekening/hadiah digital
+- Cerita pasangan di bagian cerita
+- Font pada bagian cover (saat ini memakai kombinasi **Cormorant Garamond** dan **Allura**)
 
 ### Foto & video galeri
 
-Upload ke folder `photos/` dengan penamaan berurutan:
-
-- Foto: `foto1.jpg`, `foto2.jpg`, `foto3.png`, dst (boleh campur `.jpg` / `.jpeg` / `.png` / `.webp`)
-- Video: `video1.mp4`, `video2.mp4`, dst (boleh `.mp4` / `.webm` / `.mov`)
-- Penomoran **harus berurutan** mulai dari 1. Galeri berhenti mencari setelah 3 nomor berturut-turut tidak ditemukan — jangan ada nomor yang dilompati.
-- Klik foto/video di galeri akan membuka tampilan besar (lightbox).
-
-Foto profil mempelai pakai nama tetap: `photos/nia.jpg` dan `photos/dimas.jpg`. Kalau belum ada, otomatis fallback ke placeholder huruf inisial.
-
-Foto background sampul: `photos/cover.jpg` (atau `.jpeg`/`.png`/`.webp`). Kalau belum diupload, fallback ke gradient maroon polos.
+- Foto profil mempelai: `photos/nia.jpg` dan `photos/dimas.jpg` (fallback ke inisial jika belum diupload)
+- Foto background cover: `photos/cover.jpg` (fallback ke gradient jika belum ada)
+- Galeri foto/video: upload berurutan sesuai penamaan yang dikenali `index.html` (`foto1.jpg`, `foto2.jpg`, ..., `video1.mp4`, ...)
+- Musik latar: taruh file di folder `music/`
 
 ---
 
-## 6. Cara kerja teknis (untuk referensi)
+## 5. Cara kerja teknis (ringkas)
 
-- `GET /api/guest/:code` → Function membaca `data/daftar-tamu.xlsx` lewat `env.ASSETS.fetch()`, parse dengan library `xlsx` (SheetJS), cari baris dengan kode yang cocok, lalu kembalikan nama & grupnya sebagai JSON.
-- Hasil parse Excel di-cache di memory selama "isolate" worker tersebut masih hidup — supaya tidak parse ulang di setiap request. Cache otomatis ter-refresh setiap kali ada deployment baru (termasuk saat kamu update file Excel), karena deployment baru = isolate baru.
-- `POST /api/wishes` & `GET /api/wishes` → tetap pakai D1, menyimpan dan menampilkan ucapan/RSVP tamu.
-- Tanpa binding D1 yang benar, form ucapan akan menampilkan pesan error yang jelas (bukan crash diam-diam).
-- Tanpa file `data/daftar-tamu.xlsx` (belum diupload), endpoint `/api/guest/:code` akan mengembalikan error yang jelas, dan halaman tetap fallback ke mode `?to=Nama` biasa.
+- Semua request RSVP/ucapan diproses oleh Pages Functions di folder `functions/`.
+- Data RSVP & ucapan ditulis ke Google Sheets lewat Google Sheets API (autentikasi service account).
+- Setiap entri baru memicu notifikasi ke WhatsApp (Fonnte) dan Telegram sebagai jalur cadangan bila salah satu gagal.
+- Header caching (`_headers`) diatur agar aset statis (foto/video) tetap bisa ter-update setiap ada deployment baru — hindari directive `immutable` pada aset yang masih sering diganti.
 
 ---
 
-## 7. Troubleshooting
+## 6. Troubleshooting
 
 | Masalah | Kemungkinan sebab & solusi |
-|---|---|
-| Nama tamu tidak muncul, hanya nama generik | Pastikan path file persis `data/daftar-tamu.xlsx`, dan kode di URL (`?to=001`) sama persis dengan kolom Kode di Excel (termasuk angka nol di depan). |
-| Error "File tidak ditemukan" di endpoint `/api/guest/...` | File Excel belum ke-push ke GitHub, atau salah lokasi folder. Cek lagi struktur folder di bagian 1. |
-| Build gagal di Cloudflare Pages terkait library `xlsx` | Pastikan `package.json` ada di **root** project (sejajar `index.html`), bukan di dalam folder `functions/`. |
-| Ucapan/RSVP tidak tersimpan | Cek binding D1 `DB` sudah ditambahkan di Settings → Functions, lalu lakukan re-deploy. |
-| Update Excel tidak langsung kelihatan | Tunggu deployment baru selesai (cek tab Deployments di dashboard Pages). Cache hanya refresh kalau ada deployment baru. |
+| --- | --- |
+| RSVP/ucapan tidak masuk ke Google Sheets | Cek kredensial service account & ID spreadsheet di environment variables, lalu lihat log Functions di dashboard Cloudflare |
+| Notifikasi WhatsApp/Telegram tidak terkirim | Cek token Fonnte/Telegram masih valid; untuk Telegram, pastikan tidak salah ketik karakter `I`/`l` pada token |
+| Update foto tidak muncul di situs live | Cek konfigurasi `_headers`, pastikan tidak ada directive `immutable` yang membuat browser/CDN cache foto lama |
+| Musik tidak autoplay di sebagian browser | Gunakan pola muted-autoplay lalu unmute setelah interaksi pertama dari pengguna |
 
 ---
 
