@@ -457,33 +457,42 @@ async function handleGetGuest(code, env) {
   return json({ code: row.code, name: row.name, group: row.group || null });
 }
 
-// ====== Notifikasi WhatsApp ke pemilik web saat ada tamu konfirmasi HADIR ======
+// ====== Notifikasi ke pemilik web saat ada tamu konfirmasi RSVP ======
 //
-// Pakai Fonnte (gateway WA Indonesia, ada paket gratis) — setup:
-//   1. Daftar & login di https://fonnte.com
-//   2. Menu "Device" > tambah device baru > scan QR pakai WhatsApp
+// Ada 2 kanal notifikasi yang jalan BERBARENGAN (saling backup):
+//
+// 1) WhatsApp via Fonnte (gateway WA Indonesia, ada paket gratis) — setup:
+//   a. Daftar & login di https://fonnte.com
+//   b. Menu "Device" > tambah device baru > scan QR pakai WhatsApp
 //      yang mau dipakai untuk KIRIM notifikasi (bukan nomor yang menerima)
-//   3. Setelah device connect, salin "Device Token"-nya (di halaman Device)
-//   4. Di Cloudflare Pages > Settings > Environment variables, tambahkan:
+//   c. Setelah device connect, salin "Device Token"-nya (di halaman Device)
+//   d. Di Cloudflare Pages > Settings > Environment variables, tambahkan:
 //        NOTIFY_PHONE   = nomor WA yang MENERIMA notifikasi, format internasional
 //                         TANPA "+" (mis. 6282145091666)
-//        FONNTE_TOKEN   = Device Token dari langkah 3
-//   5. Deploy ulang. Kalau kedua env var ini kosong, notifikasi otomatis dilewati (tidak error).
+//        FONNTE_TOKEN   = Device Token dari langkah c
 //
-// Catatan: nomor pengirim (device Fonnte) dan nomor penerima (NOTIFY_PHONE) boleh
-// beda — device Fonnte cuma jadi "mesin kirim", tidak perlu WA khusus buat pemilik web.
+//   Catatan: nomor pengirim (device Fonnte) dan nomor penerima (NOTIFY_PHONE) boleh
+//   beda — device Fonnte cuma jadi "mesin kirim", tidak perlu WA khusus buat pemilik web.
+//   Device Fonnte butuh HP yang tetap online & login WA-nya, jadi kadang perlu reconnect.
 //
-// Kalau nanti mau ganti ke gateway lain (Wablas, Twilio, dll) tinggal ganti isi fungsi
-// sendWhatsAppNotification di bawah ini — bagian lain kode tidak perlu diubah.
+// 2) Telegram Bot (BACKUP — tidak butuh reconnect sama sekali, selalu online) — setup:
+//   a. Di HP/PC buka Telegram, chat ke @BotFather
+//   b. Kirim perintah /newbot, ikuti instruksinya (kasih nama bot bebas)
+//   c. BotFather akan kasih "token", formatnya seperti: 123456789:ABCdefGhIJKlmNoPQRsTUVwxyz
+//   d. Cari bot kamu di Telegram (username yang tadi dibuat), klik Start / kirim pesan apa saja ke bot itu
+//   e. Buka di browser: https://api.telegram.org/bot<TOKEN>/getUpdates
+//      (ganti <TOKEN> dengan token dari BotFather)
+//      Cari angka "id" di dalam "chat" — itu CHAT_ID kamu
+//   f. Di Cloudflare Pages > Settings > Environment variables, tambahkan:
+//        TELEGRAM_BOT_TOKEN = token dari BotFather
+//        TELEGRAM_CHAT_ID   = chat id dari langkah e
+//
+// Deploy ulang setelah menambah env var. Kalau env var salah satu kanal kosong,
+// kanal itu otomatis dilewati (tidak error) — aman dipasang salah satu dulu,
+// atau dua-duanya sekaligus untuk saling backup.
 
-async function sendWhatsAppNotification(env, { name, guestCount, message }) {
+async function sendWhatsAppNotification(env, text) {
   if (!env.NOTIFY_PHONE || !env.FONNTE_TOKEN) return; // belum dikonfigurasi, lewati diam-diam
-
-  const text =
-    `RSVP baru — HADIR\n` +
-    `Nama: ${name}\n` +
-    `Jumlah tamu: ${guestCount}\n` +
-    `Ucapan: ${message}`;
 
   try {
     await fetch("https://api.fonnte.com/send", {
@@ -500,6 +509,41 @@ async function sendWhatsAppNotification(env, { name, guestCount, message }) {
   } catch (err) {
     // gagal kirim notifikasi tidak boleh menggagalkan RSVP tamu
   }
+}
+
+async function sendTelegramNotification(env, text) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return; // belum dikonfigurasi, lewati diam-diam
+
+  try {
+    await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: env.TELEGRAM_CHAT_ID,
+        text,
+      }),
+    });
+  } catch (err) {
+    // gagal kirim notifikasi tidak boleh menggagalkan RSVP tamu
+  }
+}
+
+async function sendRsvpNotification(env, { name, attendance, guestCount, message }) {
+  const statusLabel =
+    attendance === "hadir" ? "HADIR" :
+    attendance === "tidak" ? "TIDAK HADIR" :
+    "RAGU-RAGU";
+  const lines = [`RSVP baru — ${statusLabel}`, `Nama: ${name}`];
+  if (attendance === "hadir") lines.push(`Jumlah tamu: ${guestCount}`);
+  if (message) lines.push(`Ucapan: ${message}`);
+  const text = lines.join("\n");
+
+  // Kirim ke semua kanal yang terpasang secara paralel; satu kanal gagal
+  // tidak menghentikan kanal lain (saling backup).
+  await Promise.allSettled([
+    sendWhatsAppNotification(env, text),
+    sendTelegramNotification(env, text),
+  ]);
 }
 
 async function handlePostWish(request, env, context) {
@@ -540,8 +584,8 @@ async function handlePostWish(request, env, context) {
     return json({ error: "Gagal menyimpan RSVP: " + err.message }, 500);
   }
 
-  if (attendance === "hadir") {
-    const notify = sendWhatsAppNotification(env, { name, guestCount, message });
+  if (attendance === "hadir" || attendance === "tidak" || attendance === "ragu") {
+    const notify = sendRsvpNotification(env, { name, attendance, guestCount, message });
     if (context && context.waitUntil) {
       context.waitUntil(notify);
     } else {
