@@ -137,9 +137,9 @@
     font-family:'Jost',sans-serif; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase;
     color:var(--cream); opacity:.9; position:relative; z-index:2; margin-top:8px;
   }
-  #cover .cover-to{ margin-top:22px; font-family:'Jost',sans-serif; font-style:normal; letter-spacing:.15em; text-transform:uppercase; font-size:.72rem; color:var(--maroon-deep); text-shadow:0 2px 10px rgba(255,255,255,.55), 0 1px 4px rgba(0,0,0,.25); }
-  #cover .cover-guest{ font-family:'Jost',sans-serif; font-style:normal; letter-spacing:.15em; text-transform:uppercase; font-size:.72rem; }
-  #cover .open-btn{ font-family:'Jost',sans-serif; font-style:normal; letter-spacing:.15em; text-transform:uppercase; font-weight:500; font-size:.72rem; }
+  #cover .cover-to{ margin-top:22px; font-family:'Playfair Display',serif; font-style:normal; font-weight:500; letter-spacing:.02em; text-transform:none; font-size:.9rem; color:var(--maroon-deep); text-shadow:0 2px 10px rgba(255,255,255,.55), 0 1px 4px rgba(0,0,0,.25); }
+  #cover .cover-guest{ font-family:'Playfair Display',serif; font-style:normal; font-weight:700; letter-spacing:.01em; text-transform:none; font-size:1.1rem; margin-top:4px; }
+  #cover .open-btn{ font-family:'Playfair Display',serif; font-style:normal; letter-spacing:.01em; text-transform:none; font-weight:600; font-size:1.1rem; }
 
   /* ---------- WELCOME INTRO: teks tengah muncul setelah cover dibuka ---------- */
   .fl-center{
@@ -514,7 +514,7 @@
     border:1px solid var(--gold-soft); border-radius:18px; padding:26px 22px;
     background:var(--cream-deep);
   }
-  .event-card .ev-name{ font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--maroon-deep); margin-bottom:6px;}
+  .event-card .ev-name{ font-family:'Alex Brush',cursive; font-weight:400; font-size:2.1rem; line-height:1.15; color:var(--maroon-deep); margin-bottom:8px;}
   .event-card .ev-date{ font-family:var(--font-copy); font-style:italic; font-size:1.05rem; line-height:1.75; color:var(--ink); margin-bottom:2px;}
   .event-card .ev-time{ font-family:var(--font-copy); font-style:italic; font-size:1.05rem; line-height:1.75; color:var(--maroon); font-weight:500; margin-bottom:12px;}
   .event-card .ev-place{ font-family:var(--font-copy); font-style:italic; font-size:1.05rem; line-height:1.75; opacity:.8; margin-bottom:16px;}
@@ -1830,7 +1830,7 @@
   const gcNext = document.getElementById('gcNext');
   let gcCurrent = 0;
   let gcAutoplayTimer = null;
-  const GC_AUTOPLAY_MS = 2000;
+  const GC_AUTOPLAY_MS = 3500;
 
   function buildCarouselSlide(item, index){
     const div = document.createElement('div');
